@@ -10,6 +10,7 @@ import Foundation
 
 protocol GamesNetworkDataSource {
 	func games(_ input: GamesInput) async throws -> GamesOutput
+	func game(id: Int) async throws -> Game
 }
 
 struct GamesNetworkDataSourceImpl: GamesNetworkDataSource {
@@ -27,6 +28,19 @@ struct GamesNetworkDataSourceImpl: GamesNetworkDataSource {
 		let gamesOutput = try await httpClient.sendRequest(
 			request,
 			decoding: GamesOutput.self,
+			decoder: jsonDecoder
+		)
+		return gamesOutput
+	}
+
+	func game(id: Int) async throws -> Game {
+		let request: HTTPURLRequest = try HTTPURLRequest(
+			url: environment.baseURL / "games" / id,
+			httpMethod: .get
+		)
+		let gamesOutput = try await httpClient.sendRequest(
+			request,
+			decoding: Game.self,
 			decoder: jsonDecoder
 		)
 		return gamesOutput

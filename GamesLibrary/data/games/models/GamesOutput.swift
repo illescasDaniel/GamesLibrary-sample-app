@@ -17,5 +17,5 @@ struct GamesOutput: Decodable {
 	/// string <uri> Nullable
 	let previous: String?
 
-	let results: [Game]
+	let results: [GameSearchItem]
 }

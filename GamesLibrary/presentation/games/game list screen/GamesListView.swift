@@ -37,9 +37,18 @@ struct GameListView: View {
 	}
 
 	@ViewBuilder
-	private func listContent(_ games: [Game]) -> some View {
+	private func listContent(_ games: [GameSearchItem]) -> some View {
 		List(games) { game in
-			Text(verbatim: game.name ?? "-")
+			NavigationLink {
+				GameDetailsView(gameSearchItem: game)
+			} label: {
+				VStack {
+					Text(verbatim: game.name ?? "-")
+					if let url = game.backgroundImage.flatMap(URL.init) {
+						AsyncImage(url: url)
+					}
+				}
+			}
 		}
 	}
 }

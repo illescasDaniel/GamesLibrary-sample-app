@@ -6,7 +6,7 @@
 //
 
 protocol GetListOfGames {
-	func callAsFunction(page: Int) async throws -> [Game]
+	func callAsFunction(page: Int) async throws -> [GameSearchItem]
 }
 
 struct GetListOfGamesImpl: GetListOfGames {
@@ -14,7 +14,7 @@ struct GetListOfGamesImpl: GetListOfGames {
 	let gamesRepository: any GamesRepository
 	let pageSize: Int = 50
 
-	func callAsFunction(page: Int) async throws -> [Game] {
+	func callAsFunction(page: Int) async throws -> [GameSearchItem] {
 		let input = GamesInput(
 			page: page,
 			pageSize: pageSize,

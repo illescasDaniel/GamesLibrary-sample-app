@@ -11,6 +11,7 @@ import Foundation
 import BetterLogger
 
 let di = DICBuilder()
+// MARK: data
 	.registerSingleton(Environment.production)
 	.registerSingleton(JSONDecoder())
 	.registerSingleton(BetterLogger(name: "App"))
@@ -50,9 +51,11 @@ let di = DICBuilder()
 	.register {
 		GamesRepositoryImpl(
 			cacheDataSource: inject(),
-			networkDataSource: inject()
+			networkDataSource: inject(),
+			logger: inject()
 		) as any GamesRepository
 	}
+// MARK: domain
 	.register {
 		GetListOfGamesImpl(gamesRepository: inject()) as any GetListOfGames
 	}
@@ -60,9 +63,19 @@ let di = DICBuilder()
 		SearchGameImpl(gamesRepository: inject()) as any SearchGame
 	}
 	.register {
+		GetGameDetailsImpl(gamesRepository: inject()) as any GetGameDetails
+	}
+// MARK: presentation
+	.register {
 		GamesListViewModel(
 			getListOfGames: inject(),
 			searchGame: inject(),
+			logger: inject()
+		)
+	}
+	.register {
+		GameDetailsViewModel(
+			getGameDetails: inject(),
 			logger: inject()
 		)
 	}

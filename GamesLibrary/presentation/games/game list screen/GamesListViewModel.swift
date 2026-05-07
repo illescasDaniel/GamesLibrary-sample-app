@@ -12,7 +12,7 @@ import BetterLogger
 @Observable
 final class GamesListViewModel {
 
-	var gamesState: ViewState<[Game], any Error> = .loading
+	var gamesState: ViewState<[GameSearchItem], any Error> = .loading
 	var currentPage: Int = 1
 	var searchText: String = ""
 	var searchGameTask: Task<Void, Never>?
@@ -30,7 +30,7 @@ final class GamesListViewModel {
 	func getListOfGames() async {
 		gamesState = .loading
 		do {
-			let games = try await getListOfGames(page: currentPage)
+			let games = try await self.getListOfGames(page: currentPage)
 			gamesState = .success(games)
 		} catch {
 			logger.error("Get list of games failed", context: ["error": error])
@@ -66,7 +66,7 @@ final class GamesListViewModel {
 	private func _searchGame(_ searchText: String) async {
 		gamesState = .loading
 		do {
-			let games = try await searchGame(page: currentPage, searchText: searchText)
+			let games = try await self.searchGame(page: currentPage, searchText: searchText)
 			if searchGameTask?.isCancelled == true {
 				logger.debug("Search cancelled due to newer search")
 				return
