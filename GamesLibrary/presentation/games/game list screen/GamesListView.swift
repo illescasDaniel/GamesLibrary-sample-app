@@ -9,12 +9,16 @@ import SwiftUI
 
 struct GameListView: View {
 
-	let viewModel: GamesListViewModel = inject()
+	@Bindable var viewModel: GamesListViewModel = inject()
 
 	var body: some View {
 		NavigationStack {
 			listContentState
 		}
+		.searchable(text: $viewModel.searchText)
+		.onChange(of: viewModel.searchText, { oldValue, newValue in
+			viewModel.searchGame(oldSearchText: oldValue, newSearchText: newValue)
+		})
 		.task {
 			await viewModel.getListOfGames()
 		}

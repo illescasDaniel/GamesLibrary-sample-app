@@ -8,18 +8,23 @@
 import HTTIES
 import DIC
 import Foundation
+import BetterLogger
 
 let di = DICBuilder()
 	.registerSingleton(Environment.production)
 	.registerSingleton(JSONDecoder())
+	.registerSingleton(BetterLogger(name: "App"))
 	.register {
 		URLSession.shared as any HTTPDataRequestHandler
 	}
 	.register {
-		APIKeyRequestInterceptor(apiKey: ***REMOVED***)
+		APIKeyRequestInterceptor(
+			apiKey: ***REMOVED***,
+			logger: inject()
+		)
 	}
 	.register {
-		HTTPResponseLoggerInterceptor()
+		HTTPResponseLoggerInterceptor(logger: inject())
 	}
 	.registerSingleton {
 		HTTPClientImpl(
@@ -55,7 +60,11 @@ let di = DICBuilder()
 		SearchGameImpl(gamesRepository: inject()) as any SearchGame
 	}
 	.register {
-		GamesListViewModel(getListOfGames: inject(), searchGame: inject())
+		GamesListViewModel(
+			getListOfGames: inject(),
+			searchGame: inject(),
+			logger: inject()
+		)
 	}
 	.build()
 

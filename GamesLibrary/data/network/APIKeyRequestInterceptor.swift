@@ -7,21 +7,19 @@
 
 import HTTIES
 import Foundation
+import BetterLogger
 
 struct APIKeyRequestInterceptor: HTTPInoutRequestInterceptor {
 
 	let apiKey: String
-
-	init(apiKey: String) {
-		self.apiKey = apiKey
-	}
+	let logger: BetterLogger
 
 	func intercept(request: inout URLRequest) {
 		guard
 			let url = request.url?.absoluteString,
 			var urlComponents = URLComponents(string: url)
 		else {
-			// TODO: logger
+			logger.debug("Couldn't create URLComponents for \(request)")
 			return
 		}
 		
@@ -30,7 +28,7 @@ struct APIKeyRequestInterceptor: HTTPInoutRequestInterceptor {
 		]
 
 		guard let validURL = urlComponents.url else {
-			// TODO: logger
+			logger.debug("URL is nil after adding API key")
 			return
 		}
 		request.url = validURL
