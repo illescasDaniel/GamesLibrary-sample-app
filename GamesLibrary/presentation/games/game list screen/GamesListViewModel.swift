@@ -8,12 +8,13 @@
 import Observation
 import Foundation
 import BetterLogger
+import HTTIES
 
 @Observable
 final class GamesListViewModel {
 
 	var games: [GameSearchItem] = []
-	var gamesState: BasicViewState = .loading
+	var gamesState: ListViewState = .loading
 	var currentPage: Int = 1
 	var searchText: String = ""
 	var gamesTask: Task<Void, Never>?
@@ -40,7 +41,7 @@ final class GamesListViewModel {
 		gamesTask?.cancel()
 
 		var previousGames: [GameSearchItem] = []
-		if currentPage > 1, gamesState == .success {
+		if currentPage > 1, case .success = gamesState {
 			previousGames = games
 		}
 
@@ -51,14 +52,16 @@ final class GamesListViewModel {
 				let newGames = try await self.getListOfGames(page: currentPage)
 				if gamesTask?.isCancelled == true {
 					logger.debug("Get games cancelled")
+					setSuccessState()
 					return
 				}
-				gamesState = .success
 				games = previousGames + newGames
+				setSuccessState()
 			} catch {
 				logger.error("Get list of games failed", context: ["error": error])
 				if gamesTask?.isCancelled == true {
 					logger.debug("Get games cancelled")
+					gamesState = .success(isEmpty: games.isEmpty)
 					return
 				}
 				gamesState = .error
@@ -78,7 +81,7 @@ final class GamesListViewModel {
 		}
 
 		var previousGames: [GameSearchItem] = []
-		if currentPage > 1, gamesState == .success {
+		if currentPage > 1, case .success = gamesState {
 			previousGames = games
 		}
 
@@ -91,6 +94,7 @@ final class GamesListViewModel {
 				await _searchGame(newSearchText, previousGames: previousGames)
 			} catch {
 				logger.debug("Search cancelled due to throttling")
+				setSuccessState()
 			}
 		}
 
@@ -103,21 +107,33 @@ final class GamesListViewModel {
 			let newGames = try await self.searchGame(page: currentPage, searchText: searchText)
 			if gamesTask?.isCancelled == true {
 				logger.debug("Search cancelled due to newer search")
+				setSuccessState()
 				return
 			}
-			gamesState = .success
 			games = previousGames + newGames
+			setSuccessState()
 		} catch {
 			logger.error("Search failed", context: ["error": error])
 			if gamesTask?.isCancelled == true {
 				logger.debug("Search cancelled due to newer search")
+				setSuccessState()
 				return
 			}
 			if (error as NSError).code == URLError.cancelled.rawValue {
 				logger.debug("Search cancelled at URL Session level")
+				setSuccessState()
+				return
+			}
+			if case let AppNetworkResponseError.unexpected(statusCode) = error, statusCode == 404 {
+				logger.debug("Search endpoint can return 404 when no further results are found")
+				setSuccessState()
 				return
 			}
 			gamesState = .error
 		}
+	}
+
+	private func setSuccessState() {
+		gamesState = .success(isEmpty: games.isEmpty)
 	}
 }

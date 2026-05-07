@@ -19,10 +19,10 @@ struct GamesInput: URLQueryEncodable, nonisolated Hashable, Sendable {
 	let search: String?
 
 	/// Disable fuzziness for the search query.
-	let searchPrecise: String?
+	let searchPrecise: Bool?
 
 	/// Mark the search query as exact.
-	let searchExact: String?
+	let searchExact: Bool?
 
 	/// Filter by parent platforms, for example: 1,2,3.
 	let parentPlatforms: String?
@@ -83,8 +83,8 @@ struct GamesInput: URLQueryEncodable, nonisolated Hashable, Sendable {
 			page.map { URLQueryItem(name: "page", value: String($0)) },
 			pageSize.map { URLQueryItem(name: "page_size", value: String($0)) },
 			search.map { URLQueryItem(name: "search", value: $0) },
-			searchPrecise.map { URLQueryItem(name: "search_precise", value: $0) },
-			searchExact.map { URLQueryItem(name: "search_exact", value: $0) },
+			searchPrecise.map { URLQueryItem(name: "search_precise", value: String($0)) },
+			searchExact.map { URLQueryItem(name: "search_exact", value: String($0)) },
 			parentPlatforms.map { URLQueryItem(name: "parent_platforms", value: $0) },
 			platforms.map { URLQueryItem(name: "platforms", value: $0) },
 			stores.map { URLQueryItem(name: "stores", value: $0) },

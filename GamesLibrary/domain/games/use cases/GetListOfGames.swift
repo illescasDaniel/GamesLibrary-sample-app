@@ -12,7 +12,7 @@ protocol GetListOfGames {
 struct GetListOfGamesImpl: GetListOfGames {
 
 	let gamesRepository: any GamesRepository
-	let pageSize: Int = 50
+	let pageSize: Int = 20
 
 	func callAsFunction(page: Int) async throws -> [GameSearchItem] {
 		let input = GamesInput(

@@ -9,7 +9,6 @@ import Foundation
 
 struct Game: Decodable {
 
-	let rating: Double
 
 	let id: Int?
 	let slug: String?
@@ -25,6 +24,7 @@ struct Game: Decodable {
 	let backgroundImageAdditional: String?
 	let website: String?
 	let ratingTop: Int?
+	let rating: Double?
 
 //	let ratings: [Int]? // sometimes an [Int], sometimes a dictionary...
 	let reactions: [String: Int]?

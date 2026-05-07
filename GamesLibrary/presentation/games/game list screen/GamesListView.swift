@@ -30,7 +30,12 @@ struct GameListView: View {
 		ZStack {
 			listContent(viewModel.games)
 			switch viewModel.gamesState {
-			case .success: EmptyView()
+			case let .success(isEmpty):
+				if isEmpty {
+					ContentUnavailableView {
+						Text("No results")
+					}
+				}
 			case .error:
 				Color(.systemGroupedBackground).overlay(
 					ContentUnavailableView {
@@ -76,7 +81,7 @@ struct GameListView: View {
 			}
 		}
 		.refreshable {
-			viewModel.currentPage = 0
+			viewModel.currentPage = 1
 			Task { await viewModel.getGames(oldSearchText: nil, newSearchText: viewModel.searchText) }
 		}
 		.onScrollGeometryChange(for: Bool.self) { geometry in
@@ -101,7 +106,20 @@ struct GameListView: View {
 	private func gameRowView(for game: GameSearchItem) -> some View {
 		HStack {
 			asyncImage(for: game)
-			Text(verbatim: game.name ?? "-")
+			VStack(alignment: .leading) {
+				Text(verbatim: game.name ?? "-")
+				if let rating = game.rating, rating > 0 {
+					Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+						.font(.footnote)
+						.fontWeight(.medium)
+						.padding(.horizontal, 10)
+						.padding(.vertical, 4)
+						.background(
+							Capsule()
+								.fill(Color(.systemGray6))
+						)
+				}
+			}
 		}
 	}
 
