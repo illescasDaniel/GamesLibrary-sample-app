@@ -19,9 +19,9 @@ struct GamesCacheDataSourceImpl: GamesCacheDataSource {
 	private let gamesCache: TTLCache<GamesInput, GamesOutput>
 	private let gameCache: TTLCache<Int, Game>
 
-	init() {
-		self.gamesCache = .init(timeToLive: .seconds(60 * 5))
-		self.gameCache = .init(timeToLive: .seconds(60 * 5))
+	init(timeToLive: Duration) {
+		self.gamesCache = .init(timeToLive: timeToLive)
+		self.gameCache = .init(timeToLive: timeToLive)
 	}
 
 	func saveGamesCache(input: GamesInput, output: GamesOutput) async {

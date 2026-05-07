@@ -46,7 +46,7 @@ let di = DICBuilder()
 		) as any GamesNetworkDataSource
 	}
 	.register {
-		GamesCacheDataSourceImpl() as any GamesCacheDataSource
+		GamesCacheDataSourceImpl(timeToLive: .seconds(60 * 5)) as any GamesCacheDataSource
 	}
 	.register {
 		GamesRepositoryImpl(

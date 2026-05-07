@@ -23,21 +23,30 @@ final class GamesLibraryUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func givenAppWhenLaunchedThenExampleWorks() throws {
+        // given
         let app = XCUIApplication()
+
+        // when
         app.launch()
 
+        // then
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         // XCUIAutomation Documentation
         // https://developer.apple.com/documentation/xcuiautomation
     }
 
     @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
+    func givenAppWhenLaunchIsMeasuredThenPerformanceIsTracked() throws {
+        // given
+        let metrics = [XCTApplicationLaunchMetric()]
+
+        // when
+        measure(metrics: metrics) {
             XCUIApplication().launch()
         }
+
+        // then
+        // Performance is measured by XCTest
     }
 }
