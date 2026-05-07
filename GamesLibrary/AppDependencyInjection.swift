@@ -19,7 +19,7 @@ let di = DICBuilder()
 	}
 	.register {
 		APIKeyRequestInterceptor(
-			apiKey: ***REMOVED***,
+			apiKey: inject(Environment.self).apiKey,
 			logger: inject()
 		)
 	}

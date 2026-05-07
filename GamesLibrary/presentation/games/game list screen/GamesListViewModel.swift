@@ -79,6 +79,7 @@ final class GamesListViewModel {
 			}
 			logger.error("Search failed", context: ["error": error])
 			gamesState = .error(error)
+			// TODO: some times we might get a cancellation error from urlsession
 		}
 	}
 }

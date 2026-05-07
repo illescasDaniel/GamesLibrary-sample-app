@@ -10,7 +10,9 @@
 		65194F632FAB53AA0098077E /* HTTIES in Frameworks */ = {isa = PBXBuildFile; productRef = 65194F622FAB53AA0098077E /* HTTIES */; };
 		659DE44C2FAC878B00CE3824 /* DIC in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE44B2FAC878B00CE3824 /* DIC */; };
 		659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE4512FACA0D600CE3824 /* BetterLogger */; };
-		659DE4582FACC53B00CE3824 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 659DE4572FACC53B00CE3824 /* Config.xcconfig */; };
+		659DE4582FACC53B00CE3824 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 659DE4572FACC53B00CE3824 /* Secrets.xcconfig */; };
+		659DE45C2FACCE3100CE3824 /* Secrets.xcconfig.sample in Resources */ = {isa = PBXBuildFile; fileRef = 659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */; };
+		659DE45E2FACD08300CE3824 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 659DE45D2FACD08300CE3824 /* Config.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,12 +36,27 @@
 		65194F082FAB46AA0098077E /* GamesLibrary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamesLibrary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65194F152FAB46AB0098077E /* GamesLibraryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GamesLibraryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		65194F1F2FAB46AB0098077E /* GamesLibraryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GamesLibraryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		659DE4572FACC53B00CE3824 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		659DE4572FACC53B00CE3824 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.xcconfig.sample; sourceTree = "<group>"; };
+		659DE45D2FACD08300CE3824 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		659DE45A2FACCD9700CE3824 /* Exceptions for "GamesLibrary" folder in "GamesLibrary" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 65194F072FAB46AA0098077E /* GamesLibrary */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		65194F0A2FAB46AA0098077E /* GamesLibrary */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				659DE45A2FACCD9700CE3824 /* Exceptions for "GamesLibrary" folder in "GamesLibrary" target */,
+			);
 			path = GamesLibrary;
 			sourceTree = "<group>";
 		};
@@ -86,7 +103,9 @@
 		65194EFF2FAB46AA0098077E = {
 			isa = PBXGroup;
 			children = (
-				659DE4572FACC53B00CE3824 /* Config.xcconfig */,
+				659DE45D2FACD08300CE3824 /* Config.xcconfig */,
+				659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */,
+				659DE4572FACC53B00CE3824 /* Secrets.xcconfig */,
 				65194F0A2FAB46AA0098077E /* GamesLibrary */,
 				65194F182FAB46AB0098077E /* GamesLibraryTests */,
 				65194F222FAB46AB0098077E /* GamesLibraryUITests */,
@@ -232,7 +251,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				659DE4582FACC53B00CE3824 /* Config.xcconfig in Resources */,
+				659DE45E2FACD08300CE3824 /* Config.xcconfig in Resources */,
+				659DE4582FACC53B00CE3824 /* Secrets.xcconfig in Resources */,
+				659DE45C2FACCE3100CE3824 /* Secrets.xcconfig.sample in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +448,7 @@
 		};
 		65194F2A2FAB46AB0098077E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 659DE45D2FACD08300CE3824 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -434,6 +456,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GamesLibrary/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -464,6 +487,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GamesLibrary/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
