@@ -99,25 +99,35 @@ struct GameListView: View {
 		guard case .success = viewModel.gamesState else { return }
 
 		viewModel.currentPage += 1
-		Task { await viewModel.getGames(oldSearchText: nil, newSearchText: viewModel.searchText) }
+		Task { await viewModel.getGames(oldSearchText: viewModel.searchText, newSearchText: viewModel.searchText) }
 	}
 
 	@ViewBuilder
 	private func gameRowView(for game: GameSearchItem) -> some View {
-		HStack {
+		HStack(spacing: 16) {
 			asyncImage(for: game)
 			VStack(alignment: .leading) {
-				Text(verbatim: game.name ?? "-")
-				if let rating = game.rating, rating > 0 {
-					Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
-						.font(.footnote)
-						.fontWeight(.medium)
-						.padding(.horizontal, 10)
-						.padding(.vertical, 4)
-						.background(
-							Capsule()
-								.fill(Color(.systemGray6))
-						)
+				Text(game.name ?? "-")
+				HStack {
+					Group {
+						if let rating = game.rating, rating > 0 {
+							Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+						}
+						if let releaseDate = game.released?.prefix(4) {
+							Text(verbatim: String(releaseDate))
+						}
+						if let playtime = game.playtime, playtime > 0 {
+							Text(verbatim: String("\(playtime)h"))
+						}
+					}
+					.font(.footnote)
+					.fontWeight(.medium)
+					.padding(.horizontal, 10)
+					.padding(.vertical, 4)
+					.background(
+						Capsule()
+							.fill(Color(.systemGray6))
+					)
 				}
 			}
 		}

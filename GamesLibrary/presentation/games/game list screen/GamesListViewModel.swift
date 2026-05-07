@@ -31,8 +31,16 @@ final class GamesListViewModel {
 
 	func getGames(oldSearchText: String?, newSearchText: String) async {
 		if newSearchText.isEmpty {
+			if !(oldSearchText ?? "").isEmpty {
+				games = []
+				currentPage = 1
+			}
 			await getGames()
 		} else {
+			if (oldSearchText ?? "").isEmpty {
+				games = []
+				currentPage = 1
+			}
 			await searchGame(oldSearchText: oldSearchText, newSearchText: searchText)
 		}
 	}
