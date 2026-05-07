@@ -20,7 +20,7 @@ struct GameListView: View {
 			viewModel.searchGame(oldSearchText: oldValue, newSearchText: newValue)
 		})
 		.task {
-			await viewModel.getListOfGames()
+			await viewModel.getGames()
 		}
 	}
 
@@ -30,7 +30,15 @@ struct GameListView: View {
 		case let .success(games):
 			listContent(games)
 		case let .error(error):
-			Text("error: \(error.localizedDescription)") // TODO: improve
+			ContentUnavailableView {
+				Text("An error ocurred. Try again")
+			} actions: {
+				Button("Retry") {
+					Task {
+						await viewModel.getGames()
+					}
+				}.buttonStyle(.glassProminent)
+			}
 		case .loading:
 			ProgressView()
 		}

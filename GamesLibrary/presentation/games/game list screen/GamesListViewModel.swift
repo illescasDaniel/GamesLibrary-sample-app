@@ -15,7 +15,7 @@ final class GamesListViewModel {
 	var gamesState: ViewState<[GameSearchItem], any Error> = .loading
 	var currentPage: Int = 1
 	var searchText: String = ""
-	var searchGameTask: Task<Void, Never>?
+	var gamesTask: Task<Void, Never>?
 
 	private let getListOfGames: any GetListOfGames
 	private let searchGame: any SearchGame
@@ -27,15 +27,29 @@ final class GamesListViewModel {
 		self.logger = logger
 	}
 
-	func getListOfGames() async {
+	func getGames() async {
+		gamesTask?.cancel()
 		gamesState = .loading
-		do {
-			let games = try await self.getListOfGames(page: currentPage)
-			gamesState = .success(games)
-		} catch {
-			logger.error("Get list of games failed", context: ["error": error])
-			gamesState = .error(error)
+
+		gamesTask = Task {
+			do {
+				let games = try await self.getListOfGames(page: currentPage)
+				if gamesTask?.isCancelled == true {
+					logger.debug("Get games cancelled")
+					return
+				}
+				gamesState = .success(games)
+			} catch {
+				logger.error("Get list of games failed", context: ["error": error])
+				if gamesTask?.isCancelled == true {
+					logger.debug("Get games cancelled")
+					return
+				}
+				gamesState = .error(error)
+			}
 		}
+
+		await gamesTask?.value
 	}
 
 	func searchGame(oldSearchText: String?, newSearchText: String) {
@@ -45,15 +59,15 @@ final class GamesListViewModel {
 			return
 		}
 		if cleanSearchText.isEmpty {
-			Task { await getListOfGames() }
+			Task { await getGames() }
 			logger.debug("Search text is empty, not performing a new search, reverting to the list")
 			return
 		}
 
-		searchGameTask?.cancel()
+		gamesTask?.cancel()
 		gamesState = .loading
 
-		searchGameTask = Task {
+		gamesTask = Task {
 			do {
 				try await Task.sleep(for: .milliseconds(150))
 				await _searchGame(newSearchText)
@@ -67,19 +81,22 @@ final class GamesListViewModel {
 		gamesState = .loading
 		do {
 			let games = try await self.searchGame(page: currentPage, searchText: searchText)
-			if searchGameTask?.isCancelled == true {
+			if gamesTask?.isCancelled == true {
 				logger.debug("Search cancelled due to newer search")
 				return
 			}
 			gamesState = .success(games)
 		} catch {
-			if searchGameTask?.isCancelled == true {
+			logger.error("Search failed", context: ["error": error])
+			if gamesTask?.isCancelled == true {
 				logger.debug("Search cancelled due to newer search")
 				return
 			}
-			logger.error("Search failed", context: ["error": error])
+			if (error as NSError).code == URLError.cancelled.rawValue {
+				logger.debug("Search cancelled at URL Session level")
+				return
+			}
 			gamesState = .error(error)
-			// TODO: some times we might get a cancellation error from urlsession
 		}
 	}
 }

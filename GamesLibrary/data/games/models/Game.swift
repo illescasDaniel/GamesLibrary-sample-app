@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Game: Codable {
+struct Game: Decodable {
 
 	let rating: Double
 
@@ -26,7 +26,7 @@ struct Game: Codable {
 	let website: String?
 	let ratingTop: Int?
 
-	let ratings: [Int]?
+//	let ratings: [Int]? // sometimes an [Int], sometimes a dictionary...
 	let reactions: [String: Int]?
 	let added: Int?
 	let addedByStatus: [String: Int]?
@@ -57,7 +57,7 @@ struct Game: Codable {
 	let platforms: [PlatformElement]?
 
 	enum CodingKeys: String, CodingKey {
-		case id, slug, name, rating, description, metacritic, released, tba, updated, website, ratings, reactions, added, playtime, platforms
+		case id, slug, name, rating, description, metacritic, released, tba, updated, website, /*ratings,*/ reactions, added, playtime, platforms
 		case nameOriginal = "name_original"
 		case metacriticPlatforms = "metacritic_platforms"
 		case backgroundImage = "background_image"
