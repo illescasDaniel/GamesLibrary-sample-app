@@ -15,6 +15,8 @@ struct GameDetailsView: View {
 
 	var body: some View {
 		contentState
+			.navigationTitle(gameSearchItem.name ?? String())
+			.navigationBarTitleDisplayMode(.inline)
 			.task {
 				guard let id = gameSearchItem.id else { return }
 				await viewModel.getGameDetails(id: id)
@@ -40,9 +42,11 @@ struct GameDetailsView: View {
 	@ViewBuilder
 	private func contentView(_ game: Game) -> some View {
 		ScrollView {
-			LazyVStack(spacing: 16) {
-				asyncImage(for: game)
-				VStack(alignment: .center) {
+			LazyVStack(alignment: .leading, spacing: 16) {
+
+				HStack(alignment: .top, spacing: 16) {
+					asyncImage(for: game)
+
 					HStack {
 						Group {
 							if let rating = game.rating, rating > 0 {
@@ -63,18 +67,16 @@ struct GameDetailsView: View {
 							Capsule()
 								.fill(Color(.systemGray6))
 						)
-					}
-
-					Text(game.name ?? "-")
-						.font(.headline)
-
-					if let description = game.description {
-						Text(description) // todo: how it looks
-							.font(.body)
-					}
+					}.padding(.vertical, 8)
 				}
-				Spacer()
-			}
+
+				if let description = game.description?.strippingHTML() {
+					Text(verbatim: description)
+						.font(.body)
+				}
+			}.padding()
+
+			Spacer()
 		}
 	}
 
