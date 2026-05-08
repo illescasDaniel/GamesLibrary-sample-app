@@ -50,7 +50,7 @@ struct GameDetailsView: View {
 
 	@ViewBuilder
 	private func contentView(gameDetails: any GameDetailsProtocol, loading: Bool) -> some View {
-		ScrollView {
+		ScrollView(.vertical) {
 			LazyVStack(alignment: .center, spacing: 16) {
 
 				HStack(alignment: .top) {
@@ -80,9 +80,26 @@ struct GameDetailsView: View {
 							}
 							.capsuleChipStyle()
 						}
+
+						ScrollView(.horizontal) {
+							LazyHStack {
+								Group {
+									let platforms = gameDetails.platforms?.compactMap({ $0.platform?.name }) ?? []
+									ForEach(platforms, id: \.self) { platform in
+										Text(platform)
+									}
+								}
+								.capsuleChipStyle()
+							}
+						}
 					}
 					.padding(.vertical, 8)
 				}.frame(maxWidth: .infinity)
+
+				Text("Description")
+					.font(.title)
+					.frame(maxWidth: .infinity, alignment: .leading)
+					.padding(.top, 8)
 
 				if let description = gameDetails.description?.strippingHTML() {
 					Text(verbatim: description)
