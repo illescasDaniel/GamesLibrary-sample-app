@@ -19,7 +19,7 @@ struct SearchGameImpl: SearchGame {
 			page: page,
 			pageSize: pageSize,
 			search: searchText,
-			searchPrecise: true, searchExact: nil, parentPlatforms: nil, platforms: nil, stores: nil, developers: nil, publishers: nil, genres: nil, tags: nil, creators: nil, dates: nil, updated: nil, platformsCount: nil, metacritic: nil, excludeCollection: nil, excludeAdditions: nil, excludeParents: nil, excludeGameSeries: nil, excludeStores: nil,
+			searchPrecise: true, searchExact: true, parentPlatforms: nil, platforms: nil, stores: nil, developers: nil, publishers: nil, genres: nil, tags: nil, creators: nil, dates: nil, updated: nil, platformsCount: nil, metacritic: nil, excludeCollection: nil, excludeAdditions: nil, excludeParents: nil, excludeGameSeries: nil, excludeStores: nil,
 			ordering: searchText.isEmpty ? nil : "-added"
 		)
 		let output = try await gamesRepository.games(input)

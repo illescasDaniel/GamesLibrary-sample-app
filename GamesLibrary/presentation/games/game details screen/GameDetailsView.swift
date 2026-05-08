@@ -87,11 +87,13 @@ struct GameDetailsView: View {
 									let platforms = gameDetails.platforms?.compactMap({ $0.platform?.name }) ?? []
 									ForEach(platforms, id: \.self) { platform in
 										Text(platform)
+											.environment(\.layoutDirection, .leftToRight)
 									}
 								}
 								.capsuleChipStyle()
 							}
 						}
+						.environment(\.layoutDirection, .rightToLeft)
 					}
 					.padding(.vertical, 8)
 				}.frame(maxWidth: .infinity)
