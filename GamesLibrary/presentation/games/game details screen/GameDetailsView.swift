@@ -28,15 +28,7 @@ struct GameDetailsView: View {
 	private var contentState: some View {
 		switch viewModel.gamesState {
 		case let .success(game):
-			contentView(
-				rating: game.rating,
-				esbrRating: game.esrbRating?.name,
-				released: game.released,
-				playtime: game.playtime,
-				description: game.description ?? "(No Description)",
-				image: game.backgroundImage,
-				website: game.website
-			)
+			contentView(gameDetails: game, loading: false)
 		case .error:
 			ContentUnavailableView {
 				Text("An error ocurred. Try again")
@@ -50,46 +42,30 @@ struct GameDetailsView: View {
 			}
 		case .loading:
 			ZStack {
-				contentView(
-					rating: gameSearchItem.rating,
-					esbrRating: gameSearchItem.esrbRating?.name,
-					released: gameSearchItem.released,
-					playtime: gameSearchItem.playtime,
-					description: nil,
-					image: gameSearchItem.backgroundImage,
-					website: nil
-				)
+				contentView(gameDetails: gameSearchItem, loading: true)
 				LoadingView("Loading full details")
 			}
 		}
 	}
 
 	@ViewBuilder
-	private func contentView(
-		rating: Double?,
-		esbrRating: String?,
-		released: String?,
-		playtime: Int?,
-		description: String?,
-		image: String?,
-		website: String?
-	) -> some View {
+	private func contentView(gameDetails: any GameDetailsProtocol, loading: Bool) -> some View {
 		ScrollView {
 			LazyVStack(alignment: .center, spacing: 16) {
 
 				HStack(alignment: .top) {
-					asyncImage(for: image)
+					asyncImage(for: gameDetails.backgroundImage)
 					Spacer()
 					VStack(alignment: .trailing) {
 						HStack {
 							Group {
-								if let rating, rating > 0 {
+								if let rating = gameDetails.rating, rating > 0 {
 									Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
 								}
-								if let releaseDate = released?.prefix(4) {
+								if let releaseDate = gameDetails.released?.prefix(4) {
 									Text(verbatim: String(releaseDate))
 								}
-								if let playtime, playtime > 0 {
+								if let playtime = gameDetails.playtime, playtime > 0 {
 									Text(verbatim: String("\(playtime)h"))
 								}
 							}
@@ -98,7 +74,7 @@ struct GameDetailsView: View {
 
 						HStack {
 							Group {
-								if let esbrRating {
+								if let esbrRating = gameDetails.esrbRating?.name {
 									Label(esbrRating, systemImage: "number.square")
 								}
 							}
@@ -108,15 +84,18 @@ struct GameDetailsView: View {
 					.padding(.vertical, 8)
 				}.frame(maxWidth: .infinity)
 
-				if let description = description?.strippingHTML() {
+				if let description = gameDetails.description?.strippingHTML() {
 					Text(verbatim: description)
 						.font(.body)
-				} else {
+				} else if loading {
 					Text(verbatim: String(Array(repeating: " ", count: 200)))
 						.redacted(reason: .placeholder)
+				} else {
+					Text(verbatim: "(No available description)")
+						.font(.body)
 				}
 
-				if let website = website.flatMap({ URL(string: $0) }) {
+				if let website = gameDetails.website.flatMap({ URL(string: $0) }) {
 					Link("Visit Website", destination: website)
 						.buttonStyle(.borderedProminent)
 				}
