@@ -103,7 +103,7 @@ struct GameDetailsView: View {
 					.frame(maxWidth: .infinity, alignment: .leading)
 					.padding(.top, 8)
 
-				if let description = gameDetails.description?.strippingHTML() {
+				if let description = gameDetails.validDescription?.strippingHTML() {
 					Text(verbatim: description)
 						.font(.body)
 				} else if loading {

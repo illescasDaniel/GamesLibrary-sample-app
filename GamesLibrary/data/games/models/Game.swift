@@ -15,6 +15,7 @@ struct Game: Decodable {
 	let name: String?
 	let nameOriginal: String?
 	let description: String?
+	let rawDescription: String?
 	let metacritic: Int?
 	let metacriticPlatforms: [GamePlatformMetacritic]?
 	let released: String?
@@ -55,6 +56,7 @@ struct Game: Decodable {
 
 	enum CodingKeys: String, CodingKey {
 		case id, slug, name, rating, description, metacritic, released, tba, updated, website, /*ratings,*/ reactions, added, playtime, platforms
+		case rawDescription = "description_raw"
 		case nameOriginal = "name_original"
 		case metacriticPlatforms = "metacritic_platforms"
 		case backgroundImage = "background_image"
