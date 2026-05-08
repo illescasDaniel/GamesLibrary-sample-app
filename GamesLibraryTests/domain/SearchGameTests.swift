@@ -22,4 +22,18 @@ struct SearchGameTests {
 		#expect(result.count == 1)
 		#expect(result.first?.id == 2)
 	}
+
+	@Test
+	func givenUseCaseWhenExecutedFailsThenThrowsError() async throws {
+		// given
+		let mockRepository = MockGamesRepository()
+		let useCase = SearchGameImpl(gamesRepository: mockRepository)
+
+		mockRepository.gamesResult = .failure(MockError.anyError)
+
+		// when / then
+		await #expect(throws: MockError.anyError) {
+			try await useCase(page: 1, searchText: "Test")
+		}
+	}
 }

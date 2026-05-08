@@ -8,6 +8,25 @@ import BetterLogger
 struct GameDetailsViewModelTests {
 
 	@Test
+	func givenViewModelWhenInitializedThenStateIsLoading() {
+		// given
+		let mockGetGameDetails = MockGetGameDetails()
+
+		// when
+		let viewModel = GameDetailsViewModel(
+			getGameDetails: mockGetGameDetails,
+			logger: BetterLogger(name: "Test")
+		)
+
+		// then
+		if case .loading = viewModel.gamesState {
+			// Success
+		} else {
+			Issue.record("Initial state should be loading")
+		}
+	}
+
+	@Test
 	func givenViewModelWhenGetGameDetailsSucceedsThenStateIsSuccess() async {
 		// given
 		let mockGetGameDetails = MockGetGameDetails()

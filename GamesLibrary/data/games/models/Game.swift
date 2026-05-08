@@ -86,7 +86,7 @@ struct Game: Decodable {
 }
 
 extension Game {
-	struct GamePlatformMetacritic: Codable {
+	struct GamePlatformMetacritic: Decodable {
 		let metascore: Int?
 		let url: String?
 	}

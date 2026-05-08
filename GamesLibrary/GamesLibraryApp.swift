@@ -17,6 +17,7 @@ struct GamesLibraryApp: App {
 	var body: some Scene {
 		WindowGroup {
 			#if DEBUG
+			// avoid running the whole app when running unit tests
 			if isTesting {
 				EmptyView()
 			} else {

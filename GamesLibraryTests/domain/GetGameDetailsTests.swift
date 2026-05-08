@@ -21,4 +21,18 @@ struct GetGameDetailsTests {
 		// then
 		#expect(result.id == 123)
 	}
+
+	@Test
+	func givenUseCaseWhenExecutedFailsThenThrowsError() async throws {
+		// given
+		let mockRepository = MockGamesRepository()
+		let useCase = GetGameDetailsImpl(gamesRepository: mockRepository)
+
+		mockRepository.gameResult = .failure(MockError.anyError)
+
+		// when / then
+		await #expect(throws: MockError.anyError) {
+			try await useCase(id: 123)
+		}
+	}
 }

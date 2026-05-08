@@ -44,11 +44,9 @@ struct GameSearchItem: Identifiable, Decodable {
 extension GameSearchItem {
 	/// Placeholder for the empty `{}` ratings object in the JSON
 	struct Ratings: Decodable {
-		// Add properties here if the API populates this later
 	}
 
 	/// Placeholder for the empty `{}` added_by_status object in the JSON
 	struct AddedByStatus: Decodable {
-		// Add properties here if the API populates this later
 	}
 }
