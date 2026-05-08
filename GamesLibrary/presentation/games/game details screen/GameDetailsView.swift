@@ -27,35 +27,64 @@ struct GameDetailsView: View {
 	private var contentState: some View {
 		switch viewModel.gamesState {
 		case let .success(game):
-			contentView(game)
-		case let .error(error):
-			Text("error: \(error.localizedDescription)") // TODO: improve
+			contentView(
+				rating: game.rating,
+				released: game.released,
+				playtime: game.playtime,
+				description: game.description ?? "(No Description)",
+				image: game.backgroundImage,
+				website: game.website
+			)
+		case .error:
+			ContentUnavailableView {
+				Text("An error ocurred. Try again")
+			} actions: {
+				Button("Retry") {
+					Task {
+						guard let id = gameSearchItem.id else { return }
+						await viewModel.getGameDetails(id: id)
+					}
+				}.buttonStyle(.glassProminent)
+			}
 		case .loading:
-			VStack {
-				ProgressView("Loading full details")
-
-				Text(verbatim: "game: \(gameSearchItem.name ?? "-")")
+			ZStack {
+				contentView(
+					rating: gameSearchItem.rating,
+					released: gameSearchItem.released,
+					playtime: gameSearchItem.playtime,
+					description: nil,
+					image: gameSearchItem.backgroundImage,
+					website: nil
+				)
+				LoadingView("Loading full details")
 			}
 		}
 	}
 
 	@ViewBuilder
-	private func contentView(_ game: Game) -> some View {
+	private func contentView(
+		rating: Double?,
+		released: String?,
+		playtime: Int?,
+		description: String?,
+		image: String?,
+		website: String?
+	) -> some View {
 		ScrollView {
-			LazyVStack(alignment: .leading, spacing: 16) {
+			LazyVStack(alignment: .center, spacing: 16) {
 
 				HStack(alignment: .top, spacing: 16) {
-					asyncImage(for: game)
-
+					asyncImage(for: image)
+					Spacer()
 					HStack {
 						Group {
-							if let rating = game.rating, rating > 0 {
+							if let rating = rating, rating > 0 {
 								Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
 							}
-							if let releaseDate = game.released?.prefix(4) {
+							if let releaseDate = released?.prefix(4) {
 								Text(verbatim: String(releaseDate))
 							}
-							if let playtime = game.playtime, playtime > 0 {
+							if let playtime = playtime, playtime > 0 {
 								Text(verbatim: String("\(playtime)h"))
 							}
 						}
@@ -68,11 +97,19 @@ struct GameDetailsView: View {
 								.fill(Color(.systemGray6))
 						)
 					}.padding(.vertical, 8)
-				}
+				}.frame(maxWidth: .infinity)
 
-				if let description = game.description?.strippingHTML() {
+				if let description = description?.strippingHTML() {
 					Text(verbatim: description)
 						.font(.body)
+				} else {
+					Text(verbatim: String(Array(repeating: " ", count: 200)))
+						.redacted(reason: .placeholder)
+				}
+
+				if let website = website.flatMap({ URL(string: $0) }) {
+					Link("Visit Website", destination: website)
+						.buttonStyle(.borderedProminent)
 				}
 			}.padding()
 
@@ -81,8 +118,8 @@ struct GameDetailsView: View {
 	}
 
 	@ViewBuilder
-	private func asyncImage(for game: Game) -> some View {
-		if let url = game.backgroundImage.flatMap(URL.init) {
+	private func asyncImage(for image: String?) -> some View {
+		if let url = image.flatMap(URL.init) {
 			AsyncImage(url: url) { phase in
 				switch phase {
 				case .empty:
