@@ -29,6 +29,7 @@ struct GameDetailsView: View {
 		case let .success(game):
 			contentView(
 				rating: game.rating,
+				esbrRating: game.esrbRating?.name,
 				released: game.released,
 				playtime: game.playtime,
 				description: game.description ?? "(No Description)",
@@ -50,6 +51,7 @@ struct GameDetailsView: View {
 			ZStack {
 				contentView(
 					rating: gameSearchItem.rating,
+					esbrRating: gameSearchItem.esrbRating?.name,
 					released: gameSearchItem.released,
 					playtime: gameSearchItem.playtime,
 					description: nil,
@@ -64,6 +66,7 @@ struct GameDetailsView: View {
 	@ViewBuilder
 	private func contentView(
 		rating: Double?,
+		esbrRating: String?,
 		released: String?,
 		playtime: Int?,
 		description: String?,
@@ -73,30 +76,35 @@ struct GameDetailsView: View {
 		ScrollView {
 			LazyVStack(alignment: .center, spacing: 16) {
 
-				HStack(alignment: .top, spacing: 16) {
+				HStack(alignment: .top) {
 					asyncImage(for: image)
 					Spacer()
-					HStack {
-						Group {
-							if let rating = rating, rating > 0 {
-								Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+					VStack(alignment: .trailing) {
+						HStack {
+							Group {
+								if let rating, rating > 0 {
+									Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+								}
+								if let releaseDate = released?.prefix(4) {
+									Text(verbatim: String(releaseDate))
+								}
+								if let playtime, playtime > 0 {
+									Text(verbatim: String("\(playtime)h"))
+								}
 							}
-							if let releaseDate = released?.prefix(4) {
-								Text(verbatim: String(releaseDate))
-							}
-							if let playtime = playtime, playtime > 0 {
-								Text(verbatim: String("\(playtime)h"))
-							}
+							.capsuleChipStyle()
 						}
-						.font(.footnote)
-						.fontWeight(.medium)
-						.padding(.horizontal, 10)
-						.padding(.vertical, 4)
-						.background(
-							Capsule()
-								.fill(Color(.systemGray6))
-						)
-					}.padding(.vertical, 8)
+
+						HStack {
+							Group {
+								if let esbrRating {
+									Label(esbrRating, image: "number.square")
+								}
+							}
+							.capsuleChipStyle()
+						}
+					}
+					.padding(.vertical, 8)
 				}.frame(maxWidth: .infinity)
 
 				if let description = description?.strippingHTML() {

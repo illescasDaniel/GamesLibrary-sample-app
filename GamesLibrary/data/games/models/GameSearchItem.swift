@@ -51,32 +51,4 @@ extension GameSearchItem {
 	struct AddedByStatus: Decodable {
 		// Add properties here if the API populates this later
 	}
-
-	struct ESRBRating: Decodable {
-		let id: Int?
-		let slug: String?
-		let name: String?
-	}
-
-	struct PlatformEntry: Decodable {
-		let platform: PlatformDetail?
-		let releasedAt: String?
-		let requirements: Requirements?
-
-		enum CodingKeys: String, CodingKey {
-			case platform, requirements
-			case releasedAt = "released_at"
-		}
-	}
-
-	struct PlatformDetail: Decodable {
-		let id: Int?
-		let slug: String?
-		let name: String?
-	}
-
-	struct Requirements: Decodable {
-		let minimum: String?
-		let recommended: String?
-	}
 }

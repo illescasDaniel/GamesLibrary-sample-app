@@ -25,12 +25,10 @@ struct Game: Decodable {
 	let website: String?
 	let ratingTop: Int?
 	let rating: Double?
-
 //	let ratings: [Int]? // sometimes an [Int], sometimes a dictionary...
 	let reactions: [String: Int]?
 	let added: Int?
 	let addedByStatus: [String: Int]?
-
 	let playtime: Int?
 	let screenshotsCount: Int?
 	let moviesCount: Int?
@@ -52,9 +50,8 @@ struct Game: Decodable {
 	let parentsCount: Int?
 	let additionsCount: Int?
 	let gameSeriesCount: Int?
-
 	let esrbRating: ESRBRating?
-	let platforms: [PlatformElement]?
+	let platforms: [PlatformEntry]?
 
 	enum CodingKeys: String, CodingKey {
 		case id, slug, name, rating, description, metacritic, released, tba, updated, website, /*ratings,*/ reactions, added, playtime, platforms
@@ -92,34 +89,5 @@ extension Game {
 	struct GamePlatformMetacritic: Codable {
 		let metascore: Int?
 		let url: String?
-	}
-
-	struct ESRBRating: Codable {
-		let id: Int?
-		let slug: String?
-		let name: String?
-	}
-
-	struct PlatformElement: Codable {
-		let platform: PlatformInfo?
-		let releasedAt: String?
-		let requirements: Requirements?
-
-		enum CodingKeys: String, CodingKey {
-			case platform
-			case releasedAt = "released_at"
-			case requirements
-		}
-	}
-
-	struct PlatformInfo: Codable {
-		let id: Int?
-		let slug: String?
-		let name: String?
-	}
-
-	struct Requirements: Codable {
-		let minimum: String?
-		let recommended: String?
 	}
 }
