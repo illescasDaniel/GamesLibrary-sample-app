@@ -16,6 +16,12 @@ let di = DICBuilder()
 	.registerSingleton(JSONDecoder())
 	.registerSingleton(BetterLogger(name: "App"))
 	.register {
+		let memoryCapacity = 50 * 1024 * 1024
+		let diskCapacity = 200 * 1024 * 1024
+		let cache = URLCache(memoryCapacity: memoryCapacity, diskCapacity: diskCapacity, diskPath: "myImageCache")
+		return cache
+	}
+	.register {
 		URLSession.shared as any HTTPDataRequestHandler
 	}
 	.register {

@@ -27,29 +27,25 @@ final class GamesListViewModel {
 		self.logger = logger
 	}
 
-	func getGames(oldSearchText: String?, newSearchText: String) async {
-		if (oldSearchText ?? "").isEmpty {
-			games = []
-			currentPage = 1
-		}
-		await searchGame(newSearchText: newSearchText.trimmingCharacters(in: .whitespacesAndNewlines))
-	}
+	func searchGame(loadNextPage: Bool = false) async {
 
-	private func searchGame(newSearchText: String) async {
-		var previousGames: [GameSearchItem] = []
-		if currentPage > 1, case .success = gamesState {
-			previousGames = games
-		}
+		let searchText = self.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
 
 		gamesTask?.cancel()
 		gamesState = .loading
 
+		if loadNextPage {
+			currentPage += 1
+		} else {
+			currentPage = 1
+		}
+
 		gamesTask = Task {
 			do {
-				if !newSearchText.isEmpty {
+				if !searchText.isEmpty {
 					try await Task.sleep(for: .milliseconds(150))
 				}
-				await _searchGame(newSearchText, previousGames: previousGames)
+				await _searchGame(searchText, previousGames: loadNextPage ? games : [])
 			} catch {
 				logger.debug("Search cancelled due to throttling")
 				setSuccessState()

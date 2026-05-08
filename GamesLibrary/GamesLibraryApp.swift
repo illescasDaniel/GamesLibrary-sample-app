@@ -9,6 +9,11 @@ import SwiftUI
 
 @main
 struct GamesLibraryApp: App {
+
+	init() {
+		URLCache.shared = inject()
+	}
+
 	var body: some Scene {
 		WindowGroup {
 			#if DEBUG

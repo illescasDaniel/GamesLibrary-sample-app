@@ -17,11 +17,11 @@ struct GameListView: View {
 				.navigationTitle("Games Library")
 		}
 		.searchable(text: $viewModel.searchText)
-		.onChange(of: viewModel.searchText, { oldValue, newValue in
-			Task { await viewModel.getGames(oldSearchText: oldValue, newSearchText: viewModel.searchText) }
+		.onChange(of: viewModel.searchText, { _, newValue in
+			Task { await viewModel.searchGame() }
 		})
 		.task {
-			await viewModel.getGames(oldSearchText: nil, newSearchText: viewModel.searchText)
+			await viewModel.searchGame()
 		}
 	}
 
@@ -43,7 +43,7 @@ struct GameListView: View {
 					} actions: {
 						Button("Retry") {
 							Task {
-								await viewModel.getGames(oldSearchText: nil, newSearchText: viewModel.searchText)
+								await viewModel.searchGame()
 							}
 						}.buttonStyle(.glassProminent)
 					}
@@ -81,8 +81,7 @@ struct GameListView: View {
 			}
 		}
 		.refreshable {
-			viewModel.currentPage = 1
-			Task { await viewModel.getGames(oldSearchText: nil, newSearchText: viewModel.searchText) }
+			await viewModel.searchGame()
 		}
 		.onScrollGeometryChange(for: Bool.self) { geometry in
 			guard geometry.contentSize != .zero else { return false }
@@ -98,8 +97,9 @@ struct GameListView: View {
 	private func loadNextPage() {
 		guard case .success = viewModel.gamesState else { return }
 
-		viewModel.currentPage += 1
-		Task { await viewModel.getGames(oldSearchText: viewModel.searchText, newSearchText: viewModel.searchText) }
+		Task {
+			await viewModel.searchGame(loadNextPage: true)
+		}
 	}
 
 	@ViewBuilder
