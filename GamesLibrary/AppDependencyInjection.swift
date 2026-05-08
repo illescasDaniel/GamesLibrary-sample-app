@@ -57,9 +57,6 @@ let di = DICBuilder()
 	}
 // MARK: domain
 	.register {
-		GetListOfGamesImpl(gamesRepository: inject()) as any GetListOfGames
-	}
-	.register {
 		SearchGameImpl(gamesRepository: inject()) as any SearchGame
 	}
 	.register {
@@ -68,7 +65,6 @@ let di = DICBuilder()
 // MARK: presentation
 	.register {
 		GamesListViewModel(
-			getListOfGames: inject(),
 			searchGame: inject(),
 			logger: inject()
 		)

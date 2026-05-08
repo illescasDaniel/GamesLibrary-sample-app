@@ -19,75 +19,23 @@ final class GamesListViewModel {
 	var searchText: String = ""
 	var gamesTask: Task<Void, Never>?
 
-	private let getListOfGames: any GetListOfGames
 	private let searchGame: any SearchGame
 	private let logger: BetterLogger
 
-	init(getListOfGames: any GetListOfGames, searchGame: any SearchGame, logger: BetterLogger) {
-		self.getListOfGames = getListOfGames
+	init(searchGame: any SearchGame, logger: BetterLogger) {
 		self.searchGame = searchGame
 		self.logger = logger
 	}
 
 	func getGames(oldSearchText: String?, newSearchText: String) async {
-		if newSearchText.isEmpty {
-			if !(oldSearchText ?? "").isEmpty {
-				games = []
-				currentPage = 1
-			}
-			await getGames()
-		} else {
-			if (oldSearchText ?? "").isEmpty {
-				games = []
-				currentPage = 1
-			}
-			await searchGame(oldSearchText: oldSearchText, newSearchText: searchText)
-		}
-	}
-
-	private func getGames() async {
-		gamesTask?.cancel()
-
-		var previousGames: [GameSearchItem] = []
-		if currentPage > 1, case .success = gamesState {
-			previousGames = games
-		}
-
-		gamesState = .loading
-
-		gamesTask = Task {
-			do {
-				let newGames = try await self.getListOfGames(page: currentPage)
-				if gamesTask?.isCancelled == true {
-					logger.debug("Get games cancelled")
-					setSuccessState()
-					return
-				}
-				games = previousGames + newGames
-				setSuccessState()
-			} catch {
-				logger.error("Get list of games failed", context: ["error": error])
-				if gamesTask?.isCancelled == true {
-					logger.debug("Get games cancelled")
-					gamesState = .success(isEmpty: games.isEmpty)
-					return
-				}
-				gamesState = .error
-			}
-		}
-
-		await gamesTask?.value
-	}
-
-	private func searchGame(oldSearchText: String?, newSearchText: String) async {
-		let cleanSearchText = newSearchText.trimmingCharacters(in: .whitespacesAndNewlines)
-		if cleanSearchText.isEmpty {
+		if (oldSearchText ?? "").isEmpty {
+			games = []
 			currentPage = 1
-			Task { await getGames() }
-			logger.debug("Search text is empty, not performing a new search, reverting to the list")
-			return
 		}
+		await searchGame(newSearchText: newSearchText.trimmingCharacters(in: .whitespacesAndNewlines))
+	}
 
+	private func searchGame(newSearchText: String) async {
 		var previousGames: [GameSearchItem] = []
 		if currentPage > 1, case .success = gamesState {
 			previousGames = games
@@ -98,7 +46,9 @@ final class GamesListViewModel {
 
 		gamesTask = Task {
 			do {
-				try await Task.sleep(for: .milliseconds(150))
+				if !newSearchText.isEmpty {
+					try await Task.sleep(for: .milliseconds(150))
+				}
 				await _searchGame(newSearchText, previousGames: previousGames)
 			} catch {
 				logger.debug("Search cancelled due to throttling")
