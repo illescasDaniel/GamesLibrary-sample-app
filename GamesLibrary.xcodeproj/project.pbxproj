@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		65194F632FAB53AA0098077E /* HTTIES in Frameworks */ = {isa = PBXBuildFile; productRef = 65194F622FAB53AA0098077E /* HTTIES */; };
+		653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */; };
 		659DE44C2FAC878B00CE3824 /* DIC in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE44B2FAC878B00CE3824 /* DIC */; };
 		659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE4512FACA0D600CE3824 /* BetterLogger */; };
 		659DE4582FACC53B00CE3824 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 659DE4572FACC53B00CE3824 /* Secrets.xcconfig */; };
@@ -78,6 +79,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65194F632FAB53AA0098077E /* HTTIES in Frameworks */,
+				653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */,
 				659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */,
 				659DE44C2FAC878B00CE3824 /* DIC in Frameworks */,
 			);
@@ -146,6 +148,7 @@
 				65194F622FAB53AA0098077E /* HTTIES */,
 				659DE44B2FAC878B00CE3824 /* DIC */,
 				659DE4512FACA0D600CE3824 /* BetterLogger */,
+				653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */,
 			);
 			productName = GamesLibrary;
 			productReference = 65194F082FAB46AA0098077E /* GamesLibrary.app */;
@@ -233,6 +236,7 @@
 				65194F612FAB53AA0098077E /* XCRemoteSwiftPackageReference "HTTIES" */,
 				659DE44A2FAC878B00CE3824 /* XCRemoteSwiftPackageReference "DIC" */,
 				659DE4502FACA0D600CE3824 /* XCRemoteSwiftPackageReference "BetterLogger" */,
+				653DC3FC2FAE29F50063F18B /* XCRemoteSwiftPackageReference "OptimizedAsyncImage" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65194F092FAB46AA0098077E /* Products */;
@@ -635,6 +639,14 @@
 				minimumVersion = 2.0.2;
 			};
 		};
+		653DC3FC2FAE29F50063F18B /* XCRemoteSwiftPackageReference "OptimizedAsyncImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/illescasDaniel/OptimizedAsyncImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		659DE44A2FAC878B00CE3824 /* XCRemoteSwiftPackageReference "DIC" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/illescasDaniel/DIC";
@@ -658,6 +670,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 65194F612FAB53AA0098077E /* XCRemoteSwiftPackageReference "HTTIES" */;
 			productName = HTTIES;
+		};
+		653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 653DC3FC2FAE29F50063F18B /* XCRemoteSwiftPackageReference "OptimizedAsyncImage" */;
+			productName = OptimizedAsyncImage;
 		};
 		659DE44B2FAC878B00CE3824 /* DIC */ = {
 			isa = XCSwiftPackageProductDependency;

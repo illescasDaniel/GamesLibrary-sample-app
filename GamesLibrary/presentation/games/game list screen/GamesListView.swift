@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OptimizedAsyncImage
 
 struct GameListView: View {
 
@@ -99,9 +100,6 @@ struct GameListView: View {
 						if let releaseDate = game.released?.prefix(4) {
 							Text(verbatim: String(releaseDate))
 						}
-						if let playtime = game.playtime, playtime > 0 {
-							Text(verbatim: String("\(playtime)h"))
-						}
 					}
 					.font(.footnote)
 					.fontWeight(.medium)
@@ -119,7 +117,7 @@ struct GameListView: View {
 	@ViewBuilder
 	private func asyncImage(for game: GameSearchItem) -> some View {
 		if let url = game.backgroundImage.flatMap(URL.init) {
-			AsyncImage(url: url) { phase in
+			OptimizedAsyncImage(url: url, targetSize: CGSize(width: 48, height: 48)) { phase in
 				switch phase {
 				case .empty:
 					ZStack {

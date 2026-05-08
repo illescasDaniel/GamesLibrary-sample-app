@@ -14,8 +14,7 @@ struct CapsuleChipModifier: ViewModifier {
 			.fontWeight(.medium)
 			.multilineTextAlignment(.center)
 			.frame(alignment: .center)
-			.padding(.horizontal, 10)
-			.padding(.vertical, 4)
+			.padding(8)
 			.background(
 				Capsule()
 					.fill(Color(.systemGray6))
@@ -24,7 +23,6 @@ struct CapsuleChipModifier: ViewModifier {
 }
 
 extension View {
-	/// Applies the standard capsule chip styling
 	func capsuleChipStyle() -> some View {
 		self.modifier(CapsuleChipModifier())
 	}

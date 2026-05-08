@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OptimizedAsyncImage
 
 struct GameDetailsView: View {
 
@@ -98,7 +99,7 @@ struct GameDetailsView: View {
 						HStack {
 							Group {
 								if let esbrRating {
-									Label(esbrRating, image: "number.square")
+									Label(esbrRating, systemImage: "number.square")
 								}
 							}
 							.capsuleChipStyle()
@@ -128,7 +129,7 @@ struct GameDetailsView: View {
 	@ViewBuilder
 	private func asyncImage(for image: String?) -> some View {
 		if let url = image.flatMap(URL.init) {
-			AsyncImage(url: url) { phase in
+			OptimizedAsyncImage(url: url, targetSize: CGSize(width: 128, height: 128)) { phase in
 				switch phase {
 				case .empty:
 					ZStack {
