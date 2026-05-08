@@ -39,11 +39,72 @@ struct GameDetailsView: View {
 
 	@ViewBuilder
 	private func contentView(_ game: Game) -> some View {
-		VStack {
-			Text(verbatim: "full game: \(game.name ?? "-")")
-			if let url = game.backgroundImage.flatMap(URL.init) {
-				AsyncImage(url: url)
+		ScrollView {
+			LazyVStack(spacing: 16) {
+				asyncImage(for: game)
+				VStack(alignment: .center) {
+					HStack {
+						Group {
+							if let rating = game.rating, rating > 0 {
+								Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+							}
+							if let releaseDate = game.released?.prefix(4) {
+								Text(verbatim: String(releaseDate))
+							}
+							if let playtime = game.playtime, playtime > 0 {
+								Text(verbatim: String("\(playtime)h"))
+							}
+						}
+						.font(.footnote)
+						.fontWeight(.medium)
+						.padding(.horizontal, 10)
+						.padding(.vertical, 4)
+						.background(
+							Capsule()
+								.fill(Color(.systemGray6))
+						)
+					}
+
+					Text(game.name ?? "-")
+						.font(.headline)
+
+					if let description = game.description {
+						Text(description) // todo: how it looks
+							.font(.body)
+					}
+				}
+				Spacer()
 			}
+		}
+	}
+
+	@ViewBuilder
+	private func asyncImage(for game: Game) -> some View {
+		if let url = game.backgroundImage.flatMap(URL.init) {
+			AsyncImage(url: url) { phase in
+				switch phase {
+				case .empty:
+					ZStack {
+						Color.gray.opacity(0.2)
+						ProgressView()
+					}
+					.frame(width: 128, height: 128)
+					.cornerRadius(8)
+				case let .success(image):
+					image
+						.resizable()
+						.aspectRatio(contentMode: .fill)
+						.frame(width: 128, height: 128)
+						.clipped()
+						.cornerRadius(8)
+				case .failure:
+					EmptyView()
+				@unknown default:
+					EmptyView()
+				}
+			}
+		} else {
+			EmptyView()
 		}
 	}
 }
