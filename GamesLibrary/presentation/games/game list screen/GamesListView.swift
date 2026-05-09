@@ -14,13 +14,21 @@ struct GameListView: View {
 
 	var body: some View {
 		NavigationStack {
-			listContentState
-				.navigationTitle("Games Library")
+			ScrollViewReader { proxy in
+				listContentState
+					.navigationTitle("Games Library")
+					.onChange(of: viewModel.searchText, { _, newValue in
+						if let firstGame = viewModel.games.first {
+							withAnimation {
+								proxy.scrollTo(firstGame.id, anchor: .top)
+							}
+						}
+						
+						Task { await viewModel.searchGame() }
+					})
+			}
 		}
 		.searchable(text: $viewModel.searchText)
-		.onChange(of: viewModel.searchText, { _, newValue in
-			Task { await viewModel.searchGame() }
-		})
 		.task {
 			await viewModel.searchGame()
 		}
@@ -64,6 +72,7 @@ struct GameListView: View {
 				gameRowView(for: game)
 			}
 		}
+		.animation(.default, value: viewModel.games)
 		.refreshable {
 			await viewModel.searchGame()
 		}
@@ -72,7 +81,7 @@ struct GameListView: View {
 			let distanceFromBottom = geometry.contentSize.height - geometry.contentOffset.y - geometry.containerSize.height
 			return distanceFromBottom < 100
 		} action: { oldValue, isNearBottom in
-			if isNearBottom {
+			if isNearBottom && !oldValue {
 				loadNextPage()
 			}
 		}

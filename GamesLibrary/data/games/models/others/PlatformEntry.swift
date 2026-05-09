@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PlatformEntry: Decodable {
+struct PlatformEntry: Equatable, Decodable {
 	let platform: PlatformInfo?
 	let releasedAt: String?
 	let requirements: Requirements?
@@ -18,13 +18,13 @@ struct PlatformEntry: Decodable {
 		case requirements
 	}
 
-	struct PlatformInfo: Decodable {
+	struct PlatformInfo: Equatable, Decodable {
 		let id: Int?
 		let slug: String?
 		let name: String?
 	}
 
-	struct Requirements: Decodable {
+	struct Requirements: Equatable, Decodable {
 		let minimum: String?
 		let recommended: String?
 	}

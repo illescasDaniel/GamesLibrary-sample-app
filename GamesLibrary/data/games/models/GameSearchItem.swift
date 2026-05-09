@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GameSearchItem: Identifiable, Decodable {
+struct GameSearchItem: Identifiable, Equatable, Decodable {
 	let id: Int?
 	let slug: String?
 	let name: String?
@@ -43,10 +43,10 @@ struct GameSearchItem: Identifiable, Decodable {
 // Nested Models
 extension GameSearchItem {
 	/// Placeholder for the empty `{}` ratings object in the JSON
-	struct Ratings: Decodable {
+	struct Ratings: Equatable, Decodable {
 	}
 
 	/// Placeholder for the empty `{}` added_by_status object in the JSON
-	struct AddedByStatus: Decodable {
+	struct AddedByStatus: Equatable, Decodable {
 	}
 }

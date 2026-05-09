@@ -16,7 +16,7 @@ struct GameDetailsView: View {
 
 	var body: some View {
 		contentState
-			.navigationTitle(gameSearchItem.name ?? String())
+			.navigationTitle(gameSearchItem.name ?? "Game Details")
 			.navigationBarTitleDisplayMode(.inline)
 			.task {
 				guard let id = gameSearchItem.id else { return }
@@ -30,15 +30,18 @@ struct GameDetailsView: View {
 		case let .success(game):
 			contentView(gameDetails: game, loading: false)
 		case .error:
-			ContentUnavailableView {
-				Text("An error ocurred. Try again")
-			} actions: {
-				Button("Retry") {
-					Task {
-						guard let id = gameSearchItem.id else { return }
-						await viewModel.getGameDetails(id: id)
-					}
-				}.buttonStyle(.glassProminent)
+			if let id = gameSearchItem.id {
+				ContentUnavailableView {
+					Text("An error ocurred. Try again")
+				} actions: {
+					Button("Retry") {
+						Task {
+							await viewModel.getGameDetails(id: id)
+						}
+					}.buttonStyle(.glassProminent)
+				}
+			} else {
+				contentView(gameDetails: gameSearchItem, loading: false)
 			}
 		case .loading:
 			ZStack {

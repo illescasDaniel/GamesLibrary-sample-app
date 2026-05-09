@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ESRBRating: Decodable {
+struct ESRBRating: Equatable, Decodable {
 	let id: Int?
 	let slug: String?
 	let name: String?
