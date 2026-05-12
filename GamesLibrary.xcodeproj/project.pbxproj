@@ -7,13 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		650717332FB34B04009FA940 /* TTLCache in Frameworks */ = {isa = PBXBuildFile; productRef = 650717322FB34B04009FA940 /* TTLCache */; };
 		65194F632FAB53AA0098077E /* HTTIES in Frameworks */ = {isa = PBXBuildFile; productRef = 65194F622FAB53AA0098077E /* HTTIES */; };
 		653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */; };
 		659DE44C2FAC878B00CE3824 /* DIC in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE44B2FAC878B00CE3824 /* DIC */; };
 		659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE4512FACA0D600CE3824 /* BetterLogger */; };
-		659DE4582FACC53B00CE3824 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 659DE4572FACC53B00CE3824 /* Secrets.xcconfig */; };
 		659DE45C2FACCE3100CE3824 /* Secrets.xcconfig.sample in Resources */ = {isa = PBXBuildFile; fileRef = 659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */; };
-		659DE45E2FACD08300CE3824 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 659DE45D2FACD08300CE3824 /* Config.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +78,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65194F632FAB53AA0098077E /* HTTIES in Frameworks */,
+				650717332FB34B04009FA940 /* TTLCache in Frameworks */,
 				653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */,
 				659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */,
 				659DE44C2FAC878B00CE3824 /* DIC in Frameworks */,
@@ -149,6 +149,7 @@
 				659DE44B2FAC878B00CE3824 /* DIC */,
 				659DE4512FACA0D600CE3824 /* BetterLogger */,
 				653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */,
+				650717322FB34B04009FA940 /* TTLCache */,
 			);
 			productName = GamesLibrary;
 			productReference = 65194F082FAB46AA0098077E /* GamesLibrary.app */;
@@ -208,7 +209,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2640;
-				LastUpgradeCheck = 2640;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					65194F072FAB46AA0098077E = {
 						CreatedOnToolsVersion = 26.4.1;
@@ -237,6 +238,7 @@
 				659DE44A2FAC878B00CE3824 /* XCRemoteSwiftPackageReference "DIC" */,
 				659DE4502FACA0D600CE3824 /* XCRemoteSwiftPackageReference "BetterLogger" */,
 				653DC3FC2FAE29F50063F18B /* XCRemoteSwiftPackageReference "OptimizedAsyncImage" */,
+				650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65194F092FAB46AA0098077E /* Products */;
@@ -255,8 +257,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				659DE45E2FACD08300CE3824 /* Config.xcconfig in Resources */,
-				659DE4582FACC53B00CE3824 /* Secrets.xcconfig in Resources */,
 				659DE45C2FACCE3100CE3824 /* Secrets.xcconfig.sample in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,6 +375,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -439,6 +440,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_STRICT_MEMORY_SAFETY = YES;
@@ -631,6 +633,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/illescasDaniel/TTLCache";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		65194F612FAB53AA0098077E /* XCRemoteSwiftPackageReference "HTTIES" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/illescasDaniel/HTTIES";
@@ -666,6 +676,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		650717322FB34B04009FA940 /* TTLCache */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */;
+			productName = TTLCache;
+		};
 		65194F622FAB53AA0098077E /* HTTIES */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 65194F612FAB53AA0098077E /* XCRemoteSwiftPackageReference "HTTIES" */;
