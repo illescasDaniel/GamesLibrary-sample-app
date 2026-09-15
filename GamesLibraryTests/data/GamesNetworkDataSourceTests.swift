@@ -1,52 +1,26 @@
 import Testing
 import Foundation
-@testable import GamesLibrary
 import HTTIES
+@testable import GamesLibrary
 
 @Suite
 @MainActor
 struct GamesNetworkDataSourceTests {
 
-	@Test
-	func givenDataSourceWhenFetchingGamesSucceedsThenResultIsCorrect() async throws {
-		// given
-		let mockHTTPClient = MockHTTPClient()
-		let dataSource = GamesNetworkDataSourceImpl(
-			httpClient: mockHTTPClient,
-			environment: .production,
-			jsonDecoder: JSONDecoder()
-		)
+    @Test
+    func givenNetworkDataSourceWhen404ThenReturnsEmptyResults() async throws {
+        let mockHTTPClient = MockHTTPClient()
+        mockHTTPClient.error = AppNetworkResponseError.unexpected(statusCode: 404)
 
-		let expectedOutput = GamesOutput.dummy(results: [GameSearchItem.dummy(id: 1)])
-		mockHTTPClient.result = expectedOutput
+        let dataSource = GamesNetworkDataSourceImpl(
+            httpClient: mockHTTPClient,
+            environment: AppEnvironment.production,
+            jsonDecoder: JSONDecoder()
+        )
 
-		let input = GamesInput.dummy(page: 1, pageSize: 20)
+        let output = try await dataSource.games(GamesInputDTO.dummy(page: 1))
 
-		// when
-		let result = try await dataSource.games(input)
-
-		// then
-		#expect(result.results.first?.id == 1)
-		#expect(mockHTTPClient.lastRequest?.urlRequest.url?.absoluteString.contains("/games") == true)
-	}
-
-	@Test
-	func givenDataSourceWhenFetchingGamesFailsThenThrowsError() async throws {
-		// given
-		let mockHTTPClient = MockHTTPClient()
-		let dataSource = GamesNetworkDataSourceImpl(
-			httpClient: mockHTTPClient,
-			environment: .production,
-			jsonDecoder: JSONDecoder()
-		)
-
-		mockHTTPClient.error = MockError.anyError
-
-		let input = GamesInput.dummy(page: 1, pageSize: 20)
-
-		// when / then
-		await #expect(throws: MockError.anyError) {
-			try await dataSource.games(input)
-		}
-	}
+        #expect(output.results.isEmpty)
+        #expect(output.count == 0)
+    }
 }

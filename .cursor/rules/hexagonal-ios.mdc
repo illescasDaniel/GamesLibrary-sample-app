@@ -1,0 +1,29 @@
+---
+description: Hexagonal architecture boundaries for GamesLibraryCore vs app adapters
+alwaysApply: true
+---
+
+# Hexagonal Architecture
+
+## GamesLibraryCore package (inside)
+
+- Domain entities, value objects, errors
+- Inbound ports (`*UseCasePort`) and outbound ports (`*RepositoryPort`)
+- Use case implementations (pure orchestration, no I/O)
+
+**Must NOT import:** SwiftUI, SwiftData, UIKit, HTTIES, BetterLogger, TTLCache, DIC, or any app/DTO type.
+
+**May import:** Foundation only.
+
+## GamesLibrary app target (outside)
+
+- **Inbound adapters:** SwiftUI views, `@Observable` ViewModels, formatters, UI state enums
+- **Outbound adapters:** repository implementations, DTOs (`Decodable`), mappers, cache, network
+- **Composition root:** `AppContainer` wires dependencies; `AppCoordinator` handles navigation
+
+## Rules
+
+- ViewModels depend on inbound ports, never repositories or HTTP clients
+- DTO-to-entity mappers live next to DTOs in `Infrastructure/Adapters/Outbound/`
+- `#Preview` mocks the port, not the ViewModel
+- Formatting (dates, ratings, HTML stripping) is a UI adapter concern

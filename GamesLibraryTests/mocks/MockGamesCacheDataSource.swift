@@ -2,22 +2,22 @@ import Foundation
 @testable import GamesLibrary
 
 final class MockGamesCacheDataSource: GamesCacheDataSource, @unchecked Sendable {
-	var savedGames: [GamesInput: GamesOutput] = [:]
-	var savedGameDetails: [Int: Game] = [:]
+    private var gamesCache: [GamesInputDTO: GamesOutputDTO] = [:]
+    private var gameCache: [Int: GameDTO] = [:]
 
-	func saveGamesCache(input: GamesInput, output: GamesOutput) async {
-		savedGames[input] = output
-	}
+    func saveGamesCache(input: GamesInputDTO, output: GamesOutputDTO) async {
+        gamesCache[input] = output
+    }
 
-	func loadGamesCache(input: GamesInput) async -> GamesOutput? {
-		savedGames[input]
-	}
+    func loadGamesCache(input: GamesInputDTO) async -> GamesOutputDTO? {
+        gamesCache[input]
+    }
 
-	func saveGameCache(id: Int, output: Game) async {
-		savedGameDetails[id] = output
-	}
+    func saveGameCache(id: Int, output: GameDTO) async {
+        gameCache[id] = output
+    }
 
-	func loadGameCache(id: Int) async -> Game? {
-		savedGameDetails[id]
-	}
+    func loadGameCache(id: Int) async -> GameDTO? {
+        gameCache[id]
+    }
 }

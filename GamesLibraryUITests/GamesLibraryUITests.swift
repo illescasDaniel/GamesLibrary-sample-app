@@ -1,24 +1,62 @@
-//
-//  GamesLibraryUITests.swift
-//  GamesLibraryUITests
-//
-//  Created by Daniel Illescas Romero on 6/5/26.
-//
-
 import XCTest
 
 final class GamesLibraryUITests: XCTestCase {
-	
-	override func setUpWithError() throws {
-		// Put setup code here. This method is called before the invocation of each test method in the class.
-		
-		// In UI tests it is usually best to stop immediately when a failure occurs.
-		continueAfterFailure = false
-		
-		// In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-	}
-	
-	override func tearDownWithError() throws {
-		// Put teardown code here. This method is called after the invocation of each test method in the class.
-	}
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+    }
+
+    @MainActor
+    func testGamesListLaunchesAndShowsTitle() throws {
+        let app = launchUITestApp()
+
+        XCTAssertTrue(app.element(matching: AccessibilityIdentifier.GamesList.screen).waitForExistence(timeout: 10))
+    }
+
+    @MainActor
+    func testGamesListShowsRowsAfterLoad() throws {
+        let app = launchUITestApp()
+
+        let gameRow = app.elements(matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix).firstMatch
+
+        XCTAssertTrue(gameRow.waitForExistence(timeout: 15))
+    }
+
+    @MainActor
+    func testTapGameRowOpensDetails() throws {
+        let app = launchUITestApp()
+
+        let gameRow = app.elements(matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix).firstMatch
+        XCTAssertTrue(gameRow.waitForExistence(timeout: 15))
+
+        gameRow.tap()
+
+        XCTAssertTrue(app.element(matching: AccessibilityIdentifier.GameDetails.screen).waitForExistence(timeout: 10))
+    }
+
+    @MainActor
+    func testSearchShowsNoResults() throws {
+        // SwiftUI `.searchable` text entry is unreliable in XCUITest; seed the query via launch environment.
+        let app = launchUITestApp(forceEmptyResults: true)
+
+        let searchField = app.searchFields.firstMatch
+        XCTAssertTrue(searchField.waitForExistence(timeout: 10))
+        let emptyState = app.element(matching: AccessibilityIdentifier.GamesList.emptyState)
+        XCTAssertTrue(emptyState.waitForExistence(timeout: 20))
+
+        let gameRow = app.elements(matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix).firstMatch
+        XCTAssertFalse(gameRow.waitForExistence(timeout: 2))
+    }
+
+    @MainActor
+    private func launchUITestApp(forceEmptyResults: Bool = false) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.terminate()
+        app.launchArguments = ["-UITesting"]
+        app.launchEnvironment = forceEmptyResults
+            ? [UITestSupport.forceEmptyResultsEnvironmentKey: "1"]
+            : [:]
+        app.launch()
+        return app
+    }
 }

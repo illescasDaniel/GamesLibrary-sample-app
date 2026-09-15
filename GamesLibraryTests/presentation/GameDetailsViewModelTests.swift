@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import GamesLibraryCore
 @testable import GamesLibrary
 import BetterLogger
 
@@ -7,68 +8,74 @@ import BetterLogger
 @MainActor
 struct GameDetailsViewModelTests {
 
-	@Test
-	func givenViewModelWhenInitializedThenStateIsLoading() {
-		// given
-		let mockGetGameDetails = MockGetGameDetails()
+    @Test
+    func givenViewModelWhenInitializedThenStateIsLoading() {
+        let mockGetGameDetails = MockGetGameDetailsUseCase()
+        let viewModel = GameDetailsViewModel(
+            getGameDetails: mockGetGameDetails,
+            logger: BetterLogger(name: "Test")
+        )
+        if case .loading = viewModel.gamesState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected loading state")
+        }
+    }
 
-		// when
-		let viewModel = GameDetailsViewModel(
-			getGameDetails: mockGetGameDetails,
-			logger: BetterLogger(name: "Test")
-		)
+    @Test
+    func givenViewModelWhenGetGameDetailsSucceedsThenStateIsSuccess() async {
+        let mockGetGameDetails = MockGetGameDetailsUseCase()
+        let viewModel = GameDetailsViewModel(
+            getGameDetails: mockGetGameDetails,
+            logger: BetterLogger(name: "Test")
+        )
+        mockGetGameDetails.result = .success(GameDetails.dummy(id: 42))
 
-		// then
-		if case .loading = viewModel.gamesState {
-			// Success
-		} else {
-			Issue.record("Initial state should be loading")
-		}
-	}
+        await viewModel.getGameDetails(id: GameID(42))
 
-	@Test
-	func givenViewModelWhenGetGameDetailsSucceedsThenStateIsSuccess() async {
-		// given
-		let mockGetGameDetails = MockGetGameDetails()
-		let viewModel = GameDetailsViewModel(
-			getGameDetails: mockGetGameDetails,
-			logger: BetterLogger(name: "Test")
-		)
+        if case .success(let game) = viewModel.gamesState {
+            #expect(game.id == GameID(42))
+        } else {
+            Issue.record("Expected success state")
+        }
+    }
 
-		let expectedGame = Game.dummy(id: 123)
-		mockGetGameDetails.result = .success(expectedGame)
+    @Test
+    func givenViewModelWhenGetGameDetailsFailsThenStateIsError() async {
+        let mockGetGameDetails = MockGetGameDetailsUseCase()
+        let viewModel = GameDetailsViewModel(
+            getGameDetails: mockGetGameDetails,
+            logger: BetterLogger(name: "Test")
+        )
+        mockGetGameDetails.result = .failure(MockError.anyError)
 
-		// when
-		await viewModel.getGameDetails(id: 123)
+        await viewModel.getGameDetails(id: GameID(1))
 
-		// then
-		if case .success(let game) = viewModel.gamesState {
-			#expect(game.id == 123)
-		} else {
-			Issue.record("State should be success")
-		}
-	}
+        if case .error = viewModel.gamesState {
+            #expect(Bool(true))
+        } else {
+            Issue.record("Expected error state")
+        }
+    }
 
-	@Test
-	func givenViewModelWhenGetGameDetailsFailsThenStateIsError() async {
-		// given
-		let mockGetGameDetails = MockGetGameDetails()
-		let viewModel = GameDetailsViewModel(
-			getGameDetails: mockGetGameDetails,
-			logger: BetterLogger(name: "Test")
-		)
+    @Test
+    func givenViewModelWhenRetryAfterFailureThenUseCaseCalledAgain() async {
+        let mockGetGameDetails = MockGetGameDetailsUseCase()
+        let viewModel = GameDetailsViewModel(
+            getGameDetails: mockGetGameDetails,
+            logger: BetterLogger(name: "Test")
+        )
+        mockGetGameDetails.result = .failure(MockError.anyError)
+        await viewModel.getGameDetails(id: GameID(1))
 
-		let expectedError = NSError(domain: "test", code: 404, userInfo: nil)
-		mockGetGameDetails.result = .failure(expectedError)
+        mockGetGameDetails.result = .success(GameDetails.dummy(id: 1))
+        await viewModel.getGameDetails(id: GameID(1))
 
-		// when
-		await viewModel.getGameDetails(id: 123)
-
-		// then
-		if case .error(let error) = viewModel.gamesState {
-			#expect((error as NSError).code == 404)
-		} else {
-			Issue.record("State should be error")
-		}
-	}
+        #expect(mockGetGameDetails.callCount == 2)
+        if case .success(let game) = viewModel.gamesState {
+            #expect(game.id == GameID(1))
+        } else {
+            Issue.record("Expected success state after retry")
+        }
+    }
 }

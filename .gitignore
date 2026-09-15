@@ -9,7 +9,16 @@
 
 ## Build generated
 build/
+.build/
 DerivedData/
+.swiftpm/
+
+# Nested build artifacts (app + local Core package)
+GamesLibraryCore/build/
+GamesLibraryCore/.build/
+GamesLibraryCore/.swiftpm/
+**/build/
+**/.build/
 
 ## Various settings
 *.pbxuser

@@ -1,5 +1,6 @@
 import Testing
 import Foundation
+import GamesLibraryCore
 @testable import GamesLibrary
 import BetterLogger
 
@@ -7,135 +8,145 @@ import BetterLogger
 @MainActor
 struct GamesRepositoryTests {
 
-	@Test
-	func givenRepositoryWhenFetchingGamesAndCacheExistsThenReturnsCachedGames() async throws {
-		// given
-		let mockCache = MockGamesCacheDataSource()
-		let mockNetwork = MockGamesNetworkDataSource()
-		let repository = GamesRepositoryImpl(
-			cacheDataSource: mockCache,
-			networkDataSource: mockNetwork,
-			logger: BetterLogger(name: "Test")
-		)
+    @Test
+    func givenRepositoryWhenFetchingGamesAndCacheExistsThenReturnsCachedGames() async throws {
+        let mockCache = MockGamesCacheDataSource()
+        let mockNetwork = MockGamesNetworkDataSource()
+        let repository = GamesRepository(
+            cacheDataSource: mockCache,
+            networkDataSource: mockNetwork,
+            logger: BetterLogger(name: "Test")
+        )
 
-		let input = GamesInput.dummy(page: 1, pageSize: 20)
-		let cachedOutput = GamesOutput.dummy(results: [GameSearchItem.dummy(id: 1)])
-		await mockCache.saveGamesCache(input: input, output: cachedOutput)
+        let input = GamesInputDTO.dummy(page: 1, pageSize: 20)
+        let cachedOutput = GamesOutputDTO.dummy(results: [GameSearchItemDTO.dummy(id: 1)])
+        await mockCache.saveGamesCache(input: input, output: cachedOutput)
 
-		// when
-		let result = try await repository.games(input)
+        let result = try await repository.searchGames(query: "", page: 1, pageSize: 20, ordering: nil)
 
-		// then
-		#expect(result.results.first?.id == 1)
-		#expect(mockNetwork.gamesResult == nil) // Network should not be called
-	}
+        #expect(result.first?.id == GameID(1))
+        #expect(mockNetwork.gamesResult == nil)
+    }
 
-	@Test
-	func givenRepositoryWhenFetchingGamesAndCacheIsEmptyThenFetchesFromNetworkAndSavesToCache() async throws {
-		// given
-		let mockCache = MockGamesCacheDataSource()
-		let mockNetwork = MockGamesNetworkDataSource()
-		let repository = GamesRepositoryImpl(
-			cacheDataSource: mockCache,
-			networkDataSource: mockNetwork,
-			logger: BetterLogger(name: "none")
-		)
+    @Test
+    func givenRepositoryWhenFetchingGamesAndCacheIsEmptyThenFetchesFromNetworkAndSavesToCache() async throws {
+        let mockCache = MockGamesCacheDataSource()
+        let mockNetwork = MockGamesNetworkDataSource()
+        let repository = GamesRepository(
+            cacheDataSource: mockCache,
+            networkDataSource: mockNetwork,
+            logger: BetterLogger(name: "Test")
+        )
 
-		let input = GamesInput.dummy(page: 1, pageSize: 20)
-		let networkOutput = GamesOutput.dummy(results: [GameSearchItem.dummy(id: 2)])
-		mockNetwork.gamesResult = .success(networkOutput)
+        mockNetwork.gamesResult = .success(GamesOutputDTO.dummy(results: [GameSearchItemDTO.dummy(id: 2)]))
 
-		// when
-		let result = try await repository.games(input)
+        let result = try await repository.searchGames(query: "Test", page: 1, pageSize: 20, ordering: "-added")
 
-		// then
-		#expect(result.results.first?.id == 2)
-		#expect(await mockCache.loadGamesCache(input: input)?.results.first?.id == 2)
-	}
+        #expect(result.first?.id == GameID(2))
+        let cacheInput = GamesInputDTO(
+            page: 1, pageSize: 20, search: "Test",
+            searchPrecise: true, searchExact: true,
+            parentPlatforms: nil, platforms: nil, stores: nil,
+            developers: nil, publishers: nil, genres: nil, tags: nil,
+            creators: nil, dates: nil, updated: nil, platformsCount: nil,
+            metacritic: nil, excludeCollection: nil, excludeAdditions: nil,
+            excludeParents: nil, excludeGameSeries: nil, excludeStores: nil,
+            ordering: "-added"
+        )
+        #expect(await mockCache.loadGamesCache(input: cacheInput)?.results.first?.id == 2)
+    }
 
-	@Test
-	func givenRepositoryWhenFetchingGamesFailsThenThrowsError() async throws {
-		// given
-		let mockCache = MockGamesCacheDataSource()
-		let mockNetwork = MockGamesNetworkDataSource()
-		let repository = GamesRepositoryImpl(
-			cacheDataSource: mockCache,
-			networkDataSource: mockNetwork,
-			logger: BetterLogger(name: "Test")
-		)
+    @Test
+    func givenRepositoryWhenFetchingGamesFailsThenThrowsError() async throws {
+        let mockCache = MockGamesCacheDataSource()
+        let mockNetwork = MockGamesNetworkDataSource()
+        let repository = GamesRepository(
+            cacheDataSource: mockCache,
+            networkDataSource: mockNetwork,
+            logger: BetterLogger(name: "Test")
+        )
+        mockNetwork.gamesResult = .failure(MockError.anyError)
 
-		let input = GamesInput.dummy(page: 1, pageSize: 20)
-		mockNetwork.gamesResult = .failure(MockError.anyError)
+        await #expect(throws: MockError.anyError) {
+            try await repository.searchGames(query: "Test", page: 1, pageSize: 20, ordering: nil)
+        }
+    }
 
-		// when / then
-		await #expect(throws: MockError.anyError) {
-			try await repository.games(input)
-		}
-	}
+    @Test
+    func givenRepositoryWhenFetchingGameDetailAndCacheExistsThenReturnsCachedGame() async throws {
+        let mockCache = MockGamesCacheDataSource()
+        let mockNetwork = MockGamesNetworkDataSource()
+        let repository = GamesRepository(
+            cacheDataSource: mockCache,
+            networkDataSource: mockNetwork,
+            logger: BetterLogger(name: "Test")
+        )
 
-	@Test
-	func givenRepositoryWhenFetchingGameDetailAndCacheExistsThenReturnsCachedGame() async throws {
-		// given
-		let mockCache = MockGamesCacheDataSource()
-		let mockNetwork = MockGamesNetworkDataSource()
-		let repository = GamesRepositoryImpl(
-			cacheDataSource: mockCache,
-			networkDataSource: mockNetwork,
-			logger: BetterLogger(name: "Test")
-		)
+        let gameId = 123
+        await mockCache.saveGameCache(id: gameId, output: GameDTO.dummy(id: gameId))
 
-		let gameId = 123
-		let cachedGame = Game.dummy(id: gameId)
-		await mockCache.saveGameCache(id: gameId, output: cachedGame)
+        let result = try await repository.gameDetails(id: GameID(gameId))
 
-		// when
-		let result = try await repository.game(id: gameId)
+        #expect(result.id == GameID(gameId))
+        #expect(mockNetwork.gameResult == nil)
+    }
 
-		// then
-		#expect(result.id == gameId)
-		#expect(mockNetwork.gameResult == nil) // Network should not be called
-	}
+    @Test
+    func givenRepositoryWhenFetchingGameDetailAndCacheIsEmptyThenFetchesFromNetwork() async throws {
+        let mockCache = MockGamesCacheDataSource()
+        let mockNetwork = MockGamesNetworkDataSource()
+        let repository = GamesRepository(
+            cacheDataSource: mockCache,
+            networkDataSource: mockNetwork,
+            logger: BetterLogger(name: "Test")
+        )
 
-	@Test
-	func givenRepositoryWhenFetchingGameDetailAndCacheIsEmptyThenFetchesFromNetworkAndSavesToCache() async throws {
-		// given
-		let mockCache = MockGamesCacheDataSource()
-		let mockNetwork = MockGamesNetworkDataSource()
-		let repository = GamesRepositoryImpl(
-			cacheDataSource: mockCache,
-			networkDataSource: mockNetwork,
-			logger: BetterLogger(name: "Test")
-		)
+        let gameId = 456
+        mockNetwork.gameResult = .success(GameDTO.dummy(id: gameId))
 
-		let gameId = 456
-		let networkGame = Game.dummy(id: gameId)
-		mockNetwork.gameResult = .success(networkGame)
+        let result = try await repository.gameDetails(id: GameID(gameId))
 
-		// when
-		let result = try await repository.game(id: gameId)
+        #expect(result.id == GameID(gameId))
+        #expect(await mockCache.loadGameCache(id: gameId)?.id == gameId)
+    }
 
-		// then
-		#expect(result.id == gameId)
-		#expect(await mockCache.loadGameCache(id: gameId)?.id == gameId)
-	}
+    @Test
+    func givenRepositoryWhenGameDTOHasNoIdThenThrowsNotFound() async throws {
+        let mockCache = MockGamesCacheDataSource()
+        let mockNetwork = MockGamesNetworkDataSource()
+        let repository = GamesRepository(
+            cacheDataSource: mockCache,
+            networkDataSource: mockNetwork,
+            logger: BetterLogger(name: "Test")
+        )
 
-	@Test
-	func givenRepositoryWhenFetchingGameDetailFailsThenThrowsError() async throws {
-		// given
-		let mockCache = MockGamesCacheDataSource()
-		let mockNetwork = MockGamesNetworkDataSource()
-		let repository = GamesRepositoryImpl(
-			cacheDataSource: mockCache,
-			networkDataSource: mockNetwork,
-			logger: BetterLogger(name: "Test")
-		)
+        let json = #"{"name": "No ID"}"#
+        let dto = try JSONDecoder().decode(GameDTO.self, from: Data(json.utf8))
+        mockNetwork.gameResult = .success(dto)
 
-		let gameId = 789
-		mockNetwork.gameResult = .failure(MockError.anyError)
+        await #expect(throws: GamesError.notFound) {
+            try await repository.gameDetails(id: GameID(1))
+        }
+    }
 
-		// when / then
-		await #expect(throws: MockError.anyError) {
-			try await repository.game(id: gameId)
-		}
-	}
+    @Test
+    func givenRepositoryWhenSearchResultsIncludeNilIdDTOsThenTheyAreFiltered() async throws {
+        let mockCache = MockGamesCacheDataSource()
+        let mockNetwork = MockGamesNetworkDataSource()
+        let repository = GamesRepository(
+            cacheDataSource: mockCache,
+            networkDataSource: mockNetwork,
+            logger: BetterLogger(name: "Test")
+        )
+
+        let validItem = GameSearchItemDTO.dummy(id: 1)
+        let json = #"{"name": "No ID"}"#
+        let invalidItem = try JSONDecoder().decode(GameSearchItemDTO.self, from: Data(json.utf8))
+        mockNetwork.gamesResult = .success(GamesOutputDTO.dummy(results: [validItem, invalidItem]))
+
+        let result = try await repository.searchGames(query: "", page: 1, pageSize: 20, ordering: nil)
+
+        #expect(result.count == 1)
+        #expect(result.first?.id == GameID(1))
+    }
 }

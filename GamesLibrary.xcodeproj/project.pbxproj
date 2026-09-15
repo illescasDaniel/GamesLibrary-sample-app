@@ -10,9 +10,10 @@
 		650717332FB34B04009FA940 /* TTLCache in Frameworks */ = {isa = PBXBuildFile; productRef = 650717322FB34B04009FA940 /* TTLCache */; };
 		65194F632FAB53AA0098077E /* HTTIES in Frameworks */ = {isa = PBXBuildFile; productRef = 65194F622FAB53AA0098077E /* HTTIES */; };
 		653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */; };
-		659DE44C2FAC878B00CE3824 /* DIC in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE44B2FAC878B00CE3824 /* DIC */; };
 		659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE4512FACA0D600CE3824 /* BetterLogger */; };
 		659DE45C2FACCE3100CE3824 /* Secrets.xcconfig.sample in Resources */ = {isa = PBXBuildFile; fileRef = 659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */; };
+		65CORE003EE0000000000003 /* GamesLibraryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 65CORE002EE0000000000002 /* GamesLibraryCore */; };
+		65CORE004EE0000000000004 /* GamesLibraryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 65CORE002EE0000000000002 /* GamesLibraryCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		659DE4572FACC53B00CE3824 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.xcconfig.sample; sourceTree = "<group>"; };
 		659DE45D2FACD08300CE3824 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		65FAED493058196500E503EB /* GamesLibrary.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GamesLibrary.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -49,6 +51,29 @@
 			);
 			target = 65194F072FAB46AA0098077E /* GamesLibrary */;
 		};
+		65BUILD001EE0000000000001 /* Exceptions for "GamesLibraryTests" folder in "GamesLibraryTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				.build,
+				build,
+			);
+			target = 65194F142FAB46AB0098077E /* GamesLibraryTests */;
+		};
+		65BUILD002EE0000000000002 /* Exceptions for "GamesLibraryUITests" folder in "GamesLibraryUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				.build,
+				build,
+			);
+			target = 65194F1E2FAB46AB0098077E /* GamesLibraryUITests */;
+		};
+		65UITEST001EE0000000000001 /* Exceptions for "GamesLibrary" folder in "GamesLibraryUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Infrastructure/Adapters/Inbound/UI/Utils/AccessibilityIdentifier.swift,
+			);
+			target = 65194F1E2FAB46AB0098077E /* GamesLibraryUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -56,17 +81,24 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				659DE45A2FACCD9700CE3824 /* Exceptions for "GamesLibrary" folder in "GamesLibrary" target */,
+				65UITEST001EE0000000000001 /* Exceptions for "GamesLibrary" folder in "GamesLibraryUITests" target */,
 			);
 			path = GamesLibrary;
 			sourceTree = "<group>";
 		};
 		65194F182FAB46AB0098077E /* GamesLibraryTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				65BUILD001EE0000000000001 /* Exceptions for "GamesLibraryTests" folder in "GamesLibraryTests" target */,
+			);
 			path = GamesLibraryTests;
 			sourceTree = "<group>";
 		};
 		65194F222FAB46AB0098077E /* GamesLibraryUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				65BUILD002EE0000000000002 /* Exceptions for "GamesLibraryUITests" folder in "GamesLibraryUITests" target */,
+			);
 			path = GamesLibraryUITests;
 			sourceTree = "<group>";
 		};
@@ -81,7 +113,7 @@
 				650717332FB34B04009FA940 /* TTLCache in Frameworks */,
 				653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */,
 				659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */,
-				659DE44C2FAC878B00CE3824 /* DIC in Frameworks */,
+				65CORE003EE0000000000003 /* GamesLibraryCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +121,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65CORE004EE0000000000004 /* GamesLibraryCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +138,7 @@
 		65194EFF2FAB46AA0098077E = {
 			isa = PBXGroup;
 			children = (
+				65FAED493058196500E503EB /* GamesLibrary.xctestplan */,
 				659DE45D2FACD08300CE3824 /* Config.xcconfig */,
 				659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */,
 				659DE4572FACC53B00CE3824 /* Secrets.xcconfig */,
@@ -146,10 +180,10 @@
 			name = GamesLibrary;
 			packageProductDependencies = (
 				65194F622FAB53AA0098077E /* HTTIES */,
-				659DE44B2FAC878B00CE3824 /* DIC */,
 				659DE4512FACA0D600CE3824 /* BetterLogger */,
 				653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */,
 				650717322FB34B04009FA940 /* TTLCache */,
+				65CORE002EE0000000000002 /* GamesLibraryCore */,
 			);
 			productName = GamesLibrary;
 			productReference = 65194F082FAB46AA0098077E /* GamesLibrary.app */;
@@ -173,6 +207,7 @@
 			);
 			name = GamesLibraryTests;
 			packageProductDependencies = (
+				65CORE002EE0000000000002 /* GamesLibraryCore */,
 			);
 			productName = GamesLibraryTests;
 			productReference = 65194F152FAB46AB0098077E /* GamesLibraryTests.xctest */;
@@ -235,10 +270,10 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				65194F612FAB53AA0098077E /* XCRemoteSwiftPackageReference "HTTIES" */,
-				659DE44A2FAC878B00CE3824 /* XCRemoteSwiftPackageReference "DIC" */,
 				659DE4502FACA0D600CE3824 /* XCRemoteSwiftPackageReference "BetterLogger" */,
 				653DC3FC2FAE29F50063F18B /* XCRemoteSwiftPackageReference "OptimizedAsyncImage" */,
 				650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */,
+				65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65194F092FAB46AA0098077E /* Products */;
@@ -632,6 +667,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = GamesLibraryCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -655,14 +697,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
-			};
-		};
-		659DE44A2FAC878B00CE3824 /* XCRemoteSwiftPackageReference "DIC" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/illescasDaniel/DIC";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.4;
 			};
 		};
 		659DE4502FACA0D600CE3824 /* XCRemoteSwiftPackageReference "BetterLogger" */ = {
@@ -691,15 +725,15 @@
 			package = 653DC3FC2FAE29F50063F18B /* XCRemoteSwiftPackageReference "OptimizedAsyncImage" */;
 			productName = OptimizedAsyncImage;
 		};
-		659DE44B2FAC878B00CE3824 /* DIC */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 659DE44A2FAC878B00CE3824 /* XCRemoteSwiftPackageReference "DIC" */;
-			productName = DIC;
-		};
 		659DE4512FACA0D600CE3824 /* BetterLogger */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 659DE4502FACA0D600CE3824 /* XCRemoteSwiftPackageReference "BetterLogger" */;
 			productName = BetterLogger;
+		};
+		65CORE002EE0000000000002 /* GamesLibraryCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */;
+			productName = GamesLibraryCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

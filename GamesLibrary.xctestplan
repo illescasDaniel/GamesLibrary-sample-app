@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "2E746F19-C3D0-478F-A61F-889A4FAEFE47",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:GamesLibrary.xcodeproj",
+      "identifier" : "65194F072FAB46AA0098077E",
+      "name" : "GamesLibrary"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:GamesLibrary.xcodeproj",
+        "identifier" : "65194F142FAB46AB0098077E",
+        "name" : "GamesLibraryTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:GamesLibrary.xcodeproj",
+        "identifier" : "65194F1E2FAB46AB0098077E",
+        "name" : "GamesLibraryUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

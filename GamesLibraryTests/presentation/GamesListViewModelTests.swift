@@ -1,139 +1,155 @@
 import Testing
 import Foundation
+import GamesLibraryCore
 @testable import GamesLibrary
 import BetterLogger
-import HTTIES
 
 @Suite
 @MainActor
 struct GamesListViewModelTests {
 
-	@Test
-	func givenViewModelWhenInitializedThenStateIsLoading() {
-		// given
-		let mockSearchGame = MockSearchGame()
+    @Test
+    func givenViewModelWhenInitializedThenStateIsLoading() {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        #expect(viewModel.gamesState == .loading)
+    }
 
-		// when
-		let viewModel = GamesListViewModel(
-			searchGame: mockSearchGame,
-			logger: BetterLogger(name: "Test")
-		)
+    @Test
+    func givenViewModelWhenSearchSucceedsThenStateIsSuccess() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        mockSearchGames.result = .success([GameSummary.dummy(id: 1, name: "Game 1")])
 
-		// then
-		#expect(viewModel.gamesState == .loading)
-	}
+        viewModel.searchText = "Test"
+        await viewModel.searchGame()
 
-	@Test
-	func givenViewModelWhenSearchSucceedsThenStateIsSuccess() async {
-		// given
-		let mockSearchGame = MockSearchGame()
-		let viewModel = GamesListViewModel(
-			searchGame: mockSearchGame,
-			logger: BetterLogger(name: "Test")
-		)
+        #expect(viewModel.gamesState == .success(isEmpty: false))
+        #expect(viewModel.games.count == 1)
+        #expect(viewModel.games.first?.id == GameID(1))
+    }
 
-		let expectedGames = [GameSearchItem.dummy(id: 1, name: "Game 1")]
-		mockSearchGame.result = .success(expectedGames)
+    @Test
+    func givenViewModelWhenSearchFailsThenStateIsError() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        mockSearchGames.result = .failure(NSError(domain: "test", code: 1))
 
-		// when
-		viewModel.searchText = "Test"
-		await viewModel.searchGame()
+        viewModel.searchText = "Test"
+        await viewModel.searchGame()
 
-		// then
-		#expect(viewModel.gamesState == .success(isEmpty: false))
-		#expect(viewModel.games.count == 1)
-		#expect(viewModel.games.first?.id == 1)
-	}
+        #expect(viewModel.gamesState == .error)
+    }
 
-	@Test
-	func givenViewModelWhenSearchFailsThenStateIsError() async {
-		// given
-		let mockSearchGame = MockSearchGame()
-		let viewModel = GamesListViewModel(
-			searchGame: mockSearchGame,
-			logger: BetterLogger(name: "Test")
-		)
+    @Test
+    func givenViewModelWhenSearchIsThrottledThenReturnsSuccess() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        mockSearchGames.result = .success([])
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        viewModel.searchText = "Test"
 
-		let expectedError = NSError(domain: "test", code: 1, userInfo: nil)
-		mockSearchGame.result = .failure(expectedError)
+        let task1 = Task { await viewModel.searchGame() }
+        viewModel.searchText = "Test 2"
+        let task2 = Task { await viewModel.searchGame() }
+        await task1.value
+        await task2.value
 
-		// when
-		viewModel.searchText = "Test"
-		await viewModel.searchGame()
+        #expect(viewModel.gamesState == .success(isEmpty: true))
+    }
 
-		// then
-		#expect(viewModel.gamesState == .error)
-	}
+    @Test
+    func givenViewModelWhenLoadingNextPageThenGamesAreAppended() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        mockSearchGames.result = .success([GameSummary.dummy(id: 1)])
+        await viewModel.searchGame()
 
-	@Test
-	func givenViewModelWhenSearchIsThrottledThenReturnsSuccess() async {
-		// given
-		let mockSearchGame = MockSearchGame()
-		mockSearchGame.result = .success([])
-		let viewModel = GamesListViewModel(
-			searchGame: mockSearchGame,
-			logger: BetterLogger(name: "Test")
-		)
+        mockSearchGames.result = .success([GameSummary.dummy(id: 2)])
+        await viewModel.searchGame(loadNextPage: true)
 
-		viewModel.searchText = "Test"
-		
-		// when
-		// We start two searches rapidly
-		let task1 = Task { await viewModel.searchGame() }
-		viewModel.searchText = "Test 2"
-		let task2 = Task { await viewModel.searchGame() }
-		
-		await task1.value
-		await task2.value
+        #expect(viewModel.games.count == 2)
+        #expect(viewModel.games.map(\.id.rawValue) == [1, 2])
+        #expect(viewModel.currentPage == 2)
+    }
 
-		// then
-		// The first one should have been cancelled/throttled, and the second one should complete
-		#expect(viewModel.gamesState == .success(isEmpty: true))
-	}
+    @Test
+    func givenViewModelWhenSearchReturnsEmptyThenStateIsSuccessEmpty() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        mockSearchGames.result = .success([])
+        viewModel.searchText = "NoMatchQuery"
 
-	@Test
-	func givenViewModelWhenSearchReturns404ThenStateIsSuccessEmpty() async {
-		// given
-		let mockSearchGame = MockSearchGame()
-		let viewModel = GamesListViewModel(
-			searchGame: mockSearchGame,
-			logger: BetterLogger(name: "Test")
-		)
+        await viewModel.searchGame()
 
-		// Mock 404 error
-		let error404 = AppNetworkResponseError.unexpected(statusCode: 404)
-		mockSearchGame.result = .failure(error404)
+        #expect(viewModel.gamesState == .success(isEmpty: true))
+        #expect(viewModel.games.isEmpty)
+    }
 
-		// when
-		viewModel.searchText = "Test"
-		await viewModel.searchGame()
+    @Test
+    func givenViewModelWhenNextPageReturnsEmptyThenStateRemainsSuccess() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        mockSearchGames.result = .success([GameSummary.dummy(id: 1)])
+        await viewModel.searchGame()
 
-		// then
-		#expect(viewModel.gamesState == .success(isEmpty: true))
-	}
+        mockSearchGames.result = .success([])
+        await viewModel.searchGame(loadNextPage: true)
 
-	@Test
-	func givenViewModelWhenLoadingNextPageThenGamesAreAppended() async {
-		// given
-		let mockSearchGame = MockSearchGame()
-		let viewModel = GamesListViewModel(
-			searchGame: mockSearchGame,
-			logger: BetterLogger(name: "Test")
-		)
+        #expect(viewModel.gamesState == .success(isEmpty: false))
+        #expect(viewModel.games.count == 1)
+        #expect(viewModel.games.first?.id == GameID(1))
+    }
 
-		let firstPageGames = [GameSearchItem.dummy(id: 1)]
-		mockSearchGame.result = .success(firstPageGames)
-		await viewModel.searchGame()
+    @Test
+    func givenViewModelWhenSearchWithoutLoadNextPageThenPageIsOne() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        mockSearchGames.result = .success([GameSummary.dummy(id: 1)])
+        viewModel.currentPage = 5
 
-		let secondPageGames = [GameSearchItem.dummy(id: 2)]
-		mockSearchGame.result = .success(secondPageGames)
+        await viewModel.searchGame()
 
-		// when
-		await viewModel.searchGame(loadNextPage: true)
+        #expect(viewModel.currentPage == 1)
+    }
 
-		// then
-		#expect(viewModel.games.count == 2)
-		#expect(viewModel.games.map(\.id) == [1, 2])
-		#expect(viewModel.currentPage == 2)
-	}
+    @Test
+    func givenViewModelWhenURLSessionCancelledThenStateRemainsSuccess() async {
+        let mockSearchGames = MockSearchGamesUseCase()
+        let viewModel = GamesListViewModel(
+            searchGames: mockSearchGames,
+            logger: BetterLogger(name: "Test")
+        )
+        mockSearchGames.result = .success([GameSummary.dummy(id: 1)])
+        await viewModel.searchGame()
+
+        mockSearchGames.result = .failure(NSError(domain: NSURLErrorDomain, code: URLError.cancelled.rawValue))
+        await viewModel.searchGame(loadNextPage: true)
+
+        #expect(viewModel.gamesState == .success(isEmpty: false))
+        #expect(viewModel.games.count == 1)
+    }
 }
