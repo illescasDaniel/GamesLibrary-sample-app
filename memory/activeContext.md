@@ -4,7 +4,7 @@ _Last updated: 2026-09-15_
 
 ## Branch
 
-- `develop` — current (hexagonal + SDD refactor uncommitted)
+- `develop` — current (hexagonal + SDD refactor committed)
 
 ## Current focus
 
@@ -18,5 +18,5 @@ Hexagonal/SDD refactor and tab re-indent committed on `develop`.
 
 ## Next steps
 
-1. Continue hexagonal/SDD work on `develop` (commit when Daniel asks).
+1. Continue hexagonal/SDD work on `develop`.
 2. Keep `memory/` updated at session milestones per `.cursor/rules/agent-memory.mdc`.
