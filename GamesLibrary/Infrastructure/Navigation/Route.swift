@@ -1,5 +1,5 @@
 import GamesLibraryCore
 
 enum Route: Hashable {
-    case details(GameSummary)
+	case details(GameSummary)
 }

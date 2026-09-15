@@ -33,19 +33,19 @@ A struct that stores a closure as a property has the same problem as putting the
 // invalidates on every body evaluation of FormContainer.
 
 struct SubmitAction {
-    var perform: (String) -> Void
+	var perform: (String) -> Void
 }
 
 extension EnvironmentValues {
-    @Entry var submitAction = SubmitAction(perform: { _ in })
+	@Entry var submitAction = SubmitAction(perform: { _ in })
 }
 
 struct FormContainer: View {
-    var body: some View {
-        FormFields()
-            .environment(\.submitAction,
-                SubmitAction(perform: { print("Submit: \($0)") }))
-    }
+	var body: some View {
+		FormFields()
+			.environment(\.submitAction,
+				SubmitAction(perform: { print("Submit: \($0)") }))
+	}
 }
 ```
 
@@ -62,26 +62,26 @@ Lifting the closure to a `private let action: () -> Void = { ... }` on the `View
 // Closures can't be compared and all views that read this key will be invalidated even when the closure hasn't changed.
 
 extension EnvironmentValues {
-    @Entry var submitAction: (String) -> Void = { _ in }
+	@Entry var submitAction: (String) -> Void = { _ in }
 }
 
 struct FormContainer: View {
-    var body: some View {
-        FormFields()
-            .environment(\.submitAction) { draft in
-                print("Submit: \(draft)")
-            }
-    }
+	var body: some View {
+		FormFields()
+			.environment(\.submitAction) { draft in
+				print("Submit: \(draft)")
+			}
+	}
 }
 
 struct FormFields: View {
-    // This view is always invalidated: SwiftUI cannot compare the closure
-    // in submitAction, so it assumes the value changed every time.
-    @Environment(\.submitAction) private var submit
+	// This view is always invalidated: SwiftUI cannot compare the closure
+	// in submitAction, so it assumes the value changed every time.
+	@Environment(\.submitAction) private var submit
 
-    var body: some View {
-        Button("Submit") { submit("hello") }
-    }
+	var body: some View {
+		Button("Submit") { submit("hello") }
+	}
 }
 ```
 
@@ -94,29 +94,29 @@ struct FormFields: View {
 // SwiftUI can compare the struct's stored properties to skip redundant
 // invalidation
 struct SubmitAction {
-    func callAsFunction(_ draft: String) {
-        print("Submit: \(draft)")
-    }
+	func callAsFunction(_ draft: String) {
+		print("Submit: \(draft)")
+	}
 }
 
 extension EnvironmentValues {
-    @Entry var submitAction = SubmitAction()
+	@Entry var submitAction = SubmitAction()
 }
 
 struct FormContainer: View {
-    var body: some View {
-        FormFields()
-            .environment(\.submitAction, SubmitAction())
-    }
+	var body: some View {
+		FormFields()
+			.environment(\.submitAction, SubmitAction())
+	}
 }
 
 struct FormFields: View {
-    @Environment(\.submitAction) private var submit
+	@Environment(\.submitAction) private var submit
 
-    var body: some View {
-        // Reads like a closure call thanks to callAsFunction.
-        Button("Submit") { submit("hello") }
-    }
+	var body: some View {
+		// Reads like a closure call thanks to callAsFunction.
+		Button("Submit") { submit("hello") }
+	}
 }
 ```
 
@@ -129,26 +129,26 @@ struct FormFields: View {
 @MainActor
 @Observable
 final class FormHandler {
-    func submit(_ draft: String) {
-        print("Submit: \(draft)")
-    }
+	func submit(_ draft: String) {
+		print("Submit: \(draft)")
+	}
 }
 
 struct FormContainer: View {
-    @State private var handler = FormHandler()
+	@State private var handler = FormHandler()
 
-    var body: some View {
-        FormFields()
-            .environment(handler)
-    }
+	var body: some View {
+		FormFields()
+			.environment(handler)
+	}
 }
 
 struct FormFields: View {
-    @Environment(FormHandler.self) private var handler
+	@Environment(FormHandler.self) private var handler
 
-    var body: some View {
-        Button("Submit") { handler.submit("hello") }
-    }
+	var body: some View {
+		Button("Submit") { handler.submit("hello") }
+	}
 }
 ```
 
@@ -161,28 +161,28 @@ struct FormFields: View {
 // Closures can't be compared and all views that read this key will be invalidated even when the closure hasn't changed.
 
 extension EnvironmentValues {
-    @Entry var submitAction: () -> Void = {}
+	@Entry var submitAction: () -> Void = {}
 }
 
 struct FormContainer: View {
-    @State private var draft = "hello"
+	@State private var draft = "hello"
 
-    var body: some View {
-        FormFields()
-            .environment(\.submitAction) {
-                print("Submit: \(draft)")
-            }
-    }
+	var body: some View {
+		FormFields()
+			.environment(\.submitAction) {
+				print("Submit: \(draft)")
+			}
+	}
 }
 
 struct FormFields: View {
-    // This view is always invalidated: SwiftUI cannot compare the closure
-    // in submitAction, so it assumes the value changed every time.
-    @Environment(\.submitAction) private var submit
+	// This view is always invalidated: SwiftUI cannot compare the closure
+	// in submitAction, so it assumes the value changed every time.
+	@Environment(\.submitAction) private var submit
 
-    var body: some View {
-        Button("Submit") { submit() }
-    }
+	var body: some View {
+		Button("Submit") { submit() }
+	}
 }
 ```
 
@@ -195,37 +195,37 @@ struct FormFields: View {
 // Store the previously captured @State as a property on the struct.
 
 struct SubmitAction {
-    var draft: String
+	var draft: String
     
-    func callAsFunction() {
-        print("Submit: \(draft)")
-    }
+	func callAsFunction() {
+		print("Submit: \(draft)")
+	}
 }
 
 extension EnvironmentValues {
-    // `submitAction` is optional here because the action is invalid
-    // without the draft value set. When fixing this issue optionality
-    // should always be considered based on the context. This example
-    // does not imply that the entry *must* be optional in all cases.
-    @Entry var submitAction: SubmitAction?
+	// `submitAction` is optional here because the action is invalid
+	// without the draft value set. When fixing this issue optionality
+	// should always be considered based on the context. This example
+	// does not imply that the entry *must* be optional in all cases.
+	@Entry var submitAction: SubmitAction?
 }
 
 struct FormContainer: View {
-    @State private var draft = "hello"
+	@State private var draft = "hello"
 
-    var body: some View {
-        FormFields()
-            .environment(\.submitAction, SubmitAction(draft: draft))
-    }
+	var body: some View {
+		FormFields()
+			.environment(\.submitAction, SubmitAction(draft: draft))
+	}
 }
 
 struct FormFields: View {
-    @Environment(\.submitAction) private var submit
+	@Environment(\.submitAction) private var submit
 
-    var body: some View {
-        // Reads like a closure call thanks to callAsFunction.
-        Button("Submit") { submit?() }
-    }
+	var body: some View {
+		// Reads like a closure call thanks to callAsFunction.
+		Button("Submit") { submit?() }
+	}
 }
 ```
 
@@ -238,28 +238,28 @@ struct FormFields: View {
 @MainActor
 @Observable
 final class FormHandler {
-    var draft: String = "hello"
+	var draft: String = "hello"
 
-    func submit() {
-        print("Submit: \(draft)")
-    }
+	func submit() {
+		print("Submit: \(draft)")
+	}
 }
 
 struct FormContainer: View {
-    @State private var handler = FormHandler()
+	@State private var handler = FormHandler()
 
-    var body: some View {
-        FormFields()
-            .environment(handler)
-    }
+	var body: some View {
+		FormFields()
+			.environment(handler)
+	}
 }
 
 struct FormFields: View {
-    @Environment(FormHandler.self) private var handler
+	@Environment(FormHandler.self) private var handler
 
-    var body: some View {
-        Button("Submit") { handler.submit() }
-    }
+	var body: some View {
+		Button("Submit") { handler.submit() }
+	}
 }
 ```
 
@@ -271,60 +271,60 @@ In this case, the closure, `appearanceHandler`, is completely different dependin
 
 ```swift
 class MetricsTracker {
-    func trackForm(name: String) { /* ... */ }
-    func trackCart(itemCount: Int) { /* ... */ }
+	func trackForm(name: String) { /* ... */ }
+	func trackCart(itemCount: Int) { /* ... */ }
 }
 
 extension EnvironmentValues {
-    @Entry var appearanceHandler: () -> Void = {}
+	@Entry var appearanceHandler: () -> Void = {}
 }
 
 struct MainView: View {
-    @State private var tracker = MetricsTracker()
-    @State private var formName = "Form1"
-    @State private var cartItemCount = 0
+	@State private var tracker = MetricsTracker()
+	@State private var formName = "Form1"
+	@State private var cartItemCount = 0
     
-    var body: some View {
-        VStack {
-            FormFields(name: formName)
-                .environment(\.appearanceHandler) {
-                    tracker.trackForm(name: formName)
-                }
-            ShoppingCart(itemCount: cartItemCount)
-                .environment(\.appearanceHandler) {
-                    tracker.trackCart(itemCount: cartItemCount)
-                }
-        }
-    }
+	var body: some View {
+		VStack {
+			FormFields(name: formName)
+				.environment(\.appearanceHandler) {
+					tracker.trackForm(name: formName)
+				}
+			ShoppingCart(itemCount: cartItemCount)
+				.environment(\.appearanceHandler) {
+					tracker.trackCart(itemCount: cartItemCount)
+				}
+		}
+	}
 }
 
 struct FormFields: View {
-    // This view is always invalidated: SwiftUI cannot compare the closure
-    // in appearanceHandler, so it assumes the value changed every time.
-    @Environment(\.appearanceHandler) private var appearanceHandler
+	// This view is always invalidated: SwiftUI cannot compare the closure
+	// in appearanceHandler, so it assumes the value changed every time.
+	@Environment(\.appearanceHandler) private var appearanceHandler
     
-    let name: String
+	let name: String
     
-    var body: some View {
-        Text(name)
-        FormContent()
-            .onAppear {
-                appearanceHandler()
-            }
-    }
+	var body: some View {
+		Text(name)
+		FormContent()
+			.onAppear {
+				appearanceHandler()
+			}
+	}
 }
 
 struct ShoppingCart: View {
-    let itemCount: Int
-    @Environment(\.appearanceHandler) private var appearanceHandler
+	let itemCount: Int
+	@Environment(\.appearanceHandler) private var appearanceHandler
     
-    var body: some View {
-        Text("Item Count: \(itemCount)")
-        ItemList()
-            .onAppear {
-                appearanceHandler()
-            }
-    }
+	var body: some View {
+		Text("Item Count: \(itemCount)")
+		ItemList()
+			.onAppear {
+				appearanceHandler()
+			}
+	}
 }
 ```
 
@@ -341,78 +341,78 @@ Within Option A, choose between `callAsFunction` and a named method based on cal
 
 ```swift
 class MetricsTracker {
-    func trackForm(name: String) { /* ... */ }
-    func trackCart(itemCount: Int) { /* ... */ }
+	func trackForm(name: String) { /* ... */ }
+	func trackCart(itemCount: Int) { /* ... */ }
 }
 
 protocol AppearanceHandler {
-    func callAsFunction()
+	func callAsFunction()
 }
 
 extension EnvironmentValues {
-    @Entry var appearanceHandler: AppearanceHandler?
+	@Entry var appearanceHandler: AppearanceHandler?
 }
 
 struct FormAppearanceHandler: AppearanceHandler {
-    let tracker: MetricsTracker
-    let name: String
+	let tracker: MetricsTracker
+	let name: String
     
-    func callAsFunction() {
-        tracker.trackForm(name: name)
-    }
+	func callAsFunction() {
+		tracker.trackForm(name: name)
+	}
 }
 
 struct CartAppearanceHandler: AppearanceHandler {
-    let tracker: MetricsTracker
-    let itemCount: Int
+	let tracker: MetricsTracker
+	let itemCount: Int
     
-    func callAsFunction() {
-        tracker.trackCart(itemCount: itemCount)
-    }
+	func callAsFunction() {
+		tracker.trackCart(itemCount: itemCount)
+	}
 }
 
 struct MainView: View {
-    @State private var tracker = MetricsTracker()
-    @State private var formName = "Form1"
-    @State private var cartItemCount = 0
+	@State private var tracker = MetricsTracker()
+	@State private var formName = "Form1"
+	@State private var cartItemCount = 0
     
-    var body: some View {
-        VStack {
-            FormFields(name: formName)
-                .environment(\.appearanceHandler,
-                    FormAppearanceHandler(tracker: tracker, name: formName))
-            ShoppingCart(itemCount: cartItemCount)
-                .environment(\.appearanceHandler,
-                    CartAppearanceHandler(tracker: tracker, itemCount: cartItemCount))
-        }
-    }
+	var body: some View {
+		VStack {
+			FormFields(name: formName)
+				.environment(\.appearanceHandler,
+					FormAppearanceHandler(tracker: tracker, name: formName))
+			ShoppingCart(itemCount: cartItemCount)
+				.environment(\.appearanceHandler,
+					CartAppearanceHandler(tracker: tracker, itemCount: cartItemCount))
+		}
+	}
 }
 
 struct FormFields: View {
-    @Environment(\.appearanceHandler) private var appearanceHandler
+	@Environment(\.appearanceHandler) private var appearanceHandler
     
-    let name: String
+	let name: String
     
-    var body: some View {
-        Text(name)
-        FormContent()
-            .onAppear {
-                appearanceHandler?()
-            }
-    }
+	var body: some View {
+		Text(name)
+		FormContent()
+			.onAppear {
+				appearanceHandler?()
+			}
+	}
 }
 
 struct ShoppingCart: View {
-    let itemCount: Int
-    @Environment(\.appearanceHandler) private var appearanceHandler
+	let itemCount: Int
+	@Environment(\.appearanceHandler) private var appearanceHandler
     
-    var body: some View {
-        Text("Item Count: \(itemCount)")
-        ItemList()
-            .onAppear {
-                appearanceHandler?()
-            }
-    }
+	var body: some View {
+		Text("Item Count: \(itemCount)")
+		ItemList()
+			.onAppear {
+				appearanceHandler?()
+			}
+	}
 }
 ```
 
@@ -422,61 +422,61 @@ In many cases, rethinking the way that data is modeled can eliminate the need fo
 
 ```swift
 class MetricsTracker {
-    func trackForm(name: String) { /* ... */ }
-    func trackCart(itemCount: Int) { /* ... */ }
+	func trackForm(name: String) { /* ... */ }
+	func trackCart(itemCount: Int) { /* ... */ }
 }
 
 @MainActor
 @Observable
 final class Model {
-    private let tracker = MetricsTracker()
+	private let tracker = MetricsTracker()
     
-    var formName: String = "Form1"
-    var cartItemCount: Int = 0
+	var formName: String = "Form1"
+	var cartItemCount: Int = 0
     
-    func trackFormAppearance() {
-        tracker.trackForm(name: formName)
-    }
+	func trackFormAppearance() {
+		tracker.trackForm(name: formName)
+	}
     
-    func trackCartAppearance() {
-        tracker.trackCart(itemCount: cartItemCount)
-    }
+	func trackCartAppearance() {
+		tracker.trackCart(itemCount: cartItemCount)
+	}
 }
 
 struct MainView: View {
-    @State private var model = Model()
+	@State private var model = Model()
     
-    var body: some View {
-        VStack {
-            FormFields()
-            ShoppingCart()
-        }
-        .environment(model)
-    }
+	var body: some View {
+		VStack {
+			FormFields()
+			ShoppingCart()
+		}
+		.environment(model)
+	}
 }
 
 struct FormFields: View {
-    @Environment(Model.self) private var model
+	@Environment(Model.self) private var model
     
-    var body: some View {
-        Text(model.formName)
-        FormContent()
-            .onAppear {
-                model.trackFormAppearance()
-            }
-    }
+	var body: some View {
+		Text(model.formName)
+		FormContent()
+			.onAppear {
+				model.trackFormAppearance()
+			}
+	}
 }
 
 struct ShoppingCart: View {
-    @Environment(Model.self) private var model
+	@Environment(Model.self) private var model
     
-    var body: some View {
-        Text("Item Count: \(model.cartItemCount)")
-        ItemList()
-            .onAppear {
-                model.trackCartAppearance()
-            }
-    }
+	var body: some View {
+		Text("Item Count: \(model.cartItemCount)")
+		ItemList()
+			.onAppear {
+				model.trackCartAppearance()
+			}
+	}
 }
 ```
 
@@ -502,24 +502,24 @@ Instead, store frequently updated values in an `@Observable` model. `@Observable
 // Every pixel of a window resize incurs a comparison cost for all
 // environment-reading views in the subtree.
 extension EnvironmentValues {
-    @Entry var windowWidth: CGFloat = 0
+	@Entry var windowWidth: CGFloat = 0
 }
 
 struct RootView: View {
-    var body: some View {
-        GeometryReader { proxy in
-            ContentView()
-                .environment(\.windowWidth, proxy.size.width)
-        }
-    }
+	var body: some View {
+		GeometryReader { proxy in
+			ContentView()
+				.environment(\.windowWidth, proxy.size.width)
+		}
+	}
 }
 
 struct ContentView: View {
-    @Environment(\.windowWidth) private var width
+	@Environment(\.windowWidth) private var width
 
-    var body: some View {
-        Text(width > 600 ? "Wide layout" : "Compact layout")
-    }
+	var body: some View {
+		Text(width > 600 ? "Wide layout" : "Compact layout")
+	}
 }
 ```
 
@@ -530,34 +530,34 @@ struct ContentView: View {
 @MainActor
 @Observable
 final class ViewportModel {
-    var width: CGFloat = 0 {
-        didSet { isWide = width > 600 }
-    }
+	var width: CGFloat = 0 {
+		didSet { isWide = width > 600 }
+	}
 
-    private(set) var isWide: Bool = false
+	private(set) var isWide: Bool = false
 }
 
 struct RootView: View {
-    @State private var viewport = ViewportModel()
+	@State private var viewport = ViewportModel()
 
-    var body: some View {
-        ContentView()
-            .environment(viewport)
-            .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.size.width
-            } action: { newWidth in
-                viewport.width = newWidth
-            }
-    }
+	var body: some View {
+		ContentView()
+			.environment(viewport)
+			.onGeometryChange(for: CGFloat.self) { proxy in
+				proxy.size.width
+			} action: { newWidth in
+				viewport.width = newWidth
+			}
+	}
 }
 
 struct ContentView: View {
-    @Environment(ViewportModel.self) private var viewport
+	@Environment(ViewportModel.self) private var viewport
 
-    var body: some View {
-        // Only invalidates when isWide flips, not on every pixel.
-        Text(viewport.isWide ? "Wide layout" : "Compact layout")
-    }
+	var body: some View {
+		// Only invalidates when isWide flips, not on every pixel.
+		Text(viewport.isWide ? "Wide layout" : "Compact layout")
+	}
 }
 ```
 
@@ -571,17 +571,17 @@ The same shape applies to per-item coarsening in lists. When each row's appearan
 @MainActor
 @Observable
 final class FeedModel {
-    var offset: CGFloat = 0
+	var offset: CGFloat = 0
 }
 
 struct FeedItemView: View {
-    let index: Int
-    @Environment(FeedModel.self) private var feed
+	let index: Int
+	@Environment(FeedModel.self) private var feed
 
-    var body: some View {
-        Text("Item \(index)")
-            .opacity(feed.offset > CGFloat(index * -50) ? 1 : 0.3)  // reads raw offset
-    }
+	var body: some View {
+		Text("Item \(index)")
+			.opacity(feed.offset > CGFloat(index * -50) ? 1 : 0.3)  // reads raw offset
+	}
 }
 ```
 
@@ -592,51 +592,51 @@ struct FeedItemView: View {
 @MainActor
 @Observable
 final class FeedModel {
-    private(set) var items: [ItemModel] = []
+	private(set) var items: [ItemModel] = []
 
-    func updateOffset(_ offset: CGFloat) {
-        let visible = Set(computeVisibleIndices(for: offset))
-        for (i, item) in items.enumerated() {
-            item.isVisible = visible.contains(i)
-        }
-    }
+	func updateOffset(_ offset: CGFloat) {
+		let visible = Set(computeVisibleIndices(for: offset))
+		for (i, item) in items.enumerated() {
+			item.isVisible = visible.contains(i)
+		}
+	}
 
-    private func computeVisibleIndices(for offset: CGFloat) -> [Int] {
-        // ... derive visible indices from offset, item height, viewport height.
-    }
+	private func computeVisibleIndices(for offset: CGFloat) -> [Int] {
+		// ... derive visible indices from offset, item height, viewport height.
+	}
 }
 
 @MainActor
 @Observable
 final class ItemModel {
-    let index: Int
-    var isVisible = false
-    init(index: Int) { self.index = index }
+	let index: Int
+	var isVisible = false
+	init(index: Int) { self.index = index }
 }
 
 struct FeedItemView: View {
-    @Environment(ItemModel.self) private var item
+	@Environment(ItemModel.self) private var item
 
-    var body: some View {
-        Text("Item \(item.index)")
-            .opacity(item.isVisible ? 1 : 0.3)
-    }
+	var body: some View {
+		Text("Item \(item.index)")
+			.opacity(item.isVisible ? 1 : 0.3)
+	}
 }
 
 // Parent wiring: inject a different ItemModel per row.
 struct FeedView: View {
-    @State private var feedModel = FeedModel()
+	@State private var feedModel = FeedModel()
 
-    var body: some View {
-        ScrollView {
-            LazyVStack {
-                ForEach(feedModel.items) { item in
-                    FeedItemView()
-                        .environment(item)
-                }
-            }
-        }
-    }
+	var body: some View {
+		ScrollView {
+			LazyVStack {
+				ForEach(feedModel.items) { item in
+					FeedItemView()
+						.environment(item)
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -669,31 +669,31 @@ The invalidation only materializes when a reader actually falls back to the defa
 @Observable class Model {}
 
 extension EnvironmentValues {
-    @Entry var model = Model()
-    @Entry var counter = 0
+	@Entry var model = Model()
+	@Entry var counter = 0
 }
 
 struct ContentView: View {
-    @State private var counter = 0
+	@State private var counter = 0
 
-    var body: some View {
-        VStack {
-            Button("++") { counter += 1 }
-            RowContent()
-        }
-        .environment(\.counter, counter)
-    }
+	var body: some View {
+		VStack {
+			Button("++") { counter += 1 }
+			RowContent()
+		}
+		.environment(\.counter, counter)
+	}
 }
 
 struct RowContent: View {
-    @Environment(\.model) private var model
+	@Environment(\.model) private var model
 
-    var body: some View {
-        // Every "++" invalidates this view because `model`'s default
-        // getter constructs a new `Model()` on every read.
-        let _ = Self._printChanges()
-        Text("Row Content")
-    }
+	var body: some View {
+		// Every "++" invalidates this view because `model`'s default
+		// getter constructs a new `Model()` on every read.
+		let _ = Self._printChanges()
+		Text("Row Content")
+	}
 }
 ```
 
@@ -706,13 +706,13 @@ Making the unstable type conform to `Equatable` with a trivial or degenerate `==
 ```swift
 // AVOID: Equatable masks invalidation without fixing the underlying re-evaluation.
 @Observable final class Model: Equatable {
-    init() { print("init") }  // still fires on every unrelated env write
-    var id = 0
-    static func == (lhs: Model, rhs: Model) -> Bool { lhs.id == rhs.id }
+	init() { print("init") }  // still fires on every unrelated env write
+	var id = 0
+	static func == (lhs: Model, rhs: Model) -> Bool { lhs.id == rhs.id }
 }
 
 extension EnvironmentValues {
-    @Entry var model = Model()
+	@Entry var model = Model()
 }
 ```
 
@@ -738,14 +738,14 @@ Reviewers commonly misfire on two shapes — call them out specifically and leav
 final class Logger { func log(_ message: String) {} }
 
 struct RequestContext {
-    let logger: Logger
-    let retryBudget: Int
+	let logger: Logger
+	let retryBudget: Int
 }
 
 private let sharedLogger = Logger()
 
 extension EnvironmentValues {
-    @Entry var requestContext = RequestContext(logger: sharedLogger, retryBudget: 3)
+	@Entry var requestContext = RequestContext(logger: sharedLogger, retryBudget: 3)
 }
 ```
 
@@ -759,13 +759,13 @@ extension EnvironmentValues {
 protocol PresentationHandler { func dismiss() }
 
 struct ViewContext {
-    enum Mode { case standard, compact, expanded }
-    let mode: Mode
-    let presentation: PresentationHandler?
+	enum Mode { case standard, compact, expanded }
+	let mode: Mode
+	let presentation: PresentationHandler?
 }
 
 extension EnvironmentValues {
-    @Entry var viewContext = ViewContext(mode: .standard, presentation: nil)
+	@Entry var viewContext = ViewContext(mode: .standard, presentation: nil)
 }
 ```
 
@@ -777,12 +777,12 @@ Contrast with the unstable shape — same struct skeleton, but the default expre
 // instances carry different `logger` pointers.
 
 struct RequestContext {
-    let logger = Logger()      // fresh allocation per init
-    let retryBudget = 3
+	let logger = Logger()      // fresh allocation per init
+	let retryBudget = 3
 }
 
 extension EnvironmentValues {
-    @Entry var requestContext = RequestContext()
+	@Entry var requestContext = RequestContext()
 }
 ```
 
@@ -800,32 +800,32 @@ Declare a `static let` next to the `@Entry` declaration and reference it from th
 @Observable class Model {}
 
 extension EnvironmentValues {
-    @Entry var model = _defaultModel
-    private static let _defaultModel = Model()
-    @Entry var counter = 0
+	@Entry var model = _defaultModel
+	private static let _defaultModel = Model()
+	@Entry var counter = 0
 }
 
 struct ContentView: View {
-    @State private var counter = 0
+	@State private var counter = 0
 
-    var body: some View {
-        VStack {
-            Button("++") { counter += 1 }
-            RowContent()
-        }
-        .environment(\.counter, counter)
-    }
+	var body: some View {
+		VStack {
+			Button("++") { counter += 1 }
+			RowContent()
+		}
+		.environment(\.counter, counter)
+	}
 }
 
 struct RowContent: View {
-    @Environment(\.model) private var model
+	@Environment(\.model) private var model
 
-    var body: some View {
-        // `_defaultModel` is a `static let`, so every read returns the
-        // same instance. Updating `\.counter` no longer invalidates.
-        let _ = Self._printChanges()
-        Text("Row Content")
-    }
+	var body: some View {
+		// `_defaultModel` is a `static let`, so every read returns the
+		// same instance. Updating `\.counter` no longer invalidates.
+		let _ = Self._printChanges()
+		Text("Row Content")
+	}
 }
 ```
 
@@ -835,14 +835,14 @@ Skip `@Entry` for this key and write the conformance by hand. Use `static let de
 
 ```swift
 private struct ModelKey: EnvironmentKey {
-    static let defaultValue = Model()
+	static let defaultValue = Model()
 }
 
 extension EnvironmentValues {
-    var model: Model {
-        get { self[ModelKey.self] }
-        set { self[ModelKey.self] = newValue }
-    }
+	var model: Model {
+		get { self[ModelKey.self] }
+		set { self[ModelKey.self] = newValue }
+	}
 }
 ```
 
@@ -854,7 +854,7 @@ An `@Entry` with an `Optional` type and no initializer defaults to `nil` — a c
 
 ```swift
 extension EnvironmentValues {
-    @Entry var model: Model?
+	@Entry var model: Model?
 }
 ```
 
@@ -865,39 +865,39 @@ extension EnvironmentValues {
 ```swift
 // Before: unstable default, sentinel-as-absence in reader.
 @Observable final class EditingSession {
-    var documentId: String
-    init(documentId: String) { self.documentId = documentId }
+	var documentId: String
+	init(documentId: String) { self.documentId = documentId }
 }
 
 extension EnvironmentValues {
-    @Entry var editingSession = EditingSession(documentId: "")  // unstable + sentinel default
+	@Entry var editingSession = EditingSession(documentId: "")  // unstable + sentinel default
 }
 
 struct DocumentArea: View {
-    @Environment(\.editingSession) private var session
-    var body: some View {
-        if session.documentId.isEmpty {            // sentinel-as-absence
-            Text("No document open")
-        } else {
-            Text("Editing: \(session.documentId)")
-        }
-    }
+	@Environment(\.editingSession) private var session
+	var body: some View {
+		if session.documentId.isEmpty {            // sentinel-as-absence
+			Text("No document open")
+		} else {
+			Text("Editing: \(session.documentId)")
+		}
+	}
 }
 
 // After: Option C — absence becomes an Optional, sentinel disappears.
 extension EnvironmentValues {
-    @Entry var editingSession: EditingSession?
+	@Entry var editingSession: EditingSession?
 }
 
 struct DocumentArea: View {
-    @Environment(\.editingSession) private var session
-    var body: some View {
-        if let session {                            // honest absence test
-            Text("Editing: \(session.documentId)")
-        } else {
-            Text("No document open")
-        }
-    }
+	@Environment(\.editingSession) private var session
+	var body: some View {
+		if let session {                            // honest absence test
+			Text("Editing: \(session.documentId)")
+		} else {
+			Text("No document open")
+		}
+	}
 }
 ```
 
@@ -917,22 +917,22 @@ When reviewing, walk each view's `@Environment` / `@FocusedValue` declarations a
 ```swift
 // AVOID: declared but never read in body
 struct BadgeView: View {
-    @Environment(\.theme) private var theme   // never referenced below
-    let label: String
+	@Environment(\.theme) private var theme   // never referenced below
+	let label: String
 
-    var body: some View {
-        Text(label)
-    }
+	var body: some View {
+		Text(label)
+	}
 }
 ```
 
 ```swift
 // PREFER: remove the unused subscription
 struct BadgeView: View {
-    let label: String
+	let label: String
 
-    var body: some View {
-        Text(label)
-    }
+	var body: some View {
+		Text(label)
+	}
 }
 ```

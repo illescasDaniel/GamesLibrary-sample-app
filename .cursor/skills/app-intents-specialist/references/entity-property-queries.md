@@ -12,10 +12,10 @@
 // — this does not compile, and even a `QueryProperties {}` stub with no Property
 // entries yields a Find action the user can't filter with at all.
 struct NoteQuery: EntityPropertyQuery {
-    func entities(for ids: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: ids)
-    }
-    // ❌ no `properties`, no `sortingOptions`, no entities(matching:…)
+	func entities(for ids: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: ids)
+	}
+	// ❌ no `properties`, no `sortingOptions`, no entities(matching:…)
 }
 ```
 
@@ -25,28 +25,28 @@ struct NoteQuery: EntityPropertyQuery {
 // ComparatorMappingType of YOUR choosing (here a predicate struct your store
 // understands) — the framework never touches your backend, only this mapping.
 struct NoteQuery: EntityPropertyQuery {
-    typealias ComparatorMappingType = NotePredicate   // your own type
+	typealias ComparatorMappingType = NotePredicate   // your own type
 
-    static var properties = QueryProperties {
-        Property(\.$title) {
-            EqualToComparator    { NotePredicate.titleEquals($0) }
-            ContainsComparator   { NotePredicate.titleContains($0) }
-            HasPrefixComparator  { NotePredicate.titleHasPrefix($0) }
-        }
-        Property(\.$createdAt) {
-            LessThanComparator    { NotePredicate.createdBefore($0) }
-            GreaterThanComparator { NotePredicate.createdAfter($0) }
-        }
-    }
+	static var properties = QueryProperties {
+		Property(\.$title) {
+			EqualToComparator    { NotePredicate.titleEquals($0) }
+			ContainsComparator   { NotePredicate.titleContains($0) }
+			HasPrefixComparator  { NotePredicate.titleHasPrefix($0) }
+		}
+		Property(\.$createdAt) {
+			LessThanComparator    { NotePredicate.createdBefore($0) }
+			GreaterThanComparator { NotePredicate.createdAfter($0) }
+		}
+	}
 
-    static var sortingOptions = SortingOptions {
-        SortableBy(\.$title)
-        SortableBy(\.$createdAt)
-    }
+	static var sortingOptions = SortingOptions {
+		SortableBy(\.$title)
+		SortableBy(\.$createdAt)
+	}
 
-    func entities(for ids: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: ids)
-    }
+	func entities(for ids: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: ids)
+	}
 }
 ```
 
@@ -59,12 +59,12 @@ The comparator classes are typed against the property. Equality ones (`EqualToCo
 // HasPrefixComparator (String-only) can't apply; `title` is a String, so ordering
 // comparators are meaningless on it. Both surface as confusing generic errors.
 static var properties = QueryProperties {
-    Property(\.$tagCount) {
-        HasPrefixComparator { NotePredicate.bogus($0) }   // ❌ Int has no prefix
-    }
-    Property(\.$title) {
-        GreaterThanComparator { NotePredicate.bogus($0) } // ❌ String isn't the ordered case you want
-    }
+	Property(\.$tagCount) {
+		HasPrefixComparator { NotePredicate.bogus($0) }   // ❌ Int has no prefix
+	}
+	Property(\.$title) {
+		GreaterThanComparator { NotePredicate.bogus($0) } // ❌ String isn't the ordered case you want
+	}
 }
 ```
 
@@ -72,17 +72,17 @@ static var properties = QueryProperties {
 // PREFER: match the comparator family to the type. Numeric/comparable → ordered
 // comparators; String → contains/prefix/suffix; array → Contains for membership.
 static var properties = QueryProperties {
-    Property(\.$tagCount) {
-        EqualToComparator     { NotePredicate.tagCountEquals($0) }
-        GreaterThanComparator { NotePredicate.tagCountAbove($0) }
-    }
-    Property(\.$title) {
-        ContainsComparator  { NotePredicate.titleContains($0) }
-        HasPrefixComparator { NotePredicate.titleHasPrefix($0) }
-    }
-    Property(\.$tags) {   // [String]
-        ContainsComparator { NotePredicate.hasTag($0) }   // element membership
-    }
+	Property(\.$tagCount) {
+		EqualToComparator     { NotePredicate.tagCountEquals($0) }
+		GreaterThanComparator { NotePredicate.tagCountAbove($0) }
+	}
+	Property(\.$title) {
+		ContainsComparator  { NotePredicate.titleContains($0) }
+		HasPrefixComparator { NotePredicate.titleHasPrefix($0) }
+	}
+	Property(\.$tags) {   // [String]
+		ContainsComparator { NotePredicate.hasTag($0) }   // element membership
+	}
 }
 ```
 
@@ -96,12 +96,12 @@ The signature is `func entities(matching comparators: [ComparatorMappingType], m
 // max 5" return every note in arbitrary order — the predicate was handed to you
 // and silently discarded.
 func entities(
-    matching comparators: [NotePredicate],
-    mode: ComparatorMode,
-    sortedBy: [Sort<NoteEntity>],
-    limit: Int?
+	matching comparators: [NotePredicate],
+	mode: ComparatorMode,
+	sortedBy: [Sort<NoteEntity>],
+	limit: Int?
 ) async throws -> [NoteEntity] {
-    try await store.allNotes()   // ❌ comparators, mode, sortedBy, limit all ignored
+	try await store.allNotes()   // ❌ comparators, mode, sortedBy, limit all ignored
 }
 ```
 
@@ -111,17 +111,17 @@ func entities(
 // mode, sort order, and limit. (Sort<Entity>.by is a PartialKeyPath you read to
 // pick the column; .order gives ascending/descending.)
 func entities(
-    matching comparators: [NotePredicate],
-    mode: ComparatorMode,
-    sortedBy: [Sort<NoteEntity>],
-    limit: Int?
+	matching comparators: [NotePredicate],
+	mode: ComparatorMode,
+	sortedBy: [Sort<NoteEntity>],
+	limit: Int?
 ) async throws -> [NoteEntity] {
-    try await store.fetchNotes(
-        predicates: comparators,
-        combine: (mode == .and) ? .all : .any,
-        sort: sortedBy,          // read .by / .order per element
-        limit: limit
-    )
+	try await store.fetchNotes(
+		predicates: comparators,
+		combine: (mode == .and) ? .all : .any,
+		sort: sortedBy,          // read .by / .order per element
+		limit: limit
+	)
 }
 ```
 
@@ -134,12 +134,12 @@ func entities(
 // note into memory on each Find, then the framework filters in-memory — a
 // memory/latency trap that grows with the store and never gets flagged.
 struct NoteQuery: EnumerableEntityQuery {
-    func entities(for ids: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: ids)
-    }
-    func allEntities() async throws -> [NoteEntity] {
-        try await store.allNotes()          // ❌ could be tens of thousands
-    }
+	func entities(for ids: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: ids)
+	}
+	func allEntities() async throws -> [NoteEntity] {
+		try await store.allNotes()          // ❌ could be tens of thousands
+	}
 }
 ```
 
@@ -147,22 +147,22 @@ struct NoteQuery: EnumerableEntityQuery {
 // PREFER: EntityPropertyQuery, so the filter reaches your data layer and only the
 // matching rows are fetched. Same Find action for the user; bounded cost for you.
 struct NoteQuery: EntityPropertyQuery {
-    typealias ComparatorMappingType = NotePredicate
-    static var properties = QueryProperties {
-        Property(\.$title) { ContainsComparator { NotePredicate.titleContains($0) } }
-    }
-    static var sortingOptions = SortingOptions { SortableBy(\.$createdAt) }
+	typealias ComparatorMappingType = NotePredicate
+	static var properties = QueryProperties {
+		Property(\.$title) { ContainsComparator { NotePredicate.titleContains($0) } }
+	}
+	static var sortingOptions = SortingOptions { SortableBy(\.$createdAt) }
 
-    func entities(for ids: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: ids)
-    }
-    func entities(
-        matching comparators: [NotePredicate],
-        mode: ComparatorMode,
-        sortedBy: [Sort<NoteEntity>],
-        limit: Int?
-    ) async throws -> [NoteEntity] {
-        try await store.fetchNotes(predicates: comparators, sort: sortedBy, limit: limit)
-    }
+	func entities(for ids: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: ids)
+	}
+	func entities(
+		matching comparators: [NotePredicate],
+		mode: ComparatorMode,
+		sortedBy: [Sort<NoteEntity>],
+		limit: Int?
+	) async throws -> [NoteEntity] {
+		try await store.fetchNotes(predicates: comparators, sort: sortedBy, limit: limit)
+	}
 }
 ```

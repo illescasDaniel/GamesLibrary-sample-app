@@ -60,13 +60,13 @@ Use `DocumentGroup` or `DocumentGroupLaunchScene` as your app's **first scene** 
 ```swift
 @main
 struct NotesApp: App {
-    var body: some Scene {
-        DocumentGroup { document in
-            TextEditorView(document: document)
-        } makeDocument: { configuration, context in
-            TextDocument()
-        }
-    }
+	var body: some Scene {
+		DocumentGroup { document in
+			TextEditorView(document: document)
+		} makeDocument: { configuration, context in
+			TextDocument()
+		}
+	}
 }
 ```
 
@@ -86,54 +86,54 @@ Because `makeDocument` is `async`, you can suspend document creation right insid
 ```swift
 @main
 struct MyApp: App {
-    @Environment(\.openWindow) private var openWindow
-    @State private var documentCreationContinuation: CheckedContinuation<TextDocument?, any Error>?
+	@Environment(\.openWindow) private var openWindow
+	@State private var documentCreationContinuation: CheckedContinuation<TextDocument?, any Error>?
 
-    var body: some Scene {
-        DocumentGroup { document in
-            TextDocumentView(document: document)
-        } makeDocument: { configuration, context in
-            let document = try await withCheckedThrowingContinuation { continuation in
-                documentCreationContinuation = continuation
-                openWindow(id: templatePickerWindowID)
-            }
-            guard let document else { throw CancellationError() }
-            return document
-        }
+	var body: some Scene {
+		DocumentGroup { document in
+			TextDocumentView(document: document)
+		} makeDocument: { configuration, context in
+			let document = try await withCheckedThrowingContinuation { continuation in
+				documentCreationContinuation = continuation
+				openWindow(id: templatePickerWindowID)
+			}
+			guard let document else { throw CancellationError() }
+			return document
+		}
 
-        Window("Choose a Template", id: templatePickerWindowID) {
-            TemplatePicker(continuation: $documentCreationContinuation)
-        }
-    }
+		Window("Choose a Template", id: templatePickerWindowID) {
+			TemplatePicker(continuation: $documentCreationContinuation)
+		}
+	}
 }
 
 struct TemplatePicker: View {
-    @Binding var continuation:
-        CheckedContinuation<TextDocument?, any Error>?
-    @Environment(\.dismissWindow) private var dismissWindow
+	@Binding var continuation:
+		CheckedContinuation<TextDocument?, any Error>?
+	@Environment(\.dismissWindow) private var dismissWindow
 
-    var body: some View {
-        VStack {
-            Text("Choose a template").font(.title)
-            Button("Meeting minutes") {
-                continuation?.resume(returning: TextDocument.makeMeetingMinutes())
-                dismissWindow(id: templatePickerWindowID)
-            }
-            Button("Letter") {
-                continuation?.resume(returning: TextDocument.makeLetter())
-                dismissWindow(id: templatePickerWindowID)
-            }
-            Button("Cancel") {
-                continuation?.resume(throwing: CancellationError())
-                dismissWindow(id: templatePickerWindowID)
-            }
-        }
-    }
+	var body: some View {
+		VStack {
+			Text("Choose a template").font(.title)
+			Button("Meeting minutes") {
+				continuation?.resume(returning: TextDocument.makeMeetingMinutes())
+				dismissWindow(id: templatePickerWindowID)
+			}
+			Button("Letter") {
+				continuation?.resume(returning: TextDocument.makeLetter())
+				dismissWindow(id: templatePickerWindowID)
+			}
+			Button("Cancel") {
+				continuation?.resume(throwing: CancellationError())
+				dismissWindow(id: templatePickerWindowID)
+			}
+		}
+	}
 }
 
 extension TextDocument {
-    static func makeMeetingMinutes() -> Self { /* ... */ }
-    static func makeLetter() -> Self { /* ... */ }
+	static func makeMeetingMinutes() -> Self { /* ... */ }
+	static func makeLetter() -> Self { /* ... */ }
 }
 
 let templatePickerWindowID = "template-picker"
@@ -145,9 +145,9 @@ Conform only to `ReadableDocument` and use `viewer` / `makeReadableDocument`:
 
 ```swift
 DocumentGroup { document in
-    PDFViewer(document: document)
+	PDFViewer(document: document)
 } makeReadableDocument: { configuration, context in
-    PDFDocument()
+	PDFDocument()
 }
 
 @Observable
@@ -161,28 +161,28 @@ Set `CFBundleTypeRole` to `Viewer` in Info.plist. For read-write apps, set it to
 ```swift
 @main
 struct NotesApp: App {
-    var body: some Scene {
-        DocumentGroupLaunchScene("My Notes and Lists") {
-            NewDocumentButton("New Note", source: .note)
-            NewDocumentButton("New List", source: .list)
-        } background: {
-            LinearGradient(
-                colors: [.brandColorGradientStart, .brandColorGradientEnd],
-                startPoint: .top, endPoint: .bottom
-            )
-        }
+	var body: some Scene {
+		DocumentGroupLaunchScene("My Notes and Lists") {
+			NewDocumentButton("New Note", source: .note)
+			NewDocumentButton("New List", source: .list)
+		} background: {
+			LinearGradient(
+				colors: [.brandColorGradientStart, .brandColorGradientEnd],
+				startPoint: .top, endPoint: .bottom
+			)
+		}
 
-        DocumentGroup { document in
-            TextEditorView(document: document)
-        } makeDocument: { configuration, context in
-            TextDocument()
-        }
-    }
+		DocumentGroup { document in
+			TextEditorView(document: document)
+		} makeDocument: { configuration, context in
+			TextDocument()
+		}
+	}
 }
 
 extension DocumentCreationSource {
-    static let note = DocumentCreationSource(id: "note")
-    static let list = DocumentCreationSource(id: "list")
+	static let note = DocumentCreationSource(id: "note")
+	static let list = DocumentCreationSource(id: "list")
 }
 ```
 
@@ -195,21 +195,21 @@ For built-in formats like text, JPEG, and PDF, the system already knows what you
 ```xml
 <key>UTExportedTypeDeclarations</key>
 <array>
-    <dict>
-        <key>UTTypeIdentifier</key>
-        <string>com.example.notebook</string>
-        <key>UTTypeConformsTo</key>
-        <array>
-            <string>com.apple.package</string>
-        </array>
-        <key>UTTypeTagSpecification</key>
-        <dict>
-            <key>public.filename-extension</key>
-            <array>
-                <string>example-notebook</string>
-            </array>
-        </dict>
-    </dict>
+	<dict>
+		<key>UTTypeIdentifier</key>
+		<string>com.example.notebook</string>
+		<key>UTTypeConformsTo</key>
+		<array>
+			<string>com.apple.package</string>
+		</array>
+		<key>UTTypeTagSpecification</key>
+		<dict>
+			<key>public.filename-extension</key>
+			<array>
+				<string>example-notebook</string>
+			</array>
+		</dict>
+	</dict>
 </array>
 ```
 
@@ -217,7 +217,7 @@ Mirror the declaration in code:
 
 ```swift
 extension UTType {
-    static let notebook = UTType(exportedAs: "com.example.notebook")
+	static let notebook = UTType(exportedAs: "com.example.notebook")
 }
 ```
 
@@ -271,40 +271,40 @@ import UniformTypeIdentifiers
 
 @Observable
 final class TextDocument: Document {
-    static let readableContentTypes = [UTType.plainText]
+	static let readableContentTypes = [UTType.plainText]
 
-    var text: String
+	var text: String
 
-    init() {
-        self.text = ""
-    }
+	init() {
+		self.text = ""
+	}
 
-    func reader(configuration: sending ReadConfiguration) -> sending FileWrapperDocumentReader<String> {
-        FileWrapperDocumentReader(configuration) { fileWrapper in
-            if let data = fileWrapper.regularFileContents,
-               let text = String(data: data, encoding: .utf8) {
-                return text
-            }
-            return ""
-        }
-    }
+	func reader(configuration: sending ReadConfiguration) -> sending FileWrapperDocumentReader<String> {
+		FileWrapperDocumentReader(configuration) { fileWrapper in
+			if let data = fileWrapper.regularFileContents,
+			   let text = String(data: data, encoding: .utf8) {
+				return text
+			}
+			return ""
+		}
+	}
 
-    @MainActor
-    func apply(snapshot: sending String, previous: sending String?) async throws {
-        self.text = snapshot
-    }
+	@MainActor
+	func apply(snapshot: sending String, previous: sending String?) async throws {
+		self.text = snapshot
+	}
 
-    func writer(configuration: sending WriteConfiguration) -> sending FileWrapperDocumentWriter<String> {
-        FileWrapperDocumentWriter(configuration) { snapshot, previous in
-            let data = Data(snapshot.utf8)
-            return FileWrapper(regularFileWithContents: data)
-        }
-    }
+	func writer(configuration: sending WriteConfiguration) -> sending FileWrapperDocumentWriter<String> {
+		FileWrapperDocumentWriter(configuration) { snapshot, previous in
+			let data = Data(snapshot.utf8)
+			return FileWrapper(regularFileWithContents: data)
+		}
+	}
 
-    @MainActor
-    func snapshot(contentType: UTType) async throws -> sending String {
-        text
-    }
+	@MainActor
+	func snapshot(contentType: UTType) async throws -> sending String {
+		text
+	}
 }
 ```
 
@@ -314,19 +314,19 @@ SwiftUI tracks unsaved changes through undo actions. **Without registered undo a
 
 ```swift
 struct TextDocumentView: View {
-    @Bindable var document: TextDocument
-    @Environment(\.undoManager) private var undoManager
+	@Bindable var document: TextDocument
+	@Environment(\.undoManager) private var undoManager
 
-    var body: some View {
-        TextEditor(text: $document.text)
-            .onChange(of: document.text) { oldValue, _ in
-                undoManager?.registerUndo(
-                    withTarget: document
-                ) { document in
-                    document.text = oldValue
-                }
-            }
-    }
+	var body: some View {
+		TextEditor(text: $document.text)
+			.onChange(of: document.text) { oldValue, _ in
+				undoManager?.registerUndo(
+					withTarget: document
+				) { document in
+					document.text = oldValue
+				}
+			}
+	}
 }
 ```
 
@@ -340,18 +340,18 @@ Use a custom `DocumentReader` / `DocumentWriter` when you need streaming reads, 
 import CoreGraphics
 
 struct ImageSnapshot {
-    var image: CGImage?
-    var compressionQuality: Double
+	var image: CGImage?
+	var compressionQuality: Double
 }
 
 @Observable
 final class ImageDocument: Document {
-    static let readableContentTypes: [UTType] = [.jpeg]
+	static let readableContentTypes: [UTType] = [.jpeg]
 
-    var displayImage: CGImage?
-    var compressionQuality: Double = 0.9
+	var displayImage: CGImage?
+	var compressionQuality: Double = 0.9
 
-    init() {}
+	init() {}
 }
 ```
 
@@ -361,38 +361,38 @@ final class ImageDocument: Document {
 
 ```swift
 extension ImageDocument {
-    struct Reader: DocumentReader {
-        @concurrent
-        func read(
-            from source: URL, progress: consuming Subprogress
-        ) async throws -> sending ImageSnapshot {
-            guard let imageSource =
-                CGImageSourceCreateWithURL(source as CFURL, nil),
-                  let image = CGImageSourceCreateImageAtIndex(
-                      imageSource, 0, nil
-                  ) else {
-                throw CocoaError(.fileReadCorruptFile)
-            }
-            return ImageSnapshot(
-                image: image, compressionQuality: 0.9
-            )
-        }
-    }
+	struct Reader: DocumentReader {
+		@concurrent
+		func read(
+			from source: URL, progress: consuming Subprogress
+		) async throws -> sending ImageSnapshot {
+			guard let imageSource =
+				CGImageSourceCreateWithURL(source as CFURL, nil),
+				  let image = CGImageSourceCreateImageAtIndex(
+					  imageSource, 0, nil
+				  ) else {
+				throw CocoaError(.fileReadCorruptFile)
+			}
+			return ImageSnapshot(
+				image: image, compressionQuality: 0.9
+			)
+		}
+	}
 
-    func reader(
-        configuration: sending ReadConfiguration
-    ) -> sending Reader {
-        Reader()
-    }
+	func reader(
+		configuration: sending ReadConfiguration
+	) -> sending Reader {
+		Reader()
+	}
 
-    @MainActor
-    func apply(
-        snapshot: sending ImageSnapshot,
-        previous: sending ImageSnapshot?
-    ) async throws {
-        self.compressionQuality = snapshot.compressionQuality
-        self.displayImage = snapshot.image
-    }
+	@MainActor
+	func apply(
+		snapshot: sending ImageSnapshot,
+		previous: sending ImageSnapshot?
+	) async throws {
+		self.compressionQuality = snapshot.compressionQuality
+		self.displayImage = snapshot.image
+	}
 }
 ```
 
@@ -402,53 +402,53 @@ extension ImageDocument {
 
 ```swift
 extension ImageDocument {
-    struct Writer: DocumentWriter {
-        @concurrent
-        func write(
-            snapshot: sending ImageSnapshot,
-            to destination: URL,
-            previous: sending ImageSnapshot?,
-            progress: consuming Subprogress
-        ) async throws {
-            guard let image = snapshot.image else { return }
+	struct Writer: DocumentWriter {
+		@concurrent
+		func write(
+			snapshot: sending ImageSnapshot,
+			to destination: URL,
+			previous: sending ImageSnapshot?,
+			progress: consuming Subprogress
+		) async throws {
+			guard let image = snapshot.image else { return }
 
-            guard let imageDestination =
-                CGImageDestinationCreateWithURL(
-                    destination as CFURL,
-                    UTType.jpeg.identifier as CFString, 1, nil
-                ) else {
-                throw CocoaError(.fileWriteUnknown)
-            }
+			guard let imageDestination =
+				CGImageDestinationCreateWithURL(
+					destination as CFURL,
+					UTType.jpeg.identifier as CFString, 1, nil
+				) else {
+				throw CocoaError(.fileWriteUnknown)
+			}
 
-            let options: [CFString: Any] = [
-                kCGImageDestinationLossyCompressionQuality:
-                    snapshot.compressionQuality
-            ]
-            CGImageDestinationAddImage(
-                imageDestination, image, options as CFDictionary
-            )
+			let options: [CFString: Any] = [
+				kCGImageDestinationLossyCompressionQuality:
+					snapshot.compressionQuality
+			]
+			CGImageDestinationAddImage(
+				imageDestination, image, options as CFDictionary
+			)
 
-            guard CGImageDestinationFinalize(imageDestination) else {
-                throw CocoaError(.fileWriteUnknown)
-            }
-        }
-    }
+			guard CGImageDestinationFinalize(imageDestination) else {
+				throw CocoaError(.fileWriteUnknown)
+			}
+		}
+	}
 
-    func writer(
-        configuration: sending WriteConfiguration
-    ) -> sending Writer {
-        Writer()
-    }
+	func writer(
+		configuration: sending WriteConfiguration
+	) -> sending Writer {
+		Writer()
+	}
 
-    @MainActor
-    func snapshot(
-        contentType: UTType
-    ) async throws -> sending ImageSnapshot {
-        ImageSnapshot(
-            image: displayImage,
-            compressionQuality: compressionQuality
-        )
-    }
+	@MainActor
+	func snapshot(
+		contentType: UTType
+	) async throws -> sending ImageSnapshot {
+		ImageSnapshot(
+			image: displayImage,
+			compressionQuality: compressionQuality
+		)
+	}
 }
 ```
 
@@ -464,118 +464,118 @@ By default, **rewrite the entire package on every save.** This is the simplest c
 
 ```swift
 struct NotebookSnapshot {
-    var metadata: NotebookMetadata
-    var pages: [UUID: NotebookPage]
+	var metadata: NotebookMetadata
+	var pages: [UUID: NotebookPage]
 }
 
 struct NotebookMetadata: Codable {
-    var title: String
-    var pageOrder: [UUID]
-    var createdDate: Date
+	var title: String
+	var pageOrder: [UUID]
+	var createdDate: Date
 }
 
 struct NotebookPage: Equatable {
-    var text: String
+	var text: String
 }
 
 @Observable
 final class NotebookDocument: Document {
-    static let readableContentTypes: [UTType] = [.notebook]
+	static let readableContentTypes: [UTType] = [.notebook]
 
-    var metadata: NotebookMetadata
-    var pages: [UUID: NotebookPage]
+	var metadata: NotebookMetadata
+	var pages: [UUID: NotebookPage]
 
-    init() {
-        self.metadata = NotebookMetadata(
-            title: "Untitled", pageOrder: [], createdDate: .now
-        )
-        self.pages = [:]
-    }
+	init() {
+		self.metadata = NotebookMetadata(
+			title: "Untitled", pageOrder: [], createdDate: .now
+		)
+		self.pages = [:]
+	}
 }
 
 extension NotebookDocument {
-    func reader(
-        configuration: sending ReadConfiguration
-    ) -> sending FileWrapperDocumentReader<NotebookSnapshot> {
-        FileWrapperDocumentReader(configuration) { directory in
-            let children = directory.fileWrappers ?? [:]
-            guard let metadataData =
-                children["metadata.json"]?
-                    .regularFileContents else {
-                throw CocoaError(.fileReadCorruptFile)
-            }
-            let metadata = try JSONDecoder()
-                .decode(NotebookMetadata.self, from: metadataData)
+	func reader(
+		configuration: sending ReadConfiguration
+	) -> sending FileWrapperDocumentReader<NotebookSnapshot> {
+		FileWrapperDocumentReader(configuration) { directory in
+			let children = directory.fileWrappers ?? [:]
+			guard let metadataData =
+				children["metadata.json"]?
+					.regularFileContents else {
+				throw CocoaError(.fileReadCorruptFile)
+			}
+			let metadata = try JSONDecoder()
+				.decode(NotebookMetadata.self, from: metadataData)
 
-            let pageWrappers =
-                children["pages"]?.fileWrappers ?? [:]
-            var pages: [UUID: NotebookPage] = [:]
-            for id in metadata.pageOrder {
-                let filename = "\(id.uuidString).txt"
-                if let data = pageWrappers[filename]?
-                    .regularFileContents,
-                   let text = String(
-                       data: data, encoding: .utf8
-                   ) {
-                    pages[id] = NotebookPage(text: text)
-                }
-            }
-            return NotebookSnapshot(
-                metadata: metadata, pages: pages
-            )
-        }
-    }
+			let pageWrappers =
+				children["pages"]?.fileWrappers ?? [:]
+			var pages: [UUID: NotebookPage] = [:]
+			for id in metadata.pageOrder {
+				let filename = "\(id.uuidString).txt"
+				if let data = pageWrappers[filename]?
+					.regularFileContents,
+				   let text = String(
+					   data: data, encoding: .utf8
+				   ) {
+					pages[id] = NotebookPage(text: text)
+				}
+			}
+			return NotebookSnapshot(
+				metadata: metadata, pages: pages
+			)
+		}
+	}
 
-    @MainActor
-    func apply(
-        snapshot: sending NotebookSnapshot,
-        previous: sending NotebookSnapshot?
-    ) async throws {
-        self.metadata = snapshot.metadata
-        self.pages = snapshot.pages
-    }
+	@MainActor
+	func apply(
+		snapshot: sending NotebookSnapshot,
+		previous: sending NotebookSnapshot?
+	) async throws {
+		self.metadata = snapshot.metadata
+		self.pages = snapshot.pages
+	}
 
-    func writer(
-        configuration: sending WriteConfiguration
-    ) -> sending FileWrapperDocumentWriter<NotebookSnapshot> {
-        FileWrapperDocumentWriter(configuration) { snapshot, _ in
-            let directory = FileWrapper(
-                directoryWithFileWrappers: [:]
-            )
+	func writer(
+		configuration: sending WriteConfiguration
+	) -> sending FileWrapperDocumentWriter<NotebookSnapshot> {
+		FileWrapperDocumentWriter(configuration) { snapshot, _ in
+			let directory = FileWrapper(
+				directoryWithFileWrappers: [:]
+			)
 
-            let metadataData = try JSONEncoder()
-                .encode(snapshot.metadata)
-            let metadataWrapper = FileWrapper(
-                regularFileWithContents: metadataData
-            )
-            metadataWrapper.preferredFilename = "metadata.json"
-            directory.addFileWrapper(metadataWrapper)
+			let metadataData = try JSONEncoder()
+				.encode(snapshot.metadata)
+			let metadataWrapper = FileWrapper(
+				regularFileWithContents: metadataData
+			)
+			metadataWrapper.preferredFilename = "metadata.json"
+			directory.addFileWrapper(metadataWrapper)
 
-            let pagesDir = FileWrapper(
-                directoryWithFileWrappers: [:]
-            )
-            pagesDir.preferredFilename = "pages"
-            for (id, page) in snapshot.pages {
-                let wrapper = FileWrapper(
-                    regularFileWithContents:
-                        Data(page.text.utf8)
-                )
-                wrapper.preferredFilename =
-                    "\(id.uuidString).txt"
-                pagesDir.addFileWrapper(wrapper)
-            }
-            directory.addFileWrapper(pagesDir)
+			let pagesDir = FileWrapper(
+				directoryWithFileWrappers: [:]
+			)
+			pagesDir.preferredFilename = "pages"
+			for (id, page) in snapshot.pages {
+				let wrapper = FileWrapper(
+					regularFileWithContents:
+						Data(page.text.utf8)
+				)
+				wrapper.preferredFilename =
+					"\(id.uuidString).txt"
+				pagesDir.addFileWrapper(wrapper)
+			}
+			directory.addFileWrapper(pagesDir)
 
-            return directory
-        }
-    }
+			return directory
+		}
+	}
 
-    @MainActor
-    func snapshot(
-        contentType: UTType
-    ) async throws -> sending NotebookSnapshot {
-        NotebookSnapshot(metadata: metadata, pages: pages)
-    }
+	@MainActor
+	func snapshot(
+		contentType: UTType
+	) async throws -> sending NotebookSnapshot {
+		NotebookSnapshot(metadata: metadata, pages: pages)
+	}
 }
 ```
 
@@ -594,14 +594,14 @@ Create a `ProgressManager` from the `Subprogress` by calling `start(totalCount:)
 ```swift
 @concurrent
 func read(
-    from source: URL, progress: consuming Subprogress
+	from source: URL, progress: consuming Subprogress
 ) async throws -> sending ImageSnapshot {
-    let progressManager = progress.start(totalCount: 2)
-    let data = try Data(contentsOf: source)
-    progressManager.complete(count: 1)
-    let image = try decodeImage(from: data)
-    progressManager.complete(count: 1)
-    return ImageSnapshot(image: image)
+	let progressManager = progress.start(totalCount: 2)
+	let data = try Data(contentsOf: source)
+	progressManager.complete(count: 1)
+	let image = try decodeImage(from: data)
+	progressManager.complete(count: 1)
+	return ImageSnapshot(image: image)
 }
 ```
 
@@ -612,35 +612,35 @@ For large files, report progress per chunk:
 ```swift
 @concurrent
 func write(
-    snapshot: sending MediaSnapshot,
-    to destination: URL,
-    previous: sending MediaSnapshot?,
-    progress: consuming Subprogress
+	snapshot: sending MediaSnapshot,
+	to destination: URL,
+	previous: sending MediaSnapshot?,
+	progress: consuming Subprogress
 ) async throws {
-    let payload = snapshot.payload
-    let totalBytes = payload.count
-    let progressManager = progress.start(totalCount: totalBytes)
+	let payload = snapshot.payload
+	let totalBytes = payload.count
+	let progressManager = progress.start(totalCount: totalBytes)
 
-    try Data().write(to: destination)
-    let fileHandle = try FileHandle(forWritingTo: destination)
-    defer { try? fileHandle.close() }
+	try Data().write(to: destination)
+	let fileHandle = try FileHandle(forWritingTo: destination)
+	defer { try? fileHandle.close() }
 
-    let targetUpdateCount = 100
-    let minimumChunkSize = 64 * 1024       //  64 KB
-    let maximumChunkSize = 4 * 1024 * 1024 //   4 MB
-    let chunkSize = min(
-        maximumChunkSize,
-        max(minimumChunkSize, totalBytes / targetUpdateCount)
-    )
+	let targetUpdateCount = 100
+	let minimumChunkSize = 64 * 1024       //  64 KB
+	let maximumChunkSize = 4 * 1024 * 1024 //   4 MB
+	let chunkSize = min(
+		maximumChunkSize,
+		max(minimumChunkSize, totalBytes / targetUpdateCount)
+	)
 
-    var offset = 0
-    while offset < totalBytes {
-        let end = min(offset + chunkSize, totalBytes)
-        let chunk = payload[offset..<end]
-        try fileHandle.write(contentsOf: chunk)
-        progressManager.complete(count: end - offset)
-        offset = end
-    }
+	var offset = 0
+	while offset < totalBytes {
+		let end = min(offset + chunkSize, totalBytes)
+		let chunk = payload[offset..<end]
+		try fileHandle.write(contentsOf: chunk)
+		progressManager.complete(count: end - offset)
+		offset = end
+	}
 }
 ```
 
@@ -651,37 +651,37 @@ You can treat each file as an equal chunk of work:
 ```swift
 @concurrent
 func write(
-    snapshot: sending NotebookSnapshot,
-    to destination: URL,
-    previous: sending NotebookSnapshot?,
-    progress: consuming Subprogress
+	snapshot: sending NotebookSnapshot,
+	to destination: URL,
+	previous: sending NotebookSnapshot?,
+	progress: consuming Subprogress
 ) async throws {
-    let changedPages = snapshot.pages.filter { (identifier, content) in
-        previous?.pages[identifier] != content
-    }
+	let changedPages = snapshot.pages.filter { (identifier, content) in
+		previous?.pages[identifier] != content
+	}
 
-    let totalUnits = 1 + changedPages.count
-    let progressManager = progress.start(totalCount: totalUnits)
+	let totalUnits = 1 + changedPages.count
+	let progressManager = progress.start(totalCount: totalUnits)
 
-    // Write metadata.
-    let metadataURL = destination.appending(path: "metadata.json")
-    let metadataData = try JSONEncoder().encode(snapshot.metadata)
-    try metadataData.write(to: metadataURL, options: .atomic)
-    progressManager.complete(count: 1)
+	// Write metadata.
+	let metadataURL = destination.appending(path: "metadata.json")
+	let metadataData = try JSONEncoder().encode(snapshot.metadata)
+	try metadataData.write(to: metadataURL, options: .atomic)
+	progressManager.complete(count: 1)
 
-    // Write each changed page.
-    let pagesDirectory = destination.appending(path: "pages")
-    try? FileManager.default.createDirectory(
-        at: pagesDirectory, withIntermediateDirectories: true
-    )
+	// Write each changed page.
+	let pagesDirectory = destination.appending(path: "pages")
+	try? FileManager.default.createDirectory(
+		at: pagesDirectory, withIntermediateDirectories: true
+	)
 
-    for (identifier, content) in changedPages {
-        let pageURL = pagesDirectory.appending(
-            path: "\(identifier.uuidString).txt"
-        )
-        try Data(content.text.utf8).write(to: pageURL, options: .atomic)
-        progressManager.complete(count: 1)
-    }
+	for (identifier, content) in changedPages {
+		let pageURL = pagesDirectory.appending(
+			path: "\(identifier.uuidString).txt"
+		)
+		try Data(content.text.utf8).write(to: pageURL, options: .atomic)
+		progressManager.complete(count: 1)
+	}
 }
 ```
 
@@ -695,18 +695,18 @@ SwiftUI coordinates file access for `read` and `write` automatically. To access 
 let coordinator = document.configuration.makeFileCoordinator()
 var coordinationError: NSError?
 coordinator.coordinate(
-    readingItemAt: packageURL.appending(path: "metadata.json"),
-    options: [], error: &coordinationError
+	readingItemAt: packageURL.appending(path: "metadata.json"),
+	options: [], error: &coordinationError
 ) { url in
-    do {
-        let data = try Data(contentsOf: url)
-        let metadata = try JSONDecoder().decode(
-            NotebookMetadata.self, from: data
-        )
-        // process metadata
-    } catch {
-        // handle error
-    }
+	do {
+		let data = try Data(contentsOf: url)
+		let metadata = try JSONDecoder().decode(
+			NotebookMetadata.self, from: data
+		)
+		// process metadata
+	} catch {
+		// handle error
+	}
 }
 
 if let coordinationError { /* handle coordinated file access failing with given error */ }
@@ -720,27 +720,27 @@ Use `fileExporter` with a `WritableDocument`:
 
 ```swift
 struct TextEditorView: View {
-    @Bindable var document: TextDocument
-    @State private var isExporting = false
+	@Bindable var document: TextDocument
+	@State private var isExporting = false
 
-    var body: some View {
-        TextEditor(text: $document.text)
-            .toolbar {
-                Button("Export…") { isExporting = true }
-            }
-            .fileExporter(
-                isPresented: $isExporting, document: document,
-                contentType: .markdown,
-                defaultFilename: "Text"
-            ) { result in
-                switch result {
-                case .success(let url):
-                    print("Exported to \(url)")
-                case .failure(let error):
-                    print("Export failed: \(error)")
-                }
-            }
-    }
+	var body: some View {
+		TextEditor(text: $document.text)
+			.toolbar {
+				Button("Export…") { isExporting = true }
+			}
+			.fileExporter(
+				isPresented: $isExporting, document: document,
+				contentType: .markdown,
+				defaultFilename: "Text"
+			) { result in
+				switch result {
+				case .success(let url):
+					print("Exported to \(url)")
+				case .failure(let error):
+					print("Export failed: \(error)")
+				}
+			}
+	}
 }
 ```
 
@@ -762,99 +762,99 @@ The pattern: carry an `isChanged` flag per page, and in the writer use the **sec
 
 ```swift
 struct NotebookSnapshot {
-    var metadata: NotebookMetadata
-    var pages: [UUID: NotebookPage]
+	var metadata: NotebookMetadata
+	var pages: [UUID: NotebookPage]
 }
 
 struct NotebookPage: Equatable {
-    var text: String
-    var isChanged: Bool = false
+	var text: String
+	var isChanged: Bool = false
 }
 
 @Observable
 final class NotebookDocument: Document {
-    static let readableContentTypes: [UTType] = [.notebook]
+	static let readableContentTypes: [UTType] = [.notebook]
 
-    var metadata: NotebookMetadata
-    var pages: [UUID: NotebookPage]
+	var metadata: NotebookMetadata
+	var pages: [UUID: NotebookPage]
 
-    // ... init, reader, apply ...
+	// ... init, reader, apply ...
 
-    func writer(
-        configuration: sending WriteConfiguration
-    ) -> sending FileWrapperDocumentWriter<NotebookSnapshot> {
-        FileWrapperDocumentWriter(configuration) { snapshot, previousFileWrapper in
-            let directory = previousFileWrapper
-                ?? FileWrapper(directoryWithFileWrappers: [:])
+	func writer(
+		configuration: sending WriteConfiguration
+	) -> sending FileWrapperDocumentWriter<NotebookSnapshot> {
+		FileWrapperDocumentWriter(configuration) { snapshot, previousFileWrapper in
+			let directory = previousFileWrapper
+				?? FileWrapper(directoryWithFileWrappers: [:])
 
-            // Metadata: rewrite unconditionally (small).
-            if let existing =
-                directory.fileWrappers?["metadata.json"] {
-                directory.removeFileWrapper(existing)
-            }
-            let metadataData = try JSONEncoder()
-                .encode(snapshot.metadata)
-            let metadataWrapper = FileWrapper(
-                regularFileWithContents: metadataData
-            )
-            metadataWrapper.preferredFilename = "metadata.json"
-            directory.addFileWrapper(metadataWrapper)
+			// Metadata: rewrite unconditionally (small).
+			if let existing =
+				directory.fileWrappers?["metadata.json"] {
+				directory.removeFileWrapper(existing)
+			}
+			let metadataData = try JSONEncoder()
+				.encode(snapshot.metadata)
+			let metadataWrapper = FileWrapper(
+				regularFileWithContents: metadataData
+			)
+			metadataWrapper.preferredFilename = "metadata.json"
+			directory.addFileWrapper(metadataWrapper)
 
-            // Reuse or create the "pages" subdirectory.
-            let pagesDir =
-                directory.fileWrappers?["pages"] ?? {
-                    let created = FileWrapper(
-                        directoryWithFileWrappers: [:]
-                    )
-                    created.preferredFilename = "pages"
-                    directory.addFileWrapper(created)
-                    return created
-                }()
+			// Reuse or create the "pages" subdirectory.
+			let pagesDir =
+				directory.fileWrappers?["pages"] ?? {
+					let created = FileWrapper(
+						directoryWithFileWrappers: [:]
+					)
+					created.preferredFilename = "pages"
+					directory.addFileWrapper(created)
+					return created
+				}()
 
-            // Write only changed pages.
-            let existingPages = pagesDir.fileWrappers ?? [:]
-            for (pageID, page) in snapshot.pages
-                where page.isChanged {
-                let filename = "\(pageID.uuidString).txt"
-                if let existing = existingPages[filename] {
-                    pagesDir.removeFileWrapper(existing)
-                }
-                let wrapper = FileWrapper(
-                    regularFileWithContents:
-                        Data(page.text.utf8)
-                )
-                wrapper.preferredFilename = filename
-                pagesDir.addFileWrapper(wrapper)
-            }
+			// Write only changed pages.
+			let existingPages = pagesDir.fileWrappers ?? [:]
+			for (pageID, page) in snapshot.pages
+				where page.isChanged {
+				let filename = "\(pageID.uuidString).txt"
+				if let existing = existingPages[filename] {
+					pagesDir.removeFileWrapper(existing)
+				}
+				let wrapper = FileWrapper(
+					regularFileWithContents:
+						Data(page.text.utf8)
+				)
+				wrapper.preferredFilename = filename
+				pagesDir.addFileWrapper(wrapper)
+			}
 
-            // Remove deleted pages. metadata.pageOrder is
-            // authoritative (in-memory pages dict only holds
-            // pages the person opened).
-            let liveFilenames = Set(
-                snapshot.metadata.pageOrder
-                    .map { "\($0.uuidString).txt" }
-            )
-            for (filename, child) in existingPages
-                where !liveFilenames.contains(filename) {
-                pagesDir.removeFileWrapper(child)
-            }
+			// Remove deleted pages. metadata.pageOrder is
+			// authoritative (in-memory pages dict only holds
+			// pages the person opened).
+			let liveFilenames = Set(
+				snapshot.metadata.pageOrder
+					.map { "\($0.uuidString).txt" }
+			)
+			for (filename, child) in existingPages
+				where !liveFilenames.contains(filename) {
+				pagesDir.removeFileWrapper(child)
+			}
 
-            return directory
-        }
-    }
+			return directory
+		}
+	}
 
-    @MainActor
-    func snapshot(
-        contentType: UTType
-    ) async throws -> sending NotebookSnapshot {
-        let result = NotebookSnapshot(
-            metadata: metadata, pages: pages
-        )
-        for id in pages.keys {
-            pages[id]?.isChanged = false
-        }
-        return result
-    }
+	@MainActor
+	func snapshot(
+		contentType: UTType
+	) async throws -> sending NotebookSnapshot {
+		let result = NotebookSnapshot(
+			metadata: metadata, pages: pages
+		)
+		for id in pages.keys {
+			pages[id]?.isChanged = false
+		}
+		return result
+	}
 }
 ```
 

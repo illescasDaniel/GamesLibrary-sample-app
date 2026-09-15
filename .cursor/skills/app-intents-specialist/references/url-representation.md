@@ -11,13 +11,13 @@ Three different mechanisms open content, and they are not interchangeable. `Open
 // open intent, so Spotlight/Shortcuts can't populate a target, and you're
 // manually reaching into app state to foreground — off-actor, in perform().
 struct ShowNoteIntent: AppIntent {
-    static let title: LocalizedStringResource = "Show Note"
-    @Parameter var note: NoteEntity
+	static let title: LocalizedStringResource = "Show Note"
+	@Parameter var note: NoteEntity
 
-    func perform() async throws -> some IntentResult {
-        AppState.shared.present(note)   // hand-rolled foregrounding
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		AppState.shared.present(note)   // hand-rolled foregrounding
+		return .result()
+	}
 }
 ```
 
@@ -25,13 +25,13 @@ struct ShowNoteIntent: AppIntent {
 // PREFER: conform to OpenIntent and expose `target`. openAppWhenRun becomes
 // true automatically; the system foregrounds the app and hands you the item.
 struct ShowNoteIntent: OpenIntent {
-    static let title: LocalizedStringResource = "Show Note"
-    @Parameter var target: NoteEntity
+	static let title: LocalizedStringResource = "Show Note"
+	@Parameter var target: NoteEntity
 
-    func perform() async throws -> some IntentResult {
-        await MainActor.run { AppState.shared.present(target) }
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		await MainActor.run { AppState.shared.present(target) }
+		return .result()
+	}
 }
 ```
 
@@ -46,9 +46,9 @@ struct ShowNoteIntent: OpenIntent {
 // available to an intent that may run in an extension, and even where one
 // exists this races the actor and returns nothing the system can chain on.
 func perform() async throws -> some IntentResult {
-    let url = URL(string: "https://example.com/notes/\(note.id)")!
-    UIApplication.shared.open(url)   // wrong layer; off-actor; not returnable
-    return .result()
+	let url = URL(string: "https://example.com/notes/\(note.id)")!
+	UIApplication.shared.open(url)   // wrong layer; off-actor; not returnable
+	return .result()
 }
 ```
 
@@ -57,8 +57,8 @@ func perform() async throws -> some IntentResult {
 // The system foregrounds the app and drives the URL into your universal-link
 // handler for you.
 func perform() async throws -> some OpensIntent {
-    let url = URL(string: "https://example.com/notes/\(note.id)")!
-    return .result(opensIntent: OpenURLIntent(url))
+	let url = URL(string: "https://example.com/notes/\(note.id)")!
+	return .result(opensIntent: OpenURLIntent(url))
 }
 ```
 
@@ -73,15 +73,15 @@ If your intent already maps cleanly to a universal link, conform to `URLRepresen
 // When a URL representation exists the system opens via the URL, so this body
 // is dead code at best and a double-open at worst.
 struct OpenPageIntent: URLRepresentableIntent {
-    static let title: LocalizedStringResource = "Open Page"
-    static var urlRepresentation: URLRepresentation = "https://example.com/\(\.$page)"
+	static let title: LocalizedStringResource = "Open Page"
+	static var urlRepresentation: URLRepresentation = "https://example.com/\(\.$page)"
 
-    @Parameter(title: "Page") var page: String
+	@Parameter(title: "Page") var page: String
 
-    func perform() async throws -> some IntentResult {
-        try await Router.shared.navigate(to: page)   // won't run via URL path
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		try await Router.shared.navigate(to: page)   // won't run via URL path
+		return .result()
+	}
 }
 ```
 
@@ -89,10 +89,10 @@ struct OpenPageIntent: URLRepresentableIntent {
 // PREFER: declare only the URL representation. The default perform() from the
 // protocol handles opening; your universal-link code is the single entry point.
 struct OpenPageIntent: URLRepresentableIntent {
-    static let title: LocalizedStringResource = "Open Page"
-    static var urlRepresentation: URLRepresentation = "https://example.com/\(\.$page)"
+	static let title: LocalizedStringResource = "Open Page"
+	static var urlRepresentation: URLRepresentation = "https://example.com/\(\.$page)"
 
-    @Parameter(title: "Page") var page: String
+	@Parameter(title: "Page") var page: String
 }
 ```
 

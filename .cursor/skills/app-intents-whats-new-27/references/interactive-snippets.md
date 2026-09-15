@@ -12,36 +12,36 @@ Before iOS 26 an App Intent could only show a static snapshot from `result(view:
 ```swift
 @available(iOS 26.0, *)
 struct ClosestLandmarkIntent: AppIntent {
-    static let title: LocalizedStringResource = "Find Closest Landmark"
-    @Dependency var modelData: ModelData
+	static let title: LocalizedStringResource = "Find Closest Landmark"
+	@Dependency var modelData: ModelData
 
-    func perform() async throws -> some ReturnsValue<LandmarkEntity> & ShowsSnippetIntent & ProvidesDialog {
-        let landmark = await findClosestLandmark()
-        return .result(
-            value: landmark,
-            dialog: IntentDialog(
-                full: "The closest landmark is \(landmark.name).",
-                supporting: "\(landmark.name) is located in \(landmark.continent)."
-            ),
-            snippetIntent: LandmarkSnippetIntent(landmark: landmark)
-        )
-    }
+	func perform() async throws -> some ReturnsValue<LandmarkEntity> & ShowsSnippetIntent & ProvidesDialog {
+		let landmark = await findClosestLandmark()
+		return .result(
+			value: landmark,
+			dialog: IntentDialog(
+				full: "The closest landmark is \(landmark.name).",
+				supporting: "\(landmark.name) is located in \(landmark.continent)."
+			),
+			snippetIntent: LandmarkSnippetIntent(landmark: landmark)
+		)
+	}
 }
 
 @available(iOS 26.0, *)
 struct LandmarkSnippetIntent: SnippetIntent {
-    static let title: LocalizedStringResource = "Landmark Snippet"
+	static let title: LocalizedStringResource = "Landmark Snippet"
 
-    @Parameter var landmark: LandmarkEntity
-    @Dependency var modelData: ModelData
+	@Parameter var landmark: LandmarkEntity
+	@Dependency var modelData: ModelData
 
-    init() {}
-    init(landmark: LandmarkEntity) { self.landmark = landmark }
+	init() {}
+	init(landmark: LandmarkEntity) { self.landmark = landmark }
 
-    func perform() async throws -> some IntentResult & ShowsSnippetView {
-        let isFavorite = await modelData.isFavorite(landmark)   // READ only
-        return .result(view: LandmarkView(landmark: landmark, isFavorite: isFavorite))
-    }
+	func perform() async throws -> some IntentResult & ShowsSnippetView {
+		let isFavorite = await modelData.isFavorite(landmark)   // READ only
+		return .result(view: LandmarkView(landmark: landmark, isFavorite: isFavorite))
+	}
 }
 ```
 
@@ -56,7 +56,7 @@ The two live at different layers. The **main** intent calls `result(snippetInten
 ```swift
 // Main intent: hand over a live snippet the system can re-run.
 return .result(value: landmark, dialog: dialog,
-               snippetIntent: LandmarkSnippetIntent(landmark: landmark))
+			   snippetIntent: LandmarkSnippetIntent(landmark: landmark))
 
 // Inside the SnippetIntent (or a display-only intent): render a one-time snapshot.
 return .result(view: LandmarkView(landmark: landmark, isFavorite: isFavorite))
@@ -70,19 +70,19 @@ Inside a snippet view, wire controls to intents — `Button(intent:)` and `Toggl
 
 ```swift
 struct LandmarkView: View {
-    let landmark: LandmarkEntity
-    let isFavorite: Bool
+	let landmark: LandmarkEntity
+	let isFavorite: Bool
 
-    var body: some View {
-        // ...
-        Button(intent: UpdateFavoritesIntent(landmark: landmark, isFavorite: !isFavorite)) {
-            Label(isFavorite ? "Remove Favorite" : "Add Favorite", systemImage: "star")
-        }
-        Button(intent: FindTicketsIntent(landmark: landmark)) {
-            Text("Find Tickets")
-        }
-        // ...
-    }
+	var body: some View {
+		// ...
+		Button(intent: UpdateFavoritesIntent(landmark: landmark, isFavorite: !isFavorite)) {
+			Label(isFavorite ? "Remove Favorite" : "Add Favorite", systemImage: "star")
+		}
+		Button(intent: FindTicketsIntent(landmark: landmark)) {
+			Text("Find Tickets")
+		}
+		// ...
+	}
 }
 ```
 
@@ -97,38 +97,38 @@ A control intent can present its own snippet mid-run to confirm an action. `requ
 ```swift
 @available(iOS 26.0, *)
 struct FindTicketsIntent: AppIntent {
-    static let title: LocalizedStringResource = "Find Tickets"
+	static let title: LocalizedStringResource = "Find Tickets"
 
-    @Parameter var landmark: LandmarkEntity
-    @Dependency var searchEngine: SearchEngine
+	@Parameter var landmark: LandmarkEntity
+	@Dependency var searchEngine: SearchEngine
 
-    init() {}
-    init(landmark: LandmarkEntity) { self.landmark = landmark }
+	init() {}
+	init(landmark: LandmarkEntity) { self.landmark = landmark }
 
-    func perform() async throws -> some IntentResult {
-        let searchRequest = await searchEngine.createRequest(landmarkEntity: landmark)
-        // Present a snippet that lets people adjust the request, then confirm.
-        try await requestConfirmation(
-            actionName: .search,
-            snippetIntent: TicketRequestSnippetIntent(searchRequest: searchRequest)
-        )
-        // ...resume searching once confirmed...
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		let searchRequest = await searchEngine.createRequest(landmarkEntity: landmark)
+		// Present a snippet that lets people adjust the request, then confirm.
+		try await requestConfirmation(
+			actionName: .search,
+			snippetIntent: TicketRequestSnippetIntent(searchRequest: searchRequest)
+		)
+		// ...resume searching once confirmed...
+		return .result()
+	}
 }
 
 @available(iOS 26.0, *)
 struct TicketRequestSnippetIntent: SnippetIntent {
-    static let title: LocalizedStringResource = "Ticket Request Snippet"
+	static let title: LocalizedStringResource = "Ticket Request Snippet"
 
-    @Parameter var searchRequest: SearchRequestEntity
+	@Parameter var searchRequest: SearchRequestEntity
 
-    init() {}
-    init(searchRequest: SearchRequestEntity) { self.searchRequest = searchRequest }
+	init() {}
+	init(searchRequest: SearchRequestEntity) { self.searchRequest = searchRequest }
 
-    func perform() async throws -> some IntentResult & ShowsSnippetView {
-        .result(view: TicketRequestView(searchRequest: searchRequest))
-    }
+	func perform() async throws -> some IntentResult & ShowsSnippetView {
+		.result(view: TicketRequestView(searchRequest: searchRequest))
+	}
 }
 ```
 
@@ -149,32 +149,32 @@ Put every mutation in the *control* intent, never in the snippet's `perform()` �
 // The system re-runs LandmarkSnippetIntent.perform() and redraws automatically.
 @available(iOS 26.0, *)
 struct UpdateFavoritesIntent: AppIntent {
-    static let title: LocalizedStringResource = "Update Favorites"
+	static let title: LocalizedStringResource = "Update Favorites"
 
-    @Parameter var landmark: LandmarkEntity
-    @Parameter var isFavorite: Bool
-    @Dependency var modelData: ModelData
+	@Parameter var landmark: LandmarkEntity
+	@Parameter var isFavorite: Bool
+	@Dependency var modelData: ModelData
 
-    init() {}
-    init(landmark: LandmarkEntity, isFavorite: Bool) {
-        self.landmark = landmark
-        self.isFavorite = isFavorite
-    }
+	init() {}
+	init(landmark: LandmarkEntity, isFavorite: Bool) {
+		self.landmark = landmark
+		self.isFavorite = isFavorite
+	}
 
-    func perform() async throws -> some IntentResult {
-        await modelData.setFavorite(landmark, isFavorite: isFavorite)   // the mutation
-        return .result()                                               // no re-present needed
-    }
+	func perform() async throws -> some IntentResult {
+		await modelData.setFavorite(landmark, isFavorite: isFavorite)   // the mutation
+		return .result()                                               // no re-present needed
+	}
 }
 
 // Out-of-band refresh (not a tap): re-run the snippet's perform() as async work completes.
 @available(iOS 26.0, *)
 func performRequest(_ request: SearchRequestEntity) async throws {
-    // set a pending status...
-    TicketResultSnippetIntent.reload()   // redraw: pending
+	// set a pending status...
+	TicketResultSnippetIntent.reload()   // redraw: pending
 
-    // ...await the search...
-    TicketResultSnippetIntent.reload()   // redraw: results
+	// ...await the search...
+	TicketResultSnippetIntent.reload()   // redraw: results
 }
 ```
 
@@ -187,19 +187,19 @@ func performRequest(_ request: SearchRequestEntity) async throws {
 ```swift
 @available(iOS 26.0, *)
 struct LandmarkSnippetIntent: SnippetIntent {
-    static let title: LocalizedStringResource = "Landmark Snippet"
+	static let title: LocalizedStringResource = "Landmark Snippet"
 
-    @Parameter var landmark: LandmarkEntity
-    @Dependency var modelData: ModelData
+	@Parameter var landmark: LandmarkEntity
+	@Dependency var modelData: ModelData
 
-    init() {}
-    init(landmark: LandmarkEntity) { self.landmark = landmark }
+	init() {}
+	init(landmark: LandmarkEntity) { self.landmark = landmark }
 
-    func perform() async throws -> some IntentResult & ShowsSnippetView {
-        // READ current state only — safe to run repeatedly.
-        let isFavorite = await modelData.isFavorite(landmark)
-        return .result(view: LandmarkView(landmark: landmark, isFavorite: isFavorite))
-    }
+	func perform() async throws -> some IntentResult & ShowsSnippetView {
+		// READ current state only — safe to run repeatedly.
+		let isFavorite = await modelData.isFavorite(landmark)
+		return .result(view: LandmarkView(landmark: landmark, isFavorite: isFavorite))
+	}
 }
 ```
 
@@ -213,27 +213,27 @@ When the user's deployment target is below SDK 26 and the answer needs interacti
 // New: interactive-snippet intent, gated at the declaration.
 @available(iOS 26.0, *)
 struct ClosestLandmarkIntent: AppIntent {
-    static let title: LocalizedStringResource = "Find Closest Landmark"
-    @Dependency var modelData: ModelData
+	static let title: LocalizedStringResource = "Find Closest Landmark"
+	@Dependency var modelData: ModelData
 
-    func perform() async throws -> some ReturnsValue<LandmarkEntity> & ShowsSnippetIntent & ProvidesDialog {
-        let landmark = await findClosestLandmark()
-        return .result(value: landmark,
-                       dialog: "The closest landmark is \(landmark.name).",
-                       snippetIntent: LandmarkSnippetIntent(landmark: landmark))
-    }
+	func perform() async throws -> some ReturnsValue<LandmarkEntity> & ShowsSnippetIntent & ProvidesDialog {
+		let landmark = await findClosestLandmark()
+		return .result(value: landmark,
+					   dialog: "The closest landmark is \(landmark.name).",
+					   snippetIntent: LandmarkSnippetIntent(landmark: landmark))
+	}
 }
 
 // Older targets: a separate intent returning a static, display-only result.
 struct ClosestLandmarkLegacyIntent: AppIntent {
-    static let title: LocalizedStringResource = "Find Closest Landmark"
-    @Dependency var modelData: ModelData
+	static let title: LocalizedStringResource = "Find Closest Landmark"
+	@Dependency var modelData: ModelData
 
-    func perform() async throws -> some ReturnsValue<LandmarkEntity> & ProvidesDialog {
-        let landmark = await findClosestLandmark()
-        return .result(value: landmark,
-                       dialog: "The closest landmark is \(landmark.name).")
-    }
+	func perform() async throws -> some ReturnsValue<LandmarkEntity> & ProvidesDialog {
+		let landmark = await findClosestLandmark()
+		return .result(value: landmark,
+					   dialog: "The closest landmark is \(landmark.name).")
+	}
 }
 ```
 

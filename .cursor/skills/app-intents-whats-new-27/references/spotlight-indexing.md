@@ -14,16 +14,16 @@ These surfaces attach to *any* `IndexedEntity` — including a **schema-conformi
 ```swift
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
 struct LandmarkEntity: AppEntity, IndexedEntity {
-    let id: UUID
+	let id: UUID
 
-    // Synchronous, derived from other fields.
-    @ComputedProperty(indexingKey: \.title)
-    var name: String { "\(number). \(rawName)" }
+	// Synchronous, derived from other fields.
+	@ComputedProperty(indexingKey: \.title)
+	var name: String { "\(number). \(rawName)" }
 
-    // Expensive / async: fetched lazily, only when indexing needs it.
-    @DeferredProperty(indexingKey: \.textContent)
-    var notes: String { get async throws { try await ModelData.notes(for: id) } }
-    // ...
+	// Expensive / async: fetched lazily, only when indexing needs it.
+	@DeferredProperty(indexingKey: \.textContent)
+	var notes: String { get async throws { try await ModelData.notes(for: id) } }
+	// ...
 }
 ```
 
@@ -36,22 +36,22 @@ struct LandmarkEntity: AppEntity, IndexedEntity {
 ```swift
 @available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
 struct LandmarkEntityQuery: IndexedEntityQuery {
-    func entities(for identifiers: [LandmarkEntity.ID]) async throws -> [LandmarkEntity] {
-        try await ModelData.landmarks(ids: identifiers)
-    }
+	func entities(for identifiers: [LandmarkEntity.ID]) async throws -> [LandmarkEntity] {
+		try await ModelData.landmarks(ids: identifiers)
+	}
 
-    func reindexEntities(
-        for identifiers: [LandmarkEntity.ID],
-        indexDescription: CSSearchableIndexDescription
-    ) async throws {
-        try await CSSearchableIndex.default().indexAppEntities(entities(for: identifiers))
-    }
+	func reindexEntities(
+		for identifiers: [LandmarkEntity.ID],
+		indexDescription: CSSearchableIndexDescription
+	) async throws {
+		try await CSSearchableIndex.default().indexAppEntities(entities(for: identifiers))
+	}
 
-    func reindexAllEntities(
-        indexDescription: CSSearchableIndexDescription
-    ) async throws {
-        try await CSSearchableIndex.default().indexAppEntities(ModelData.all())
-    }
+	func reindexAllEntities(
+		indexDescription: CSSearchableIndexDescription
+	) async throws {
+		try await CSSearchableIndex.default().indexAppEntities(ModelData.all())
+	}
 }
 ```
 
@@ -64,12 +64,12 @@ struct LandmarkEntityQuery: IndexedEntityQuery {
 ```swift
 @available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
 func indexRoutePage(for landmark: LandmarkEntity, html: URL) async throws {
-    let item = CSSearchableItem(
-        uniqueIdentifier: "route-\(landmark.id.uuidString)",
-        domainIdentifier: "routes",
-        attributeSet: CSSearchableItemAttributeSet(contentType: .html))
-    item.relatedAppEntityIdentifier = EntityIdentifier(for: landmark)
-    try await CSSearchableIndex.default().indexSearchableItems([item])
+	let item = CSSearchableItem(
+		uniqueIdentifier: "route-\(landmark.id.uuidString)",
+		domainIdentifier: "routes",
+		attributeSet: CSSearchableItemAttributeSet(contentType: .html))
+	item.relatedAppEntityIdentifier = EntityIdentifier(for: landmark)
+	try await CSSearchableIndex.default().indexSearchableItems([item])
 }
 ```
 
@@ -81,7 +81,7 @@ When the user's deployment target is below the version an API requires, gate the
 
 ```swift
 if #available(iOS 27, macOS 27, visionOS 27, *) {
-    item.relatedAppEntityIdentifier = EntityIdentifier(for: landmark)   // iOS 27 API
+	item.relatedAppEntityIdentifier = EntityIdentifier(for: landmark)   // iOS 27 API
 }
 try await CSSearchableIndex.default().indexSearchableItems([item])   // iOS 18 baseline
 ```

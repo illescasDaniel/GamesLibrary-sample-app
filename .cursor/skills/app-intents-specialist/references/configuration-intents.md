@@ -14,14 +14,14 @@ A configuration intent's job is finished the moment its parameters are declared.
 // dead on the widget path, and the .result() return type even fights the
 // protocol's own Never-returning default. It compiles, so nothing warns you.
 struct FavoriteBookConfig: WidgetConfigurationIntent {
-    static let title: LocalizedStringResource = "Favorite Book"
+	static let title: LocalizedStringResource = "Favorite Book"
 
-    @Parameter(title: "Book") var book: BookEntity?
+	@Parameter(title: "Book") var book: BookEntity?
 
-    func perform() async throws -> some IntentResult {   // ❌ never invoked for the widget
-        let cover = try await CoverLoader.load(for: book) // dead code on the render path
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {   // ❌ never invoked for the widget
+		let cover = try await CoverLoader.load(for: book) // dead code on the render path
+		return .result()
+	}
 }
 ```
 
@@ -31,11 +31,11 @@ struct FavoriteBookConfig: WidgetConfigurationIntent {
 // the resolved values to your TimelineProvider, which does the actual data loading.
 // Nothing to run, nothing to return.
 struct FavoriteBookConfig: WidgetConfigurationIntent {
-    static let title: LocalizedStringResource = "Favorite Book"
-    static let description = IntentDescription("Shows your favorite book.")
+	static let title: LocalizedStringResource = "Favorite Book"
+	static let description = IntentDescription("Shows your favorite book.")
 
-    @Parameter(title: "Book") var book: BookEntity?
-    // no perform() — the timeline provider reads `book` and builds the view
+	@Parameter(title: "Book") var book: BookEntity?
+	// no perform() — the timeline provider reads `book` and builds the view
 }
 ```
 
@@ -50,11 +50,11 @@ Control Center controls have two intents with two different jobs, and conflating
 // ControlConfigurationIntent has no perform() the system will run on tap, so the
 // side effect below is orphaned — the control configures fine but never toggles.
 struct SilentModeControl: ControlConfigurationIntent {
-    static let title: LocalizedStringResource = "Silent Mode"
-    @Parameter(title: "On") var isOn: Bool
-    func perform() async throws -> some IntentResult {   // ❌ not the control's tap action
-        SilentMode.shared.set(isOn); return .result()
-    }
+	static let title: LocalizedStringResource = "Silent Mode"
+	@Parameter(title: "On") var isOn: Bool
+	func perform() async throws -> some IntentResult {   // ❌ not the control's tap action
+		SilentMode.shared.set(isOn); return .result()
+	}
 }
 ```
 
@@ -64,11 +64,11 @@ struct SilentModeControl: ControlConfigurationIntent {
 // logic. If the control needs to point at a specific target, THAT selection is
 // what a ControlConfigurationIntent's @Parameters describe.
 struct ToggleSilentMode: SetValueIntent {
-    static let title: LocalizedStringResource = "Silent Mode"
-    @Parameter(title: "Silent") var value: Bool
-    func perform() async throws -> some IntentResult {   // ✅ runs on tap
-        SilentMode.shared.set(value); return .result()
-    }
+	static let title: LocalizedStringResource = "Silent Mode"
+	@Parameter(title: "Silent") var value: Bool
+	func perform() async throws -> some IntentResult {   // ✅ runs on tap
+		SilentMode.shared.set(value); return .result()
+	}
 }
 ```
 

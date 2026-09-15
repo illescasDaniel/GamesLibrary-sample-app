@@ -32,10 +32,10 @@ types, and move their initial assignment from `setUp` to either be initialized i
 
 ```
 struct MyTests {
-    var fixture = Fixture()
-    mutating func `Fixture behaves as expected`() {
-        #expect(fixture.doSomething())
-    }
+	var fixture = Fixture()
+	mutating func `Fixture behaves as expected`() {
+		#expect(fixture.doSomething())
+	}
 }
 ```
 
@@ -82,31 +82,31 @@ XCTAssertThrowsError(try f())
 ->
 ```
 #expect(throws: (any Error).self) {
-    try f()
+	try f()
 }
 ```
 
 ```
 XCTAssertThrowsError(try f()) { error in
-    XCTAssertEqual(error, specificError)
+	XCTAssertEqual(error, specificError)
 }
 ```
 ->
 ```
 #expect(throws: specificError) {
-    try f()
+	try f()
 }
 ```
 
 ```
 XCTAssertThrowsError(try f()) { error in
-    // Check error
+	// Check error
 }
 ```
 ->
 ```
 let error = #expect(throws: (any Error).self) {
-    try f()
+	try f()
 }
 // Check error
 ```
@@ -117,7 +117,7 @@ XCTAssertNoThrow(try f())
 ->
 ```
 #expect(throws: Never.self) {
-    try f()
+	try f()
 }
 ```
 
@@ -145,17 +145,17 @@ For example, the following structures should be converted as such:
 
 ```
 guard let object = somethingOptional() else {
-    Issue.record("Could not get object")
-    return
+	Issue.record("Could not get object")
+	return
 }
 
 guard object.isAvailable() else {
-    Issue.record("Object not available")
-    return
+	Issue.record("Object not available")
+	return
 }
 
 if !object.performOperation() {
-    Issue.record("Failed to perform operation")
+	Issue.record("Failed to perform operation")
 }
 ```
 ->
@@ -178,8 +178,8 @@ await fulfillment(of: [exp])
 
 // After
 await confirmation("...") { confirm in
-    handler = { confirm() }
-    doWork()
+	handler = { confirm() }
+	doWork()
 }
 ```
 
@@ -207,11 +207,11 @@ For conditional/matching: use `when:` and `matching:` parameters:
 
 ```swift
 withKnownIssue("...") {
-    try riskyOperation()
+	try riskyOperation()
 } when: {
-    shouldExpectFailure
+	shouldExpectFailure
 } matching: { issue in
-    issue.error != nil
+	issue.error != nil
 }
 ```
 

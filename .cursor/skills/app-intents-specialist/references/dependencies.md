@@ -12,23 +12,23 @@ Accessing an unregistered `@Dependency` is a `fatalError` and not a catchable Sw
 // and the FIRST access of `database` inside perform() traps with
 // "…was not initialized prior to access". It cannot be caught.
 struct ContentView: View {
-    var body: some View {
-        NoteList()
-            .onAppear {
-                AppDependencyManager.shared.add(dependency: NoteDatabase.shared)
-            }
-    }
+	var body: some View {
+		NoteList()
+			.onAppear {
+				AppDependencyManager.shared.add(dependency: NoteDatabase.shared)
+			}
+	}
 }
 
 struct DeleteNoteIntent: AppIntent {
-    static let title: LocalizedStringResource = "Delete Note"
-    @Dependency var database: NoteDatabase   // traps if add(...) never ran
+	static let title: LocalizedStringResource = "Delete Note"
+	@Dependency var database: NoteDatabase   // traps if add(...) never ran
 
-    @Parameter var note: NoteEntity
-    func perform() async throws -> some IntentResult {
-        try await database.delete(note.id)   // fatalError here on a cold launch
-        return .result()
-    }
+	@Parameter var note: NoteEntity
+	func perform() async throws -> some IntentResult {
+		try await database.delete(note.id)   // fatalError here on a cold launch
+		return .result()
+	}
 }
 ```
 
@@ -38,12 +38,12 @@ struct DeleteNoteIntent: AppIntent {
 // any intent or query can resolve it.
 @main
 struct NotesApp: App {
-    init() {
-        AppDependencyManager.shared.add(dependency: NoteDatabase.shared)
-    }
-    var body: some Scene {
-        WindowGroup { ContentView() }
-    }
+	init() {
+		AppDependencyManager.shared.add(dependency: NoteDatabase.shared)
+	}
+	var body: some Scene {
+		WindowGroup { ContentView() }
+	}
 }
 ```
 
@@ -59,12 +59,12 @@ Register from the earliest point that runs on *every* launch of the intent's hos
 // looks correct, then fails when touched — the framework never prepares it there,
 // so the read is unreliable and a default: won't save it.
 struct NoteEntity: AppEntity {
-    @Dependency var database: NoteDatabase   // never populated — silently inert
+	@Dependency var database: NoteDatabase   // never populated — silently inert
 
-    let id: UUID
-    var title: String
-    static var defaultQuery = NoteQuery()
-    // …displayRepresentation, typeDisplayRepresentation…
+	let id: UUID
+	var title: String
+	static var defaultQuery = NoteQuery()
+	// …displayRepresentation, typeDisplayRepresentation…
 }
 ```
 
@@ -72,21 +72,21 @@ struct NoteEntity: AppEntity {
 // PREFER: put the @Dependency on the EntityQuery, which DOES support resolution.
 // The query owns data access; the entity stays a plain value type.
 struct NoteEntity: AppEntity {
-    let id: UUID
-    var title: String
-    static var defaultQuery = NoteQuery()
-    // …displayRepresentation, typeDisplayRepresentation…
+	let id: UUID
+	var title: String
+	static var defaultQuery = NoteQuery()
+	// …displayRepresentation, typeDisplayRepresentation…
 }
 
 struct NoteQuery: EntityQuery {
-    @Dependency var database: NoteDatabase   // resolved: EntityQuery supports it
+	@Dependency var database: NoteDatabase   // resolved: EntityQuery supports it
 
-    func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
-        try await database.notes(matching: identifiers)
-    }
-    func suggestedEntities() async throws -> [NoteEntity] {
-        try await database.recentNotes()
-    }
+	func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
+		try await database.notes(matching: identifiers)
+	}
+	func suggestedEntities() async throws -> [NoteEntity] {
+		try await database.recentNotes()
+	}
 }
 ```
 
@@ -101,19 +101,19 @@ The same rule applies to an `AppEnum`: it has no dependency support, so any serv
 // mutable state and no Sendable conformance, so storing it as a @Dependency on a
 // Sendable AppIntent is a Swift 6 error — "contains non-Sendable type 'BookStore'".
 @Observable final class BookStore {        // not Sendable
-    var books: [Book] = []
-    var selectedBookID: UUID?
+	var books: [Book] = []
+	var selectedBookID: UUID?
 }
 
 struct OpenBookIntent: OpenIntent {
-    static let title: LocalizedStringResource = "Open Book"
-    @Parameter var target: BookEntity
-    @Dependency private var store: BookStore   // ❌ non-Sendable dependency
+	static let title: LocalizedStringResource = "Open Book"
+	@Parameter var target: BookEntity
+	@Dependency private var store: BookStore   // ❌ non-Sendable dependency
 
-    @MainActor func perform() async throws -> some IntentResult {
-        store.selectedBookID = target.id
-        return .result()
-    }
+	@MainActor func perform() async throws -> some IntentResult {
+		store.selectedBookID = target.id
+		return .result()
+	}
 }
 ```
 
@@ -122,19 +122,19 @@ struct OpenBookIntent: OpenIntent {
 // (@MainActor implies Sendable for a reference type) so it's safe to hand across
 // the concurrency boundary; the intent already hops to @MainActor to touch it.
 @MainActor @Observable final class BookStore {   // @MainActor ⇒ Sendable
-    var books: [Book] = []
-    var selectedBookID: UUID?
+	var books: [Book] = []
+	var selectedBookID: UUID?
 }
 
 struct OpenBookIntent: OpenIntent {
-    static let title: LocalizedStringResource = "Open Book"
-    @Parameter var target: BookEntity
-    @Dependency private var store: BookStore   // ✓ Sendable now
+	static let title: LocalizedStringResource = "Open Book"
+	@Parameter var target: BookEntity
+	@Dependency private var store: BookStore   // ✓ Sendable now
 
-    @MainActor func perform() async throws -> some IntentResult {
-        store.selectedBookID = target.id
-        return .result()
-    }
+	@MainActor func perform() async throws -> some IntentResult {
+		store.selectedBookID = target.id
+		return .result()
+	}
 }
 ```
 

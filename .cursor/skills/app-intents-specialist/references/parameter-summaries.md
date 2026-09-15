@@ -13,7 +13,7 @@
 @Parameter(title: "Amount")    var amount: Double
 @Parameter(title: "Recipient") var recipient: PersonEntity
 static var parameterSummary: some ParameterSummary {
-    Summary("Send \(\.$recipient) \(\.$amount)")
+	Summary("Send \(\.$recipient) \(\.$amount)")
 }
 ```
 
@@ -22,9 +22,9 @@ static var parameterSummary: some ParameterSummary {
 // interpolation order, then the trailing block — this reads "Send <amount> to
 // <recipient>" and lays the editor out that way, regardless of declaration order.
 static var parameterSummary: some ParameterSummary {
-    Summary("Send \(\.$amount) to \(\.$recipient)") {
-        \.$memo
-    }
+	Summary("Send \(\.$amount) to \(\.$recipient)") {
+		\.$memo
+	}
 }
 ```
 
@@ -38,7 +38,7 @@ static var parameterSummary: some ParameterSummary {
 // perform() runs far too late to influence which fields Shortcuts drew. Every
 // parameter you interpolate here shows unconditionally.
 static var parameterSummary: some ParameterSummary {
-    Summary("Create \(\.$kind) event \(\.$recurrenceRule)")
+	Summary("Create \(\.$kind) event \(\.$recurrenceRule)")
 }
 @Parameter(title: "Kind")     var kind: EventKind      // AppEnum: .single, .repeating
 @Parameter(title: "Repeat")   var recurrenceRule: RecurrenceEntity
@@ -49,11 +49,11 @@ static var parameterSummary: some ParameterSummary {
 // decides its relevance. recurrenceRule appears only for repeating events; for a
 // single event the otherwise branch omits it, so the editor stays clean.
 static var parameterSummary: some ParameterSummary {
-    When(\.$kind, .equalTo, .repeating) {
-        Summary("Create \(\.$kind) event \(\.$recurrenceRule)")
-    } otherwise: {
-        Summary("Create \(\.$kind) event")
-    }
+	When(\.$kind, .equalTo, .repeating) {
+		Summary("Create \(\.$kind) event \(\.$recurrenceRule)")
+	} otherwise: {
+		Summary("Create \(\.$kind) event")
+	}
 }
 ```
 
@@ -66,11 +66,11 @@ The comparison operator is not one big enum; the initializer overloads accept di
 // don't type-check: .equalTo wants a single value, not an array, and .hasAnyValue
 // takes no value at all — the presence check has its own no-argument overload.
 static var parameterSummary: some ParameterSummary {
-    When(\.$priority, .equalTo, [.high, .urgent]) {   // wrong: .equalTo isn't array-shaped
-        Summary("Flag \(\.$task)")
-    } otherwise: {
-        Summary("Add \(\.$task)")
-    }
+	When(\.$priority, .equalTo, [.high, .urgent]) {   // wrong: .equalTo isn't array-shaped
+		Summary("Flag \(\.$task)")
+	} otherwise: {
+		Summary("Add \(\.$task)")
+	}
 }
 ```
 
@@ -79,11 +79,11 @@ static var parameterSummary: some ParameterSummary {
 // "is this optional parameter set". Each operator lives in its own enum, so the
 // value shape is dictated by the comparator you chose.
 static var parameterSummary: some ParameterSummary {
-    When(\.$priority, .oneOf, [.high, .urgent]) {
-        Summary("Flag \(\.$task) with \(\.$reason)")
-    } otherwise: {
-        Summary("Add \(\.$task)")
-    }
+	When(\.$priority, .oneOf, [.high, .urgent]) {
+		Summary("Flag \(\.$task) with \(\.$reason)")
+	} otherwise: {
+		Summary("Add \(\.$task)")
+	}
 }
 ```
 
@@ -96,10 +96,10 @@ For a parameter with several discrete values, `Switch(\.$param) { Case(value) { 
 // mode is an AppEnum with three cases but only two are handled — when mode is the
 // third value, no branch matches and the editor has no summary to show for it.
 static var parameterSummary: some ParameterSummary {
-    Switch(\.$mode) {
-        Case(.photo) { Summary("Capture photo \(\.$resolution)") }
-        Case(.video) { Summary("Record video \(\.$resolution) \(\.$frameRate)") }
-    }
+	Switch(\.$mode) {
+		Case(.photo) { Summary("Capture photo \(\.$resolution)") }
+		Case(.video) { Summary("Record video \(\.$resolution) \(\.$frameRate)") }
+	}
 }
 @Parameter(title: "Mode") var mode: CaptureMode   // AppEnum: .photo, .video, .timelapse
 ```
@@ -109,10 +109,10 @@ static var parameterSummary: some ParameterSummary {
 // DefaultCase, so every value of mode maps to a summary. Case also accepts an
 // array — Case([.photo, .timelapse]) — when several values share one layout.
 static var parameterSummary: some ParameterSummary {
-    Switch(\.$mode) {
-        Case(.video) { Summary("Record video \(\.$resolution) \(\.$frameRate)") }
-        DefaultCase { Summary("Capture \(\.$mode) \(\.$resolution)") }
-    }
+	Switch(\.$mode) {
+		Case(.video) { Summary("Record video \(\.$resolution) \(\.$frameRate)") }
+		DefaultCase { Summary("Capture \(\.$mode) \(\.$resolution)") }
+	}
 }
 ```
 
@@ -124,7 +124,7 @@ The summary format string uses `%`-prefixed tokens internally to mark where each
 // AVOID: manually escaping the percent. The literal is already escaped for you, so
 // "%%" here becomes "%%" on screen — a stray doubled sign in the shortcut label.
 static var parameterSummary: some ParameterSummary {
-    Summary("Apply \(\.$discount)%% off")
+	Summary("Apply \(\.$discount)%% off")
 }
 ```
 
@@ -132,6 +132,6 @@ static var parameterSummary: some ParameterSummary {
 // PREFER: write the percent once. The interpolation doubles it internally so the
 // token machinery is unambiguous, and the user sees a single "%".
 static var parameterSummary: some ParameterSummary {
-    Summary("Apply \(\.$discount)% off")
+	Summary("Apply \(\.$discount)% off")
 }
 ```

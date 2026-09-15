@@ -11,20 +11,20 @@ When the compiler requires pointer and count to be assigned together (the "depen
 ```c
 // This causes an error — buf and count must be assigned together:
 void fill(int *__counted_by(count) buf, size_t count) {
-    while (count-- > 0) {
-        *buf = count;
-        buf++;  // error: assignment to 'buf' requires corresponding assignment to 'count'
-    }
+	while (count-- > 0) {
+		*buf = count;
+		buf++;  // error: assignment to 'buf' requires corresponding assignment to 'count'
+	}
 }
 
 // Fix: copy to local variables (implicitly __bidi_indexable):
 void fill(int *__counted_by(countOrig) bufOrig, size_t countOrig) {
-    int *buf = bufOrig;
-    size_t count = countOrig;
-    while (count-- > 0) {
-        *buf = count;
-        buf++;  // OK — buf is __bidi_indexable, no external bounds to maintain
-    }
+	int *buf = bufOrig;
+	size_t count = countOrig;
+	while (count-- > 0) {
+		*buf = count;
+		buf++;  // OK — buf is __bidi_indexable, no external bounds to maintain
+	}
 }
 ```
 
@@ -35,9 +35,9 @@ When a struct contains pointer fields, prefer "row" organization (array of struc
 ```c
 // Row organization (recommended) — flat pointers, easy to annotate:
 struct gpio_config {
-    uint32_t cfg;
-    uint32_t *__counted_by(intStatusCount) intStatus;
-    uint32_t intStatusCount;
+	uint32_t cfg;
+	uint32_t *__counted_by(intStatusCount) intStatus;
+	uint32_t intStatusCount;
 };
 struct gpio_config configs[N];
 
@@ -57,12 +57,12 @@ static int GetExtNext(Handle *H, uint8_t **Out);
 
 // After: __bidi_indexable propagates bounds from internal buffer
 static int GetExtNext(Handle *H, uint8_t *__bidi_indexable *Out) {
-    ...
-    // H->Buf is a fixed-size array (e.g., uint8_t Buf[256]).
-    // Assigning it through a __bidi_indexable * out-parameter
-    // gives the compiler array bounds automatically — no forge needed.
-    *Out = H->Buf;
-    ...
+	...
+	// H->Buf is a fixed-size array (e.g., uint8_t Buf[256]).
+	// Assigning it through a __bidi_indexable * out-parameter
+	// gives the compiler array bounds automatically — no forge needed.
+	*Out = H->Buf;
+	...
 }
 ```
 
@@ -145,20 +145,20 @@ Create a bounds-safe internal implementation and reduce the public function to a
 // Header — mark legacy API unavailable in -fbounds-safety builds
 __ptrcheck_unavailable_r(UnionSafe)
 Result *Union(const Map *A, const Map *B,
-              Pixel *__unsafe_indexable trans);
+			  Pixel *__unsafe_indexable trans);
 
 // Public safe version with explicit count
 Result *UnionSafe(const Map *A, const Map *B,
-                  Pixel *__counted_by(transLen) trans, int transLen) {
-    // full implementation here
+				  Pixel *__counted_by(transLen) trans, int transLen) {
+	// full implementation here
 }
 
 // Legacy wrapper — forges and delegates
 Result *Union(const Map *A, const Map *B,
-              Pixel *__unsafe_indexable trans) {
-    Pixel *safe = __unsafe_forge_bidi_indexable(
-        Pixel *, trans, B->Count * sizeof(Pixel));
-    return UnionSafe(A, B, safe, B->Count);
+			  Pixel *__unsafe_indexable trans) {
+	Pixel *safe = __unsafe_forge_bidi_indexable(
+		Pixel *, trans, B->Count * sizeof(Pixel));
+	return UnionSafe(A, B, safe, B->Count);
 }
 ```
 
@@ -166,10 +166,10 @@ Internal callers use the safe version directly, never the legacy wrapper:
 
 ```c
 void MergeColorMaps(const Map *A, const Map *B,
-                    Pixel *__counted_by(B->Count) trans) {
-    // Calls UnionSafe directly — not Union
-    Result *merged = UnionSafe(A, B, trans, B->Count);
-    ...
+					Pixel *__counted_by(B->Count) trans) {
+	// Calls UnionSafe directly — not Union
+	Result *merged = UnionSafe(A, B, trans, B->Count);
+	...
 }
 ```
 
@@ -184,8 +184,8 @@ Concretely, the legacy shim from the example becomes:
 ```c
 // Legacy wrapper — header-only mode, no forge
 Result *Union(const Map *A, const Map *B,
-              Pixel *__unsafe_indexable trans) {
-    return UnionSafe(A, B, trans, B->Count);
+			  Pixel *__unsafe_indexable trans) {
+	return UnionSafe(A, B, trans, B->Count);
 }
 ```
 
@@ -238,21 +238,21 @@ If a non-adopted function returns a pointer you know is null-terminated but the 
 
 ```c
 void process(const char *__null_terminated input) {
-    const char *__null_terminated nt_ptr = input;
-    const char *idx_ptr = __null_terminated_to_indexable(input);
+	const char *__null_terminated nt_ptr = input;
+	const char *idx_ptr = __null_terminated_to_indexable(input);
 
-    size_t len = strlen(nt_ptr);
+	size_t len = strlen(nt_ptr);
 
-    // Random access via indexable pointer
-    for (size_t i = 0; i < len; i++) {
-        if (idx_ptr[i] == ':')
-            printf("colon at offset %zu\n", i);
-    }
+	// Random access via indexable pointer
+	for (size_t i = 0; i < len; i++) {
+		if (idx_ptr[i] == ':')
+			printf("colon at offset %zu\n", i);
+	}
 
-    // String API via null-terminated pointer
-    const char *__null_terminated found = strchr(nt_ptr, ':');
-    if (found)
-        printf("found: %s\n", found);
+	// String API via null-terminated pointer
+	const char *__null_terminated found = strchr(nt_ptr, ':');
+	if (found)
+		printf("found: %s\n", found);
 }
 ```
 
@@ -294,9 +294,9 @@ These are common issues encountered during real-world adoption, along with recom
 
 ```c
 struct element_t {
-    uint8_t id;
-    uint8_t len;
-    uint8_t data[10]; // sizeof(element_t) == 12
+	uint8_t id;
+	uint8_t len;
+	uint8_t data[10]; // sizeof(element_t) == 12
 };
 
 uint8_t buffer[8];
@@ -310,13 +310,13 @@ cast_buffer->id; // TRAPS — even though id is at offset 0
 
 ```c
 struct header {
-    uint8_t id;
-    uint8_t len;
+	uint8_t id;
+	uint8_t len;
 };
 
 struct header *hdr = (struct header *)buffer;
 if (hdr->id == EXPECTED_TYPE) {
-    // Now safe to access more data knowing the type
+	// Now safe to access more data knowing the type
 }
 ```
 
@@ -344,10 +344,10 @@ q->b; // NO trap — but accesses memory beyond 's'!
 
 ```c
 void do_work(void *__sized_by(*output_len) output, size_t *output_len) {
-    // unannotated_func is not annotated with -fbounds-safety
-    unannotated_func(output, output_len);
-    // error: passing 'output_len' referred to by '__sized_by' to a parameter
-    // that is not referred to by the same attribute
+	// unannotated_func is not annotated with -fbounds-safety
+	unannotated_func(output, output_len);
+	// error: passing 'output_len' referred to by '__sized_by' to a parameter
+	// that is not referred to by the same attribute
 }
 ```
 
@@ -359,9 +359,9 @@ The signature shape above — `*__sized_by(*output_len) output, size_t *output_l
 
 ```c
 void do_work(void *__sized_by(*output_len) output, size_t *output_len) {
-    size_t local_len = *output_len;
-    unannotated_func(output, &local_len);
-    *output_len = local_len;
+	size_t local_len = *output_len;
+	unannotated_func(output, &local_len);
+	*output_len = local_len;
 }
 ```
 
@@ -373,7 +373,7 @@ void do_work(void *__sized_by(*output_len) output, size_t *output_len) {
 
 ```c
 void *__bidi_indexable slice(void *__sized_by(n) p, size_t n) {
-    return p;
+	return p;
 }
 
 // Usage:
@@ -402,12 +402,12 @@ If the function has the `alloc_size` attribute, `-fbounds-safety` may infer boun
 
 ```c
 void process(int *__counted_by(count) buf_param, size_t count) {
-    int *buf = buf_param; // buf is now __bidi_indexable
-    size_t n = count;     // n is no longer tied to buf_param
-    while (n-- > 0) {
-        *buf = 0;
-        buf++; // OK — no need to keep count in sync
-    }
+	int *buf = buf_param; // buf is now __bidi_indexable
+	size_t n = count;     // n is no longer tied to buf_param
+	while (n-- > 0) {
+		*buf = 0;
+		buf++; // OK — no need to keep count in sync
+	}
 }
 ```
 
@@ -433,15 +433,15 @@ process(arr, 10);   // OK — array decays to pointer
 
 ```c
 struct container {
-    int count;
-    Item *__counted_by(count) items;
+	int count;
+	Item *__counted_by(count) items;
 };
 
 // WRONG — forge is redundant
 Item *new_items = (Item *)realloc(c->items, newCount * sizeof(Item));
 c->count = newCount;
 c->items = __unsafe_forge_bidi_indexable(
-    Item *, new_items, (size_t)newCount * sizeof(Item));
+	Item *, new_items, (size_t)newCount * sizeof(Item));
 ```
 
 **Why:** Allocators with `alloc_size` already return `__sized_by_or_null` pointers. Casting to a typed pointer gives a `__bidi_indexable` with correct bounds. The `__bidi_indexable` → `__counted_by(N)` assignment is implicit with a bounds check (per the conversion table). The forge re-derives bounds the compiler already knows.
@@ -465,9 +465,9 @@ struct Frame { uint8_t buf[256]; };
 
 // WRONG — forge is redundant
 void process(struct Frame *p) {
-    uint8_t *view = __unsafe_forge_bidi_indexable(
-        uint8_t *, p->buf, sizeof(p->buf));
-    /* ... use view ... */
+	uint8_t *view = __unsafe_forge_bidi_indexable(
+		uint8_t *, p->buf, sizeof(p->buf));
+	/* ... use view ... */
 }
 ```
 
@@ -477,7 +477,7 @@ void process(struct Frame *p) {
 
 ```c
 void process(struct Frame *p) {
-    uint8_t *view = p->buf;  // __bidi_indexable with array bounds
+	uint8_t *view = p->buf;  // __bidi_indexable with array bounds
 }
 ```
 
@@ -499,14 +499,14 @@ The same rule applies to `T local[N]`, a global `T g_arr[N]`, and a parameter `v
 
 ```c
 typedef struct Frame {
-    Dimensions Dim;          /* contains Width, Height */
-    uint8_t *Pixels;         /* implicit __single — wrong */
+	Dimensions Dim;          /* contains Width, Height */
+	uint8_t *Pixels;         /* implicit __single — wrong */
 } Frame;
 
 void process(Frame *f) {
-    size_t n = (size_t)f->Dim.Width * f->Dim.Height;
-    uint8_t *buf = __unsafe_forge_bidi_indexable(uint8_t *, f->Pixels, n);
-    /* ... use buf ... */
+	size_t n = (size_t)f->Dim.Width * f->Dim.Height;
+	uint8_t *buf = __unsafe_forge_bidi_indexable(uint8_t *, f->Pixels, n);
+	/* ... use buf ... */
 }
 ```
 
@@ -514,14 +514,14 @@ void process(Frame *f) {
 
 ```c
 typedef struct Frame {
-    Dimensions Dim;
-    uint8_t *__unsafe_indexable Pixels;  /* bound = Dim.Width * Dim.Height; not expressible */
+	Dimensions Dim;
+	uint8_t *__unsafe_indexable Pixels;  /* bound = Dim.Width * Dim.Height; not expressible */
 } Frame;
 
 void process(Frame *f) {
-    size_t n = (size_t)f->Dim.Width * f->Dim.Height;
-    uint8_t *buf = __unsafe_forge_bidi_indexable(uint8_t *, f->Pixels, n);
-    /* same forge, but now describing an honestly-unsafe pointer */
+	size_t n = (size_t)f->Dim.Width * f->Dim.Height;
+	uint8_t *buf = __unsafe_forge_bidi_indexable(uint8_t *, f->Pixels, n);
+	/* same forge, but now describing an honestly-unsafe pointer */
 }
 ```
 
@@ -532,10 +532,10 @@ void process(Frame *f) {
 int put_block(File *f, const uint8_t *CodeBlock);   /* implicit __single — wrong */
 
 int put_block(File *f, const uint8_t *CodeBlock) {
-    const uint8_t *view = __unsafe_forge_bidi_indexable(
-        const uint8_t *, CodeBlock, 256);
-    uint8_t len = view[0];
-    return write_bytes(f, view, len + 1);
+	const uint8_t *view = __unsafe_forge_bidi_indexable(
+		const uint8_t *, CodeBlock, 256);
+	uint8_t len = view[0];
+	return write_bytes(f, view, len + 1);
 }
 ```
 
@@ -549,20 +549,20 @@ __ptrcheck_unavailable_r(put_block_safe)
 int put_block(File *f, const uint8_t *__unsafe_indexable CodeBlock);
 
 int put_block_safe(File *f, const uint8_t *__counted_by(len) CodeBlock,
-                   size_t len);
+				   size_t len);
 
 // .c — implementation lives in the safe variant.
 int put_block_safe(File *f, const uint8_t *__counted_by(len) CodeBlock,
-                   size_t len) {
-    return write_bytes(f, CodeBlock, len);
+				   size_t len) {
+	return write_bytes(f, CodeBlock, len);
 }
 
 // .c — legacy shim reads the length prefix and delegates.
 int put_block(File *f, const uint8_t *__unsafe_indexable CodeBlock) {
-    size_t len = (size_t)CodeBlock[0] + 1;
-    const uint8_t *safe = __unsafe_forge_bidi_indexable(
-        const uint8_t *, CodeBlock, len);
-    return put_block_safe(f, safe, len);
+	size_t len = (size_t)CodeBlock[0] + 1;
+	const uint8_t *safe = __unsafe_forge_bidi_indexable(
+		const uint8_t *, CodeBlock, len);
+	return put_block_safe(f, safe, len);
 }
 ```
 

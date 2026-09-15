@@ -11,11 +11,11 @@ When a toolbar has more items than fit the available width (a narrow window, a r
 
 ```swift
 .toolbar {
-    ToolbarItemGroup {
-        UndoButton()
-        RedoButton()
-    }
-    .visibilityPriority(.high)
+	ToolbarItemGroup {
+		UndoButton()
+		RedoButton()
+	}
+	.visibilityPriority(.high)
 }
 ```
 
@@ -27,11 +27,11 @@ When a toolbar has more items than fit the available width (a narrow window, a r
 
 ```swift
 .toolbar {
-    ToolbarOverflowMenu {
-        ChoosePhotoButton()
-        ExportAsImageButton()
-        ClearAllStickersButton()
-    }
+	ToolbarOverflowMenu {
+		ChoosePhotoButton()
+		ExportAsImageButton()
+		ClearAllStickersButton()
+	}
 }
 ```
 
@@ -43,9 +43,9 @@ A `ToolbarItem` placed with `.topBarPinnedTrailing` stays in the trailing positi
 
 ```swift
 .toolbar {
-    ToolbarItem(placement: .topBarPinnedTrailing) {
-        ShareButton()
-    }
+	ToolbarItem(placement: .topBarPinnedTrailing) {
+		ShareButton()
+	}
 }
 ```
 
@@ -57,7 +57,7 @@ A `ToolbarItem` placed with `.topBarPinnedTrailing` stays in the trailing positi
 
 ```swift
 ScrollView {
-    StickerListView()
+	StickerListView()
 }
 .toolbarMinimizeBehavior(.onScrollDown, for: .navigationBar)  // or .automatic, .onScrollUp, .never
 ```
@@ -70,10 +70,10 @@ ScrollView {
 
 ```swift
 .toolbar {
-    ToolbarItem(placement: .topBarTrailing) {
-        AvatarView()
-    }
-    .contentMarginsRemoved()
+	ToolbarItem(placement: .topBarTrailing) {
+		AvatarView()
+	}
+	.contentMarginsRemoved()
 }
 ```
 
@@ -95,11 +95,11 @@ The status bar is now a `ToolbarPlacement`, so you control its visibility with `
 
 ```swift
 .toolbar {
-    ForEach(quickActions) { action in
-        ToolbarItem {
-            Button(action.title) { action.perform() }
-        }
-    }
+	ForEach(quickActions) { action in
+		ToolbarItem {
+			Button(action.title) { action.perform() }
+		}
+	}
 }
 ```
 
@@ -111,16 +111,16 @@ When the user's deployment target is below SDK 27 and the answer needs any of th
 
 ```swift
 .toolbar {
-    if #available(iOS 27, *) {
-        // New SDK 27 APIs go here, for example:
-        ToolbarItemGroup { /* … */ }
-            .visibilityPriority(.high)
-        ToolbarItem(placement: .topBarPinnedTrailing) { /* … */ }
-        ToolbarOverflowMenu { /* … */ }
-    } else {
-        // Older fallback: plain ToolbarItem entries (or whatever older toolbar shape works for the app).
-        ToolbarItem { /* … */ }
-    }
+	if #available(iOS 27, *) {
+		// New SDK 27 APIs go here, for example:
+		ToolbarItemGroup { /* … */ }
+			.visibilityPriority(.high)
+		ToolbarItem(placement: .topBarPinnedTrailing) { /* … */ }
+		ToolbarOverflowMenu { /* … */ }
+	} else {
+		// Older fallback: plain ToolbarItem entries (or whatever older toolbar shape works for the app).
+		ToolbarItem { /* … */ }
+	}
 }
 ```
 

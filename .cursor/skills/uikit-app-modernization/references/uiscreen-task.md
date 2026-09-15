@@ -82,13 +82,13 @@ A replacement in a view/VC has two parts: (A) the API swap, and (B) a `registerF
 ```swift
 // COMPLETE — replacement + invalidation (both parts required)
 class MyCell: UITableViewCell {
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        imageView.layer.contentsScale = traitCollection.displayScale
-        registerForTraitChanges([UITraitDisplayScale.self]) { (self: MyCell, previousTraitCollection) in
-            self.imageView.layer.contentsScale = self.traitCollection.displayScale
-        }
-    }
+	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+		super.init(style: style, reuseIdentifier: reuseIdentifier)
+		imageView.layer.contentsScale = traitCollection.displayScale
+		registerForTraitChanges([UITraitDisplayScale.self]) { (self: MyCell, previousTraitCollection) in
+			self.imageView.layer.contentsScale = self.traitCollection.displayScale
+		}
+	}
 }
 ```
 
@@ -119,25 +119,25 @@ For static properties or protocol extensions where adding a parameter changes th
 ```swift
 // WRONG — old method removed, only new method left (breaks ABI for out-of-diff callers):
 class ImageProcessor: NSObject {
-    func generateThumbnail(for image: UIImage, traitCollection: UITraitCollection) -> UIImage {
-        let scale = traitCollection.displayScale
-        return processImage(image, scale: scale)
-    }
-    // ← old generateThumbnail(for:) was deleted — out-of-diff callers can no longer compile,
-    //   and there is no deprecation signal pointing them to the new API
+	func generateThumbnail(for image: UIImage, traitCollection: UITraitCollection) -> UIImage {
+		let scale = traitCollection.displayScale
+		return processImage(image, scale: scale)
+	}
+	// ← old generateThumbnail(for:) was deleted — out-of-diff callers can no longer compile,
+	//   and there is no deprecation signal pointing them to the new API
 }
 
 // RIGHT — full deprecate-and-forward (all three parts mandatory, OLD METHOD KEPT):
 class ImageProcessor: NSObject {
-    @available(*, deprecated, message: "use generateThumbnail(for:traitCollection:) instead")
-    func generateThumbnail(for image: UIImage) -> UIImage {
-        return generateThumbnail(for: image, traitCollection: .current)
-    }
+	@available(*, deprecated, message: "use generateThumbnail(for:traitCollection:) instead")
+	func generateThumbnail(for image: UIImage) -> UIImage {
+		return generateThumbnail(for: image, traitCollection: .current)
+	}
 
-    func generateThumbnail(for image: UIImage, traitCollection: UITraitCollection) -> UIImage {
-        let scale = traitCollection.displayScale
-        return processImage(image, scale: scale)
-    }
+	func generateThumbnail(for image: UIImage, traitCollection: UITraitCollection) -> UIImage {
+		let scale = traitCollection.displayScale
+		return processImage(image, scale: scale)
+	}
 }
 ```
 
@@ -146,18 +146,18 @@ class ImageProcessor: NSObject {
 ```swift
 // WRONG — old init removed:
 class GlyphButton: UIButton {
-    init(glyph: Glyph, traitCollection: UITraitCollection) { ... }
-    // ← old init(glyph:) was deleted — callers that don't yet pass traitCollection break
+	init(glyph: Glyph, traitCollection: UITraitCollection) { ... }
+	// ← old init(glyph:) was deleted — callers that don't yet pass traitCollection break
 }
 
 // RIGHT — old init kept as deprecated wrapper:
 class GlyphButton: UIButton {
-    @available(*, deprecated, message: "use init(glyph:traitCollection:) instead")
-    convenience init(glyph: Glyph) {
-        self.init(glyph: glyph, traitCollection: .current)
-    }
+	@available(*, deprecated, message: "use init(glyph:traitCollection:) instead")
+	convenience init(glyph: Glyph) {
+		self.init(glyph: glyph, traitCollection: .current)
+	}
 
-    init(glyph: Glyph, traitCollection: UITraitCollection) { ... }
+	init(glyph: Glyph, traitCollection: UITraitCollection) { ... }
 }
 ```
 
@@ -176,12 +176,12 @@ In headers (or above the implementation when no header exists), the old method's
 @implementation ThumbnailGenerator
 
 - (UIImage *)generateThumbnailForURL:(NSURL *)url {
-    return [self generateThumbnailForURL:url traitCollection:[UITraitCollection currentTraitCollection]];
+	return [self generateThumbnailForURL:url traitCollection:[UITraitCollection currentTraitCollection]];
 }
 
 - (UIImage *)generateThumbnailForURL:(NSURL *)url traitCollection:(UITraitCollection *)traitCollection {
-    CGFloat scale = traitCollection.displayScale;
-    return [self renderThumbnail:url scale:scale];
+	CGFloat scale = traitCollection.displayScale;
+	return [self renderThumbnail:url scale:scale];
 }
 
 @end
@@ -191,7 +191,7 @@ For private methods declared only in the implementation file (no header), put th
 
 ```objc
 - (UIImage *)renderBadge __attribute__((deprecated("use renderBadgeWithTraitCollection: instead"))); {
-    return [self renderBadgeWithTraitCollection:[UITraitCollection currentTraitCollection]];
+	return [self renderBadgeWithTraitCollection:[UITraitCollection currentTraitCollection]];
 }
 ```
 
@@ -206,12 +206,12 @@ For private methods declared only in the implementation file (no header), put th
 @implementation BadgeAnimationGenerator
 
 + (CAAnimation *)animation {
-    return [self animationWithTraitCollection:[UITraitCollection currentTraitCollection]];
+	return [self animationWithTraitCollection:[UITraitCollection currentTraitCollection]];
 }
 
 + (CAAnimation *)animationWithTraitCollection:(UITraitCollection *)traitCollection {
-    CGFloat scale = traitCollection.displayScale;
-    // ... use scale ...
+	CGFloat scale = traitCollection.displayScale;
+	// ... use scale ...
 }
 
 @end
@@ -239,7 +239,7 @@ If NONE of the exceptions apply, registration is required — period.
 
 ```swift
 registerForTraitChanges([UITraitDisplayScale.self]) { (self: MyView, previousTraitCollection) in
-    // Recalculate the cached value(s)
+	// Recalculate the cached value(s)
 }
 ```
 
@@ -250,7 +250,7 @@ When registering for trait changes to update a cached value (layer `lineWidth`, 
 ```swift
 // directly update the cached property:
 registerForTraitChanges([UITraitDisplayScale.self]) { (cell: MyCell, previousTraitCollection) in
-    cell.layer.borderWidth = 1.0 / cell.traitCollection.displayScale
+	cell.layer.borderWidth = 1.0 / cell.traitCollection.displayScale
 }
 ```
 
@@ -280,26 +280,26 @@ Use this checklist to decide. If ANY cached indicator is true, registration is r
 **Cached in init:**
 ```swift
 override init(frame: CGRect) {
-    super.init(frame: frame)
-    separatorLine.lineWidth = 1.0 / traitCollection.displayScale
-    registerForTraitChanges([UITraitDisplayScale.self]) { (self: MyView, previousTraitCollection) in
-        self.separatorLine.lineWidth = 1.0 / self.traitCollection.displayScale
-    }
+	super.init(frame: frame)
+	separatorLine.lineWidth = 1.0 / traitCollection.displayScale
+	registerForTraitChanges([UITraitDisplayScale.self]) { (self: MyView, previousTraitCollection) in
+		self.separatorLine.lineWidth = 1.0 / self.traitCollection.displayScale
+	}
 }
 ```
 
 **Cached image:**
 ```swift
 func updateThemeButtonImages() {
-    let scale = traitCollection.displayScale
-    let renderer = UIGraphicsImageRenderer(size: size)
-    cachedButtonImage = renderer.image { context in /* ... */ }
-    button.setImage(cachedButtonImage, for: .normal)
+	let scale = traitCollection.displayScale
+	let renderer = UIGraphicsImageRenderer(size: size)
+	cachedButtonImage = renderer.image { context in /* ... */ }
+	button.setImage(cachedButtonImage, for: .normal)
 }
 
 // In init or setup — handler INVOKES the existing method, never duplicates its body:
 registerForTraitChanges([UITraitDisplayScale.self]) { (self: MyView, previousTraitCollection) in
-    self.updateThemeButtonImages()
+	self.updateThemeButtonImages()
 }
 ```
 
@@ -332,15 +332,15 @@ Unsafe view controller methods (view may not be in a view hierarchy): `init`, `l
 
 ```swift
 class LayoutHelper {
-    @available(*, deprecated, message: "Pass bounds from the caller's window or view context")
-    static func calculateOptimalWidth() -> CGFloat {
-        // TODO: Modernization - Callers should pass bounds from their window/view context
-        return calculateOptimalWidth(in: UIScreen.main.bounds)
-    }
+	@available(*, deprecated, message: "Pass bounds from the caller's window or view context")
+	static func calculateOptimalWidth() -> CGFloat {
+		// TODO: Modernization - Callers should pass bounds from their window/view context
+		return calculateOptimalWidth(in: UIScreen.main.bounds)
+	}
 
-    static func calculateOptimalWidth(in bounds: CGRect) -> CGFloat {
-        return bounds.width * 0.9
-    }
+	static func calculateOptimalWidth(in bounds: CGRect) -> CGFloat {
+		return bounds.width * 0.9
+	}
 }
 ```
 
@@ -396,7 +396,7 @@ When `UIScreen.main` appears inside a free function, `dispatch_once` helper, or 
 // TODO: Modernization - This cached helper assumes a single screen scale. Convert callers to pass
 // traitCollection.displayScale from their view/VC context. Once all callers are migrated, remove this function.
 func mainScreenScaleFactor() -> CGFloat {
-    // ... cached dispatch_once returning UIScreen.main.scale
+	// ... cached dispatch_once returning UIScreen.main.scale
 }
 
 // At each call site:
@@ -415,9 +415,9 @@ When migrating `UIScreen.mainScreen` in notification observers, the TODO must no
 // displays, the screen changes. Track the window's current screen, observe brightness on that
 // screen, and re-subscribe when the screen changes (e.g., via windowScene.screen updates).
 [[NSNotificationCenter defaultCenter] addObserver:self
-    selector:@selector(brightnessChanged:)
-    name:UIScreenBrightnessDidChangeNotification
-    object:UIScreen.mainScreen];
+	selector:@selector(brightnessChanged:)
+	name:UIScreenBrightnessDidChangeNotification
+	object:UIScreen.mainScreen];
 ```
 
 ### Fallback Paths
@@ -470,8 +470,8 @@ Replace `UIWindow(frame: UIScreen.main.bounds)` **only** when a `windowScene` is
 ```swift
 // windowScene in scope → safe to replace
 func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options: UIScene.ConnectionOptions) {
-    guard let windowScene = scene as? UIWindowScene else { return }
-    window = UIWindow(windowScene: windowScene)
+	guard let windowScene = scene as? UIWindowScene else { return }
+	window = UIWindow(windowScene: windowScene)
 }
 
 // windowScene not available → add TODO
@@ -501,12 +501,12 @@ Apply the full deprecate-and-forward pattern to the enclosing method so callers 
 // Deprecate-and-forward on the enclosing method:
 @available(*, deprecated, message: "use renderBadge(traitCollection:) instead")
 func renderBadge() -> UIImage {
-    return renderBadge(traitCollection: .current)
+	return renderBadge(traitCollection: .current)
 }
 
 func renderBadge(traitCollection: UITraitCollection) -> UIImage {
-    let format = UIGraphicsImageRendererFormat(for: traitCollection)
-    // ...
+	let format = UIGraphicsImageRendererFormat(for: traitCollection)
+	// ...
 }
 ```
 
@@ -517,12 +517,12 @@ func renderBadge(traitCollection: UITraitCollection) -> UIImage {
 
 // In the implementation:
 - (UIImage *)renderBadge {
-    return [self renderBadgeWithTraitCollection:[UITraitCollection currentTraitCollection]];
+	return [self renderBadgeWithTraitCollection:[UITraitCollection currentTraitCollection]];
 }
 
 - (UIImage *)renderBadgeWithTraitCollection:(UITraitCollection *)traitCollection {
-    UIGraphicsImageRendererFormat *format = [[UIGraphicsImageRendererFormat alloc] initForTraitCollection:traitCollection];
-    // ...
+	UIGraphicsImageRendererFormat *format = [[UIGraphicsImageRendererFormat alloc] initForTraitCollection:traitCollection];
+	// ...
 }
 ```
 

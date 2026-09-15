@@ -1,5 +1,5 @@
 enum ListViewState: Equatable {
-    case success(isEmpty: Bool)
-    case error
-    case loading
+	case success(isEmpty: Bool)
+	case error
+	case loading
 }

@@ -6,7 +6,7 @@ A project can use multiple String Catalogs and route strings to a specific one w
 
 ```swift
 Text("Explore", tableName: "Navigation",
-     comment: "Tab bar item title for the Explore screen.")
+	 comment: "Tab bar item title for the Explore screen.")
 ```
 
 # Bundle for Swift Packages and Frameworks
@@ -21,7 +21,7 @@ Text("Save to Favorites")
 ```swift
 // PREFER: #bundle resolves to the current target's bundle.
 Text("Save to Favorites", bundle: #bundle,
-     comment: "Button to bookmark a recipe.")
+	 comment: "Button to bookmark a recipe.")
 ```
 
 `#bundle` is the preferred form; `Bundle.module` and `Bundle(for: MyClass.self)` work but are older patterns.
@@ -52,14 +52,14 @@ When a `String` variable is passed to `Text`, the `StringProtocol` overload runs
 
 ```swift
 enum Category {
-    case appetizers, mains, desserts
-    var name: LocalizedStringResource {
-        switch self {
-        case .appetizers: "Appetizers"
-        case .mains: "Mains"
-        case .desserts: "Desserts"
-        }
-    }
+	case appetizers, mains, desserts
+	var name: LocalizedStringResource {
+		switch self {
+		case .appetizers: "Appetizers"
+		case .mains: "Mains"
+		case .desserts: "Desserts"
+		}
+	}
 }
 
 Text(category.name)
@@ -70,14 +70,14 @@ When a view or view model exposes user-facing text, type the property as `Locali
 ```swift
 // AVOID: String properties lose localization context.
 struct SectionHeader {
-    let title: String
+	let title: String
 }
 ```
 
 ```swift
 // PREFER: LocalizedStringResource keeps the string localizable.
 struct SectionHeader {
-    let title: LocalizedStringResource
+	let title: LocalizedStringResource
 }
 ```
 
@@ -170,13 +170,13 @@ Use `.leading` and `.trailing` instead of `.left` and `.right` — they flip for
 ```swift
 // AVOID: .left does not flip for RTL languages.
 Text(recipe.title)
-    .frame(maxWidth: .infinity, alignment: .left)
+	.frame(maxWidth: .infinity, alignment: .left)
 ```
 
 ```swift
 // PREFER: .leading flips to the trailing edge in RTL locales.
 Text(recipe.title)
-    .frame(maxWidth: .infinity, alignment: .leading)
+	.frame(maxWidth: .infinity, alignment: .leading)
 ```
 
 Do not hardcode frame widths or heights for text — translations vary in length and scripts vary in height. Use `ViewThatFits` when a layout might not fit longer translations.
@@ -184,8 +184,8 @@ Do not hardcode frame widths or heights for text — translations vary in length
 ```swift
 // PREFER: ViewThatFits picks the first layout that fits.
 ViewThatFits {
-    HStack { actionButtons }
-    VStack { actionButtons }
+	HStack { actionButtons }
+	VStack { actionButtons }
 }
 ```
 
@@ -229,7 +229,7 @@ When a non-view type carries a user-facing string — a model object, a tip, a q
 // AVOID: Resolving at creation time loses the ability to display
 // in a different locale later.
 struct Tip {
-    let headline: String
+	let headline: String
 }
 let tip = Tip(headline: String(localized: "Tip of the Day"))
 ```
@@ -237,7 +237,7 @@ let tip = Tip(headline: String(localized: "Tip of the Day"))
 ```swift
 // PREFER: LocalizedStringResource defers resolution to display time.
 struct Tip {
-    let headline: LocalizedStringResource
+	let headline: LocalizedStringResource
 }
 let tip = Tip(headline: "Tip of the Day")
 ```
@@ -259,7 +259,7 @@ Text("Edit", comment: "Toolbar button that enters editing mode for the list.")
 ```swift
 // PREFER: refer to placeholders by position, not by Swift name.
 Text("Completed \(count) of \(total)",
-     comment: "Progress label — the first variable is finished items, the second is the total.")
+	 comment: "Progress label — the first variable is finished items, the second is the total.")
 ```
 
 Comments can also live in the String Catalog (per-string Comment field), equivalent to passing `comment:` at the call site — keep one source of truth per string.

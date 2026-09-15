@@ -11,21 +11,21 @@ If the user's deployment target is below iOS 27 / macOS 27 / watchOS 27 / vision
 
 ```swift
 struct StickerGrid: View {
-    @State private var stickers: [Sticker] = []
+	@State private var stickers: [Sticker] = []
 
-    var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns) {
-                ForEach(stickers) { sticker in
-                    StickerView(sticker)
-                }
-                .reorderable()
-            }
-            .reorderContainer(for: Sticker.self) { difference in
-                // Update `stickers` to reflect the move (see "Applying the difference").
-            }
-        }
-    }
+	var body: some View {
+		ScrollView {
+			LazyVGrid(columns: columns) {
+				ForEach(stickers) { sticker in
+					StickerView(sticker)
+				}
+				.reorderable()
+			}
+			.reorderContainer(for: Sticker.self) { difference in
+				// Update `stickers` to reflect the move (see "Applying the difference").
+			}
+		}
+	}
 }
 ```
 
@@ -37,17 +37,17 @@ Your `move` closure receives a `ReorderDifference<ItemID, CollectionID>`:
 
 ```swift
 public struct ReorderDifference<ItemID, CollectionID> {
-    public var sources: [ItemID]            // the items being moved
-    public var destination: Destination
+	public var sources: [ItemID]            // the items being moved
+	public var destination: Destination
 
-    public struct Destination {
-        @frozen public enum Position {
-            case before(ItemID)             // insert the sources before this item
-            case end                        // append the sources to the end
-        }
-        public var position: Position
-        public var collectionID: CollectionID
-    }
+	public struct Destination {
+		@frozen public enum Position {
+			case before(ItemID)             // insert the sources before this item
+			case end                        // append the sources to the end
+		}
+		public var position: Position
+		public var collectionID: CollectionID
+	}
 }
 ```
 
@@ -55,31 +55,31 @@ public struct ReorderDifference<ItemID, CollectionID> {
 
 ```swift
 extension ReorderDifference where CollectionID == ReorderableSingleCollectionIdentifier {
-    func apply<C>(to collection: inout C)
-        where C: RangeReplaceableCollection,
-              C.Element: Identifiable,
-              C.Element.ID == ItemID
-    {
-        let moving = Set(sources)
-        guard !moving.isEmpty else { return }
+	func apply<C>(to collection: inout C)
+		where C: RangeReplaceableCollection,
+			  C.Element: Identifiable,
+			  C.Element.ID == ItemID
+	{
+		let moving = Set(sources)
+		guard !moving.isEmpty else { return }
 
-        // One in-place pass: drop the moved items and capture them in order.
-        var moved: [C.Element] = []
-        moved.reserveCapacity(moving.count)
-        collection.removeAll { element in
-            guard moving.contains(element.id) else { return false }
-            moved.append(element)
-            return true
-        }
+		// One in-place pass: drop the moved items and capture them in order.
+		var moved: [C.Element] = []
+		moved.reserveCapacity(moving.count)
+		collection.removeAll { element in
+			guard moving.contains(element.id) else { return false }
+			moved.append(element)
+			return true
+		}
 
-        switch destination.position {
-        case .before(let id):
-            let index = collection.firstIndex { $0.id == id } ?? collection.endIndex
-            collection.insert(contentsOf: moved, at: index)
-        case .end:
-            collection.append(contentsOf: moved)
-        }
-    }
+		switch destination.position {
+		case .before(let id):
+			let index = collection.firstIndex { $0.id == id } ?? collection.endIndex
+			collection.insert(contentsOf: moved, at: index)
+		case .end:
+			collection.append(contentsOf: moved)
+		}
+	}
 }
 ```
 
@@ -91,26 +91,26 @@ When a container has more than one collection (for example, `List` sections), ta
 
 ```swift
 struct Category: Identifiable {
-    let id = UUID()
-    var name: String
-    var items: [Item]
+	let id = UUID()
+	var name: String
+	var items: [Item]
 }
 
 // In your view's body:
 List {
-    ForEach(categories) { category in
-        Section(category.name) {
-            ForEach(category.items) { item in
-                ItemView(item)
-            }
-            .reorderable(collectionID: category.id)
-        }
-    }
+	ForEach(categories) { category in
+		Section(category.name) {
+			ForEach(category.items) { item in
+				ItemView(item)
+			}
+			.reorderable(collectionID: category.id)
+		}
+	}
 }
 .reorderContainer(for: Item.self, in: Category.ID.self) { difference in
-    // Apply the move. difference.destination.collectionID identifies the
-    // destination section; remove the items from their old section and insert
-    // them at difference.destination.position.
+	// Apply the move. difference.destination.collectionID identifies the
+	// destination section; remove the items from their old section and insert
+	// them at difference.destination.position.
 }
 ```
 
@@ -126,14 +126,14 @@ The type you pass to `in:` is your section model's `ID` (here `Category.ID`), no
 
 ```swift
 LazyVGrid(columns: columns) {
-    ForEach(stickers) { sticker in
-        StickerView(sticker)
-    }
-    .reorderable()
+	ForEach(stickers) { sticker in
+		StickerView(sticker)
+	}
+	.reorderable()
 }
 .reorderContainer(for: Sticker.self) { difference in /* apply the move to stickers */ }
 .dragContainer(for: Sticker.self) { draggedID in
-    stickers.first { $0.id == draggedID }.map { [$0] } ?? []
+	stickers.first { $0.id == draggedID }.map { [$0] } ?? []
 }
 ```
 
@@ -143,21 +143,21 @@ Return an empty collection from the `dragContainer` closure to disable the drag 
 
 ```swift
 LazyVGrid(columns: columns) {
-    ForEach(stickers) { sticker in
-        StickerView(sticker)
-            .dropDestination(for: Sticker.self, isEnabled: sticker.allowsCombining) { items, _ in
-                // Void-returning: no `return true` / `return false` in this closure.
-                guard let i = stickers.firstIndex(where: { $0.id == sticker.id }) else { return }
-                let droppedIDs = Set(items.map(\.id))
-                stickers[i].name = ([stickers[i].name] + items.map(\.name)).joined(separator: "+")
-                stickers.removeAll { droppedIDs.contains($0.id) }
-            }
-    }
-    .reorderable()
+	ForEach(stickers) { sticker in
+		StickerView(sticker)
+			.dropDestination(for: Sticker.self, isEnabled: sticker.allowsCombining) { items, _ in
+				// Void-returning: no `return true` / `return false` in this closure.
+				guard let i = stickers.firstIndex(where: { $0.id == sticker.id }) else { return }
+				let droppedIDs = Set(items.map(\.id))
+				stickers[i].name = ([stickers[i].name] + items.map(\.name)).joined(separator: "+")
+				stickers.removeAll { droppedIDs.contains($0.id) }
+			}
+	}
+	.reorderable()
 }
 .reorderContainer(for: Sticker.self) { difference in difference.apply(to: &stickers) }
 .dragContainer(for: Sticker.self) { draggedID in
-    stickers.first { $0.id == draggedID }.map { [$0] } ?? []
+	stickers.first { $0.id == draggedID }.map { [$0] } ?? []
 }
 ```
 
@@ -165,17 +165,17 @@ LazyVGrid(columns: columns) {
 
 ```swift
 .dropDestination(for: Sticker.self) { items, session in
-    guard let destination = session.reorderDestination(for: Sticker.self) else {
-        stickers.append(contentsOf: items)
-        return
-    }
-    switch destination.position {
-    case .before(let id):
-        let index = stickers.firstIndex { $0.id == id } ?? stickers.endIndex
-        stickers.insert(contentsOf: items, at: index)
-    case .end:
-        stickers.append(contentsOf: items)
-    }
+	guard let destination = session.reorderDestination(for: Sticker.self) else {
+		stickers.append(contentsOf: items)
+		return
+	}
+	switch destination.position {
+	case .before(let id):
+		let index = stickers.firstIndex { $0.id == id } ?? stickers.endIndex
+		stickers.insert(contentsOf: items, at: index)
+	case .end:
+		stickers.append(contentsOf: items)
+	}
 }
 ```
 

@@ -10,14 +10,14 @@ When `perform()` throws, the framework routes the error by type. If your error c
 // AVOID: a plain Error (even a LocalizedError). Siri/Shortcuts show the user a
 // generic failure, not "Playlist is full."
 enum LibraryError: LocalizedError {
-    case playlistFull
-    var errorDescription: String? { "Playlist is full." }   // not shown by Siri/Shortcuts
+	case playlistFull
+	var errorDescription: String? { "Playlist is full." }   // not shown by Siri/Shortcuts
 }
 
 func perform() async throws -> some IntentResult {
-    guard playlist.hasRoom else { throw LibraryError.playlistFull }  // genericized
-    // …
-    return .result()
+	guard playlist.hasRoom else { throw LibraryError.playlistFull }  // genericized
+	// …
+	return .result()
 }
 ```
 
@@ -25,19 +25,19 @@ func perform() async throws -> some IntentResult {
 // PREFER: conform the error to CustomLocalizedStringResourceConvertible. The
 // framework reads `localizedStringResource` and surfaces it verbatim.
 enum LibraryError: Error, CustomLocalizedStringResourceConvertible {
-    case playlistFull
+	case playlistFull
 
-    var localizedStringResource: LocalizedStringResource {
-        switch self {
-        case .playlistFull: "This playlist is full. Remove a song to add another."
-        }
-    }
+	var localizedStringResource: LocalizedStringResource {
+		switch self {
+		case .playlistFull: "This playlist is full. Remove a song to add another."
+		}
+	}
 }
 
 func perform() async throws -> some IntentResult {
-    guard playlist.hasRoom else { throw LibraryError.playlistFull }  // message preserved
-    // …
-    return .result()
+	guard playlist.hasRoom else { throw LibraryError.playlistFull }  // message preserved
+	// …
+	return .result()
 }
 ```
 
@@ -52,29 +52,29 @@ For the common failure categories the system already knows how to present — a 
 // the system's built-in presentation/response for "needs sign-in," and you now own
 // localization of a string the framework already ships.
 enum LibraryError: Error, CustomLocalizedStringResourceConvertible {
-    case notSignedIn
-    var localizedStringResource: LocalizedStringResource { "You need to sign in." }
+	case notSignedIn
+	var localizedStringResource: LocalizedStringResource { "You need to sign in." }
 }
 
 func perform() async throws -> some IntentResult {
-    guard account.isSignedIn else { throw LibraryError.notSignedIn }
-    return .result()
+	guard account.isSignedIn else { throw LibraryError.notSignedIn }
+	return .result()
 }
 ```
 
 ```swift
 // PREFER: throw the prebuilt error for the category. Localized + system-recognized.
 func perform() async throws -> some IntentResult {
-    guard account.isSignedIn else {
-        throw AppIntentError.UserActionRequired.signin
-    }
-    guard hasPhotoAccess else {
-        throw AppIntentError.PermissionRequired.photos
-    }
-    guard let match = try await store.find(query) else {
-        throw AppIntentError.Unrecoverable.entityNotFound
-    }
-    return .result()
+	guard account.isSignedIn else {
+		throw AppIntentError.UserActionRequired.signin
+	}
+	guard hasPhotoAccess else {
+		throw AppIntentError.PermissionRequired.photos
+	}
+	guard let match = try await store.find(query) else {
+		throw AppIntentError.Unrecoverable.entityNotFound
+	}
+	return .result()
 }
 ```
 

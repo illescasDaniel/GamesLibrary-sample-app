@@ -12,19 +12,19 @@ Because the key is scraped from the source, the argument you pass to a string sl
 // build-time extractor to key on — no catalog entry is generated, and this text
 // ships English-only no matter how complete your localizations are.
 struct ArchiveNotesIntent: AppIntent {
-    let sectionName: String
-    static var title: LocalizedStringResource {
-        LocalizedStringResource(stringLiteral: "Archive \(sectionName)")   // no key extracted
-    }
+	let sectionName: String
+	static var title: LocalizedStringResource {
+		LocalizedStringResource(stringLiteral: "Archive \(sectionName)")   // no key extracted
+	}
 }
 
 // AVOID: an entity's display title assembled from runtime data. Same failure —
 // the interpolation resolves at runtime, so no localizable template is emitted.
 struct NoteEntity: AppEntity {
-    var name: String
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "Note: \(name)")   // looks localized, isn't
-    }
+	var name: String
+	var displayRepresentation: DisplayRepresentation {
+		DisplayRepresentation(title: "Note: \(name)")   // looks localized, isn't
+	}
 }
 ```
 
@@ -33,18 +33,18 @@ struct NoteEntity: AppEntity {
 // the build-time extractor lifts "Archive Notes" into the catalog and translators
 // can reach it.
 struct ArchiveNotesIntent: AppIntent {
-    static var title: LocalizedStringResource { "Archive Notes" }
-    static var description = IntentDescription("Archives the current section of notes.")
+	static var title: LocalizedStringResource { "Archive Notes" }
+	static var description = IntentDescription("Archives the current section of notes.")
 }
 
 // PREFER: a literal title with the genuine instance name as an interpolated
 // argument. `\(name)` is data, not a translatable phrase — see the next section.
 struct NoteEntity: AppEntity {
-    var name: String
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Note")
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
-    }
+	var name: String
+	static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Note")
+	var displayRepresentation: DisplayRepresentation {
+		DisplayRepresentation(title: "\(name)")
+	}
 }
 ```
 
@@ -59,10 +59,10 @@ Dynamic *counts and quantities* are still static UI text with a variable inside,
 // extracted, so this can't be translated, and "1 items" / "many" pluralization
 // is wrong in most languages.
 struct DeleteNotesIntent: AppIntent {
-    let count: Int
-    var confirmationDialog: IntentDialog {
-        IntentDialog(stringLiteral: "Delete " + String(count) + " items")   // unlocalizable
-    }
+	let count: Int
+	var confirmationDialog: IntentDialog {
+		IntentDialog(stringLiteral: "Delete " + String(count) + " items")   // unlocalizable
+	}
 }
 
 // AVOID: naming your entity's count through raw string math instead of numericFormat.
@@ -74,18 +74,18 @@ static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Note")
 // PREFER: a literal template with the count interpolated as an argument; the
 // framework keys on the template and applies the .stringsdict plural rules.
 struct DeleteNotesIntent: AppIntent {
-    let count: Int
-    var confirmationDialog: IntentDialog {
-        "Delete \(count) items"   // literal template → extractable, pluralizable
-    }
+	let count: Int
+	var confirmationDialog: IntentDialog {
+		"Delete \(count) items"   // literal template → extractable, pluralizable
+	}
 }
 
 // PREFER: TypeDisplayRepresentation.numericFormat with a .stringsdict for the
 // entity's counted name. Pair the literal placeholder template with plural
 // entries so "1 book" / "2 books" resolve per locale.
 static var typeDisplayRepresentation = TypeDisplayRepresentation(
-    name: "Book",
-    numericFormat: "\(placeholder: .int) books"
+	name: "Book",
+	numericFormat: "\(placeholder: .int) books"
 )
 ```
 

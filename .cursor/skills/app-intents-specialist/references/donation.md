@@ -11,18 +11,18 @@ After a person completes an action in your app's own interface (a tap or gesture
 // prediction — Siri Suggestions and Spotlight never learn the user plays this
 // playlist every morning, because nothing was ever donated.
 func userTappedPlay(_ playlist: PlaylistEntity) async {
-    await player.play(playlist)
-    // …no donation → no prediction signal
+	await player.play(playlist)
+	// …no donation → no prediction signal
 }
 ```
 
 ```swift
 // PREFER: donate the matching intent after the action completes.
 func userTappedPlay(_ playlist: PlaylistEntity) async {
-    await player.play(playlist)
-    try? await IntentDonationManager.shared.donate(
-        intent: PlayPlaylistIntent(playlist: playlist)
-    )
+	await player.play(playlist)
+	try? await IntentDonationManager.shared.donate(
+		intent: PlayPlaylistIntent(playlist: playlist)
+	)
 }
 ```
 
@@ -31,8 +31,8 @@ When the intent declares a return value, hand the system the result alongside th
 ```swift
 // Include the result when the intent returns one, so prediction learns the outcome.
 try? await IntentDonationManager.shared.donate(
-    intent: PlayPlaylistIntent(playlist: playlist),
-    result: .result(value: playlist)
+	intent: PlayPlaylistIntent(playlist: playlist),
+	result: .result(value: playlist)
 )
 ```
 

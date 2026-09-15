@@ -11,14 +11,14 @@
 // `libraryModel` are @MainActor; perform() is not, so these calls hop actors
 // implicitly at best and race at worst. Under Swift 6 this won't compile.
 struct OpenNoteIntent: AppIntent {
-    static let title: LocalizedStringResource = "Open Note"
-    @Parameter var note: NoteEntity
+	static let title: LocalizedStringResource = "Open Note"
+	@Parameter var note: NoteEntity
 
-    func perform() async throws -> some IntentResult {
-        navigator.navigate(to: note)          // @MainActor — called off-main
-        libraryModel.lastOpened = note.id     // @MainActor mutation — data race
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		navigator.navigate(to: note)          // @MainActor — called off-main
+		libraryModel.lastOpened = note.id     // @MainActor mutation — data race
+		return .result()
+	}
 }
 ```
 
@@ -26,18 +26,18 @@ struct OpenNoteIntent: AppIntent {
 // PREFER: hop to the main actor explicitly for the work that needs it. Do the
 // rest (validation, data lookups) where perform() already is.
 struct OpenNoteIntent: AppIntent {
-    static let title: LocalizedStringResource = "Open Note"
-    @Parameter var note: NoteEntity
+	static let title: LocalizedStringResource = "Open Note"
+	@Parameter var note: NoteEntity
 
-    func perform() async throws -> some IntentResult {
-        await MainActor.run {
-            navigator.navigate(to: note)
-            libraryModel.lastOpened = note.id
-        }
-        return .result()
-    }
-    // Alternatively, since this whole body is main-actor work, annotate the method
-    // and drop the wrapper: `@MainActor func perform() async throws -> some IntentResult`.
+	func perform() async throws -> some IntentResult {
+		await MainActor.run {
+			navigator.navigate(to: note)
+			libraryModel.lastOpened = note.id
+		}
+		return .result()
+	}
+	// Alternatively, since this whole body is main-actor work, annotate the method
+	// and drop the wrapper: `@MainActor func perform() async throws -> some IntentResult`.
 }
 ```
 
@@ -54,12 +54,12 @@ So a `perform()` written as a linear script — do the irreversible thing, *then
 // unset, needsValueError restarts perform() from the top — and the charge
 // runs again on the second pass. The user is billed twice.
 func perform() async throws -> some IntentResult {
-    try await paymentService.charge(amount)            // irreversible, runs first
-    guard let recipient else {
-        throw $recipient.needsValueError("Send to whom?")  // restarts perform()
-    }
-    try await paymentService.send(amount, to: recipient)
-    return .result(value: amount)
+	try await paymentService.charge(amount)            // irreversible, runs first
+	guard let recipient else {
+		throw $recipient.needsValueError("Send to whom?")  // restarts perform()
+	}
+	try await paymentService.send(amount, to: recipient)
+	return .result(value: amount)
 }
 ```
 
@@ -69,13 +69,13 @@ func perform() async throws -> some IntentResult {
 // possible around irreversible work, guard it with an idempotency key / state
 // check so a replay is a no-op.
 func perform() async throws -> some IntentResult {
-    guard let recipient else {
-        throw $recipient.needsValueError("Send to whom?")  // restart happens here…
-    }
-    // …by the time we reach the charge, all value requests are behind us.
-    try await paymentService.charge(amount)
-    try await paymentService.send(amount, to: recipient)
-    return .result(value: amount)
+	guard let recipient else {
+		throw $recipient.needsValueError("Send to whom?")  // restart happens here…
+	}
+	// …by the time we reach the charge, all value requests are behind us.
+	try await paymentService.charge(amount)
+	try await paymentService.send(amount, to: recipient)
+	return .result(value: amount)
 }
 ```
 
@@ -90,9 +90,9 @@ Distinguish flow control from failure: `restartPerform` and `needsValueError` ar
 // notes are already gone; the prompt changes nothing, and `try?` makes a cancel
 // indistinguishable from a confirm.
 func perform() async throws -> some IntentResult {
-    try await store.deleteAllNotes()          // irreversible — already happened
-    try? await requestConfirmation(dialog: "Delete all notes?")
-    return .result()
+	try await store.deleteAllNotes()          // irreversible — already happened
+	try? await requestConfirmation(dialog: "Delete all notes?")
+	return .result()
 }
 ```
 
@@ -100,9 +100,9 @@ func perform() async throws -> some IntentResult {
 // PREFER: confirm first. A cancel throws and aborts perform() before anything
 // destructive runs; the delete executes only on confirm.
 func perform() async throws -> some IntentResult {
-    try await requestConfirmation(dialog: "Delete all notes? This can't be undone.")
-    try await store.deleteAllNotes()          // runs only if the user confirmed
-    return .result()
+	try await requestConfirmation(dialog: "Delete all notes? This can't be undone.")
+	try await store.deleteAllNotes()          // runs only if the user confirmed
+	return .result()
 }
 ```
 
@@ -117,21 +117,21 @@ The dialog-bearing `requestConfirmation(conditions:actionName:dialog:)` is iOS 1
 // IntentResult, so it won't compile — and reaching for `some IntentResult` while
 // returning a custom struct is a common dead end.
 func perform() async throws -> NoteSummary {        // ❌ not an IntentResult
-    NoteSummary(count: notes.count)
+	NoteSummary(count: notes.count)
 }
 ```
 
 ```swift
 // PREFER: return `some IntentResult` and build it with a `.result(...)` factory.
 func perform() async throws -> some ReturnsValue<Int> {
-    let count = try await store.noteCount()
-    return .result(value: count)
+	let count = try await store.noteCount()
+	return .result(value: count)
 }
 
 // No value to return? `.result()` marks completion.
 func perform() async throws -> some IntentResult {
-    try await store.archiveAll()
-    return .result()
+	try await store.archiveAll()
+	return .result()
 }
 ```
 

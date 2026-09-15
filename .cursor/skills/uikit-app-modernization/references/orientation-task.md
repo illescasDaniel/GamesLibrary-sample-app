@@ -74,9 +74,9 @@ In these cases, add a TODO explaining why bounds cannot substitute.
 ```swift
 // After
 if view.bounds.height > view.bounds.width {
-    useVerticalLayout()
+	useVerticalLayout()
 } else {
-    useHorizontalLayout()
+	useHorizontalLayout()
 }
 ```
 

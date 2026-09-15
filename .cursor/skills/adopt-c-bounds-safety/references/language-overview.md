@@ -37,18 +37,18 @@ There are two categories of pointers:
 
 ```c
 struct foo {
-    int *bar; // visible
-    int **baz; // visible pointer to a visible pointer
+	int *bar; // visible
+	int **baz; // visible pointer to a visible pointer
 };
 
 int *bar; // visible
 
 int * // visible
 baz(
-    int *frob  // visible
+	int *frob  // visible
 ) {
-    int *nicate; // hidden
-    int **qwop; // hidden pointer to a visible pointer
+	int *nicate; // hidden
+	int **qwop; // hidden pointer to a visible pointer
 }
 ```
 
@@ -175,8 +175,8 @@ int *__counted_by(count) elems;
 
 // fields:
 struct my_range {
-    int *__ended_by(end) begin;
-    int *end;
+	int *__ended_by(end) begin;
+	int *end;
 };
 
 // parameters:
@@ -202,8 +202,8 @@ int frob(int count, int arr[__counted_by(count)]);
 
 // Flexible array members:
 struct flexible {
-    int count;
-    int flex[__counted_by(count)];
+	int count;
+	int flex[__counted_by(count)];
 };
 ```
 
@@ -213,18 +213,18 @@ When you access a pointer with a count or end annotation, it is implicitly conve
 
 ```c
 void read_buffer(int *__counted_by(count) elems, int count) {
-    // bidi.lower = elems; bidi.current = elems; bidi.upper = elems + count
-    int *ptr = elems;
+	// bidi.lower = elems; bidi.current = elems; bidi.upper = elems + count
+	int *ptr = elems;
 }
 
 void read_buffer_with_byte_size(int *__sized_by(byte_count) elems, int byte_count) {
-    // bidi.lower = elems; bidi.current = elems; bidi.upper = (char *)elems + byte_count
-    int *ptr = elems;
+	// bidi.lower = elems; bidi.current = elems; bidi.upper = (char *)elems + byte_count
+	int *ptr = elems;
 }
 
 void read_ranged_buffer(int *__ended_by(end) begin, int *end) {
-    // bidi.lower = begin; bidi.current = begin; bidi.upper = end
-    int *ptr = begin;
+	// bidi.lower = begin; bidi.current = begin; bidi.upper = end
+	int *ptr = begin;
 }
 ```
 
@@ -242,25 +242,25 @@ To prevent inconsistent states, assignments to pointer-count pairs must happen i
 
 ```c
 void somefunction() {
-    int count = 0;
-    int *__counted_by(count) elems = NULL;
-    {
-        // group 1
-        elems = storage;
-        count = 3;
-        printf("hello!"); // side effects end group 1
+	int count = 0;
+	int *__counted_by(count) elems = NULL;
+	{
+		// group 1
+		elems = storage;
+		count = 3;
+		printf("hello!"); // side effects end group 1
 
-        // group 2
-        count = 2;
+		// group 2
+		count = 2;
 
-        {   // scope ends group 2
-            // ...
-        }
+		{   // scope ends group 2
+			// ...
+		}
 
-        // group 3
-        count = 1;
-        elems = storage + 1;
-    } // scope ends group 3
+		// group 3
+		count = 1;
+		elems = storage + 1;
+	} // scope ends group 3
 }
 ```
 
@@ -304,19 +304,19 @@ void make_out(int *__counted_by(*count) *o, size_t *count);
 
 // Implementation
 void make_out(int *__counted_by(*count) *o, size_t *count) {
-    size_t n = 10;
-    int *p = malloc(n * sizeof *p);
-    *count = n;   // assign count first, then the pointer (right-to-left analysis)
-    *o = p;
+	size_t n = 10;
+	int *p = malloc(n * sizeof *p);
+	*count = n;   // assign count first, then the pointer (right-to-left analysis)
+	*o = p;
 }
 
 // Caller
 void caller(void) {
-    size_t count = 0;
-    int *__counted_by(count) buf = NULL;   // must be adjacent to 'count'
-    make_out(&buf, &count);
-    for (size_t i = 0; i < count; i++) buf[i] = (int)i;
-    free(buf);
+	size_t count = 0;
+	int *__counted_by(count) buf = NULL;   // must be adjacent to 'count'
+	make_out(&buf, &count);
+	for (size_t i = 0; i < count; i++) buf[i] = (int)i;
+	free(buf);
 }
 ```
 
@@ -326,10 +326,10 @@ Identical signature shape to the OUT variant — the two are indistinguishable f
 
 ```c
 void grow_inout(int *__counted_by(*count) *p, size_t *count) {
-    size_t n = *count * 2;
-    int *tmp = realloc(*p, n * sizeof(int));
-    *count = n;
-    *p = tmp;
+	size_t n = *count * 2;
+	int *tmp = realloc(*p, n * sizeof(int));
+	*count = n;
+	*p = tmp;
 }
 ```
 
@@ -347,9 +347,9 @@ Caller decides the size; a `count = count;` self-assignment inside the callee sa
 
 ```c
 void alloc_fixed(int *__counted_by(count) *o, size_t count) {
-    int *p = malloc(count * sizeof *p);
-    count = count;   // self-assign: the dependency rule needs both sides in the same group
-    *o = p;
+	int *p = malloc(count * sizeof *p);
+	count = count;   // self-assign: the dependency rule needs both sides in the same group
+	*o = p;
 }
 ```
 
@@ -379,8 +379,8 @@ Structures with flexible array members must indicate the count with `__counted_b
 
 ```c
 struct flexible {
-    int count;
-    int elems[__counted_by(count)];
+	int count;
+	int elems[__counted_by(count)];
 };
 ```
 
@@ -416,7 +416,7 @@ Value-terminated arrays support arithmetic with values 0 and 1 only. It is a run
 ```c
 const char *s = /*...*/;
 while (*s) {
-    s++; // OK
+	s++; // OK
 }
 // *s == 0
 *s == 0; // OK: can read terminator
@@ -445,12 +445,12 @@ Convenience variants for __null_terminated pointers:
 ```c
 // -fbounds-safety enabled
 char *strdup(const char *_s) {
-    const char *__indexable s = __terminated_by_to_indexable(_s);
-    size_t size = __ptr_upper_bound(s) - s;
-    char *result = malloc(size + 1);
-    memcpy(result, s, size);
-    result[size] = 0;
-    return __unsafe_null_terminated_from_indexable(result, &result[size]);
+	const char *__indexable s = __terminated_by_to_indexable(_s);
+	size_t size = __ptr_upper_bound(s) - s;
+	char *result = malloc(size + 1);
+	memcpy(result, s, size);
+	result[size] = 0;
+	return __unsafe_null_terminated_from_indexable(result, &result[size]);
 }
 ```
 
@@ -486,8 +486,8 @@ Rules for which bounds you get with regular C operations:
 
 ```c
 struct array_inside {
-    int the_array[12];
-    int foo;
+	int the_array[12];
+	int foo;
 };
 
 struct array_inside many_arrays[15];
@@ -542,13 +542,13 @@ struct device *dev = __unsafe_forge_single(struct device *, get_device(0));
 // third_party_lib.h — can't change this header
 // Under -fbounds-safety, data defaults to __unsafe_indexable
 struct legacy_buffer {
-    void *data;
-    size_t size;
+	void *data;
+	size_t size;
 };
 
 // your code — forge because the struct can't be annotated
 void process(struct legacy_buffer *buf) {
-    void *safe = __unsafe_forge_bidi_indexable(void *, buf->data, buf->size);
+	void *safe = __unsafe_forge_bidi_indexable(void *, buf->data, buf->size);
 }
 ```
 
@@ -559,10 +559,10 @@ If you own the header, annotate the struct instead: `void *__sized_by(size) data
 ```c
 // Pascal-string: buf[0] is the byte count, data follows at buf[1..]
 void write_block(GifByteType *__unsafe_indexable buf) {
-    int block_len = buf[0] + 1;
-    GifByteType *safe = __unsafe_forge_bidi_indexable(
-        GifByteType *, buf, block_len);
-    fwrite(safe, 1, block_len, out);
+	int block_len = buf[0] + 1;
+	GifByteType *safe = __unsafe_forge_bidi_indexable(
+		GifByteType *, buf, block_len);
+	fwrite(safe, 1, block_len, out);
 }
 ```
 
@@ -574,15 +574,15 @@ Forges are unnecessary when the pointer already carries bounds information:
 
 ```c
 struct container {
-    int count;
-    Item *__counted_by(count) items;
+	int count;
+	Item *__counted_by(count) items;
 };
 
 // WRONG — forge is redundant
 Item *new_items = (Item *)realloc(c->items, newCount * sizeof(Item));
 c->count = newCount;
 c->items = __unsafe_forge_bidi_indexable(  // unnecessary!
-    Item *, new_items, (size_t)newCount * sizeof(Item));
+	Item *, new_items, (size_t)newCount * sizeof(Item));
 
 // RIGHT — realloc has alloc_size, so the cast already carries correct bounds
 Item *new_items = (Item *)realloc(c->items, newCount * sizeof(Item));
@@ -595,7 +595,7 @@ c->items = new_items;  // compiler inserts bounds check automatically
 ```c
 // WRONG — forge is redundant
 Item *local = __unsafe_forge_bidi_indexable(  // unnecessary!
-    Item *, c->items, (size_t)c->count * sizeof(Item));
+	Item *, c->items, (size_t)c->count * sizeof(Item));
 
 // RIGHT — accessing a __counted_by pointer eagerly converts to __bidi_indexable
 Item *local = c->items;  // already __bidi_indexable with correct bounds
@@ -608,13 +608,13 @@ struct Frame { uint8_t buf[256]; };
 
 // WRONG — forge is redundant
 void process(struct Frame *p) {
-    uint8_t *view = __unsafe_forge_bidi_indexable(  // unnecessary!
-        uint8_t *, p->buf, sizeof(p->buf));
+	uint8_t *view = __unsafe_forge_bidi_indexable(  // unnecessary!
+		uint8_t *, p->buf, sizeof(p->buf));
 }
 
 // RIGHT — array decay already gives bounds
 void process(struct Frame *p) {
-    uint8_t *view = p->buf;  // __bidi_indexable, bounds [&p->buf[0], &p->buf[256])
+	uint8_t *view = p->buf;  // __bidi_indexable, bounds [&p->buf[0], &p->buf[256])
 }
 ```
 
@@ -665,11 +665,11 @@ The compiler eagerly adds bounds checks, but LLVM detects redundant checks and e
 
 ```c
 int sum(int *__counted_by(count) elems, int count) {
-    int accum = 0;
-    for (int i = 0; i < count; ++i) {
-        accum += elems[i]; // bounds check added but eliminated — i < count guarantees safety
-    }
-    return accum;
+	int accum = 0;
+	for (int i = 0; i < count; ++i) {
+		accum += elems[i]; // bounds check added but eliminated — i < count guarantees safety
+	}
+	return accum;
 }
 ```
 

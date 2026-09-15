@@ -12,12 +12,12 @@ An `AppShortcut` is the zero-configuration entry point to an intent: it ships in
 // systemImageName"). The shortcut installs, but the system has nothing to draw
 // for the tile, and you inherit a deprecation warning you may not read.
 struct LibraryShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
-        AppShortcut(
-            intent: OpenLibraryIntent(),
-            phrases: ["Open my library in \(.applicationName)"]
-        )
-    }
+	static var appShortcuts: [AppShortcut] {
+		AppShortcut(
+			intent: OpenLibraryIntent(),
+			phrases: ["Open my library in \(.applicationName)"]
+		)
+	}
 }
 ```
 
@@ -26,14 +26,14 @@ struct LibraryShortcuts: AppShortcutsProvider {
 // Spotlight display; systemImageName is the SF Symbol on the tile. systemImageName
 // must be a compile-time string literal, not a variable or computed value.
 struct LibraryShortcuts: AppShortcutsProvider {
-    static var appShortcuts: [AppShortcut] {
-        AppShortcut(
-            intent: OpenLibraryIntent(),
-            phrases: ["Open my library in \(.applicationName)"],
-            shortTitle: "Open Library",
-            systemImageName: "books.vertical"
-        )
-    }
+	static var appShortcuts: [AppShortcut] {
+		AppShortcut(
+			intent: OpenLibraryIntent(),
+			phrases: ["Open my library in \(.applicationName)"],
+			shortTitle: "Open Library",
+			systemImageName: "books.vertical"
+		)
+	}
 }
 ```
 
@@ -52,10 +52,10 @@ The non-obvious part: **the `AppShortcut` initializer never validates your phras
 // it compiles (with a build warning), and if shipped the index drops it (logging
 // "Phrase missing"), so this utterance never routes to your app at all.
 AppShortcut(
-    intent: PlayMixIntent(),
-    phrases: ["Play my daily mix"],   // ambiguous across apps; no ${applicationName}
-    shortTitle: "Daily Mix",
-    systemImageName: "music.note"
+	intent: PlayMixIntent(),
+	phrases: ["Play my daily mix"],   // ambiguous across apps; no ${applicationName}
+	shortTitle: "Daily Mix",
+	systemImageName: "music.note"
 )
 ```
 
@@ -65,13 +65,13 @@ AppShortcut(
 // named set: an AppEnum, an AppEntity, or a Bool with true/false display names.
 // Primitive types with no closed set of options CANNOT be referenced in a phrase.
 AppShortcut(
-    intent: PlayMixIntent(),
-    phrases: [
-        "Play my daily mix in \(.applicationName)",
-        "Play \(\.$genre) in \(.applicationName)",   // genre is an AppEnum
-    ],
-    shortTitle: "Daily Mix",
-    systemImageName: "music.note"
+	intent: PlayMixIntent(),
+	phrases: [
+		"Play my daily mix in \(.applicationName)",
+		"Play \(\.$genre) in \(.applicationName)",   // genre is an AppEnum
+	],
+	shortTitle: "Daily Mix",
+	systemImageName: "music.note"
 )
 ```
 
@@ -88,8 +88,8 @@ If a phrase interpolates an `AppEntity`/`AppEnum` parameter backed by dynamic op
 // captured at build/extraction time are all Siri knows about, so a newly created
 // playlist is unreachable by voice and a deleted one still matches.
 func didCreatePlaylist(_ playlist: PlaylistEntity) async {
-    try? await store.save(playlist)
-    // ...and nothing tells App Intents the "play <playlist> in MyApp" options moved.
+	try? await store.save(playlist)
+	// ...and nothing tells App Intents the "play <playlist> in MyApp" options moved.
 }
 ```
 
@@ -98,8 +98,8 @@ func didCreatePlaylist(_ playlist: PlaylistEntity) async {
 // system to refresh the App Shortcut parameters so phrase expansion re-snapshots
 // the current values.
 func didCreatePlaylist(_ playlist: PlaylistEntity) async {
-    try? await store.save(playlist)
-    LibraryShortcuts.updateAppShortcutParameters()
+	try? await store.save(playlist)
+	LibraryShortcuts.updateAppShortcutParameters()
 }
 ```
 

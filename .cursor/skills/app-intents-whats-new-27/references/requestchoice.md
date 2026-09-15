@@ -13,22 +13,22 @@ Before iOS 26 an intent that needed the person to pick between a few options had
 ```swift
 @available(iOS 26.0, *)
 struct FindTicketsIntent: AppIntent {
-    static let title: LocalizedStringResource = "Find Tickets"
-    @Parameter var landmark: LandmarkEntity
+	static let title: LocalizedStringResource = "Find Tickets"
+	@Parameter var landmark: LandmarkEntity
 
-    func perform() async throws -> some IntentResult & ProvidesDialog {
-        let morning = IntentChoiceOption(title: "Morning visit")
-        let evening = IntentChoiceOption(title: "Evening visit")
+	func perform() async throws -> some IntentResult & ProvidesDialog {
+		let morning = IntentChoiceOption(title: "Morning visit")
+		let evening = IntentChoiceOption(title: "Evening visit")
 
-        let choice = try await requestChoice(
-            between: [morning, evening],
-            dialog: "When should the visit be?"
-        )
+		let choice = try await requestChoice(
+			between: [morning, evening],
+			dialog: "When should the visit be?"
+		)
 
-        let window: VisitWindow = (choice == morning) ? .morning : .evening
-        try await ModelData.shared.bookTicket(landmark, window: window)
-        return .result(dialog: "Booked the \(window) visit.")
-    }
+		let window: VisitWindow = (choice == morning) ? .morning : .evening
+		try await ModelData.shared.bookTicket(landmark, window: window)
+		return .result(dialog: "Booked the \(window) visit.")
+	}
 }
 ```
 
@@ -41,16 +41,16 @@ struct FindTicketsIntent: AppIntent {
 ```swift
 @available(iOS 26.0, *)
 func perform() async throws -> some IntentResult {
-    let keep   = IntentChoiceOption(title: "Keep both")
-    let replace = IntentChoiceOption(title: "Replace existing", style: .destructive)
+	let keep   = IntentChoiceOption(title: "Keep both")
+	let replace = IntentChoiceOption(title: "Replace existing", style: .destructive)
 
-    // Selecting .cancel throws — it does not come back as a return value.
-    let choice = try await requestChoice(between: [keep, replace, .cancel],
-                                         dialog: "This landmark already exists.")
-    if choice == replace {
-        try await ModelData.shared.overwrite()
-    }
-    return .result()
+	// Selecting .cancel throws — it does not come back as a return value.
+	let choice = try await requestChoice(between: [keep, replace, .cancel],
+										 dialog: "This landmark already exists.")
+	if choice == replace {
+		try await ModelData.shared.overwrite()
+	}
+	return .result()
 }
 ```
 
@@ -62,15 +62,15 @@ When the user's deployment target is below SDK 26 and the answer needs a mid-per
 
 ```swift
 func perform() async throws -> some IntentResult & ProvidesDialog {
-    if #available(iOS 26.0, *) {
-        let a = IntentChoiceOption(title: "Morning visit")
-        let b = IntentChoiceOption(title: "Evening visit")
-        let choice = try await requestChoice(between: [a, b], dialog: "When?")
-        // ...branch on `choice`...
-    } else {
-        // Older fallback: resolve a parameter, or use requestConfirmation for a binary choice.
-    }
-    return .result(dialog: "Booked.")
+	if #available(iOS 26.0, *) {
+		let a = IntentChoiceOption(title: "Morning visit")
+		let b = IntentChoiceOption(title: "Evening visit")
+		let choice = try await requestChoice(between: [a, b], dialog: "When?")
+		// ...branch on `choice`...
+	} else {
+		// Older fallback: resolve a parameter, or use requestConfirmation for a binary choice.
+	}
+	return .result(dialog: "Booked.")
 }
 ```
 

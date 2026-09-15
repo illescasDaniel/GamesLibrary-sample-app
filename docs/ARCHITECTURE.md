@@ -13,8 +13,8 @@ Hexagonal Architecture (Ports & Adapters) with MVVM as the UI presentation patte
 
 ```
 Views → ViewModels → Inbound Ports (Use Cases) → Outbound Ports (Repository)
-                                                         ↓
-                                              Network / Cache / DTOs
+														 ↓
+											  Network / Cache / DTOs
 ```
 
 - `AppContainer` is the composition root: wires HTTP, cache, repository, use cases, and ViewModel factories.

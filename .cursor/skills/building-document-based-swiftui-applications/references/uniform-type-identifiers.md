@@ -49,12 +49,12 @@ import UniformTypeIdentifiers
 
 // For a type you export (you own it):
 extension UTType {
-    static let restaurantMenu = UTType(exportedAs: "com.myApp.restaurantmenu")
+	static let restaurantMenu = UTType(exportedAs: "com.myApp.restaurantmenu")
 }
 
 // For a type you import (another app owns it):
 extension UTType {
-    static var anotherAppsImageFormat: UTType { UTType(importedAs: "com.anotherApp.image") }
+	static var anotherAppsImageFormat: UTType { UTType(importedAs: "com.anotherApp.image") }
 }
 ```
 
@@ -68,16 +68,16 @@ After declaring the type, tell the system your app can open it. Without a `CFBun
 <key>CFBundleDocumentTypes</key>
 <array>
   <dict>
-    <key>CFBundleTypeName</key>
-    <string>My Format</string>
-    <key>LSHandlerRank</key>
-    <string>Owner</string>
-    <key>CFBundleTypeRole</key>
-    <string>Editor</string>
-    <key>LSItemContentTypes</key>
-    <array>
-      <string>com.mycompany.myformat</string>
-    </array>
+	<key>CFBundleTypeName</key>
+	<string>My Format</string>
+	<key>LSHandlerRank</key>
+	<string>Owner</string>
+	<key>CFBundleTypeRole</key>
+	<string>Editor</string>
+	<key>LSItemContentTypes</key>
+	<array>
+	  <string>com.mycompany.myformat</string>
+	</array>
   </dict>
 </array>
 ```

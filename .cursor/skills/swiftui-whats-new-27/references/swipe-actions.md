@@ -11,25 +11,25 @@ Put `swipeActionsContainer()` on the scrollable container and keep the existing 
 
 ```swift
 struct StickerListView: View {
-    @State private var stickers: [Sticker] = []
+	@State private var stickers: [Sticker] = []
 
-    var body: some View {
-        ScrollView {
-            LazyVStack {
-                ForEach(stickers) { sticker in
-                    StickerRow(sticker)
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                stickers.removeAll { $0.id == sticker.id }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
-                }
-            }
-        }
-        .swipeActionsContainer()
-    }
+	var body: some View {
+		ScrollView {
+			LazyVStack {
+				ForEach(stickers) { sticker in
+					StickerRow(sticker)
+						.swipeActions {
+							Button(role: .destructive) {
+								stickers.removeAll { $0.id == sticker.id }
+							} label: {
+								Label("Delete", systemImage: "trash")
+							}
+						}
+				}
+			}
+		}
+		.swipeActionsContainer()
+	}
 }
 ```
 
@@ -43,15 +43,15 @@ The `swipeActions(edge:allowsFullSwipe:content:onPresentationChanged:)` overload
 
 ```swift
 StickerRow(sticker)
-    .swipeActions {
-        Button(role: .destructive) {
-            stickers.removeAll { $0.id == sticker.id }
-        } label: {
-            Label("Delete", systemImage: "trash")
-        }
-    } onPresentationChanged: { isPresented in
-        revealedSticker = isPresented ? sticker.id : nil
-    }
+	.swipeActions {
+		Button(role: .destructive) {
+			stickers.removeAll { $0.id == sticker.id }
+		} label: {
+			Label("Delete", systemImage: "trash")
+		}
+	} onPresentationChanged: { isPresented in
+		revealedSticker = isPresented ? sticker.id : nil
+	}
 ```
 
 **Availability:** iOS 27, macOS 27, watchOS 27, visionOS 27; tvOS unavailable.

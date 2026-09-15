@@ -14,8 +14,8 @@ import AppIntents
 
 @available(iOS 27.0, *)
 func updateNowPlaying(_ episode: EpisodeEntity) async throws {
-    // Replaces whatever was previously published for the now-playing context.
-    try await RelevantEntities.shared.updateEntities([episode], for: .audio(.nowPlaying))
+	// Replaces whatever was previously published for the now-playing context.
+	try await RelevantEntities.shared.updateEntities([episode], for: .audio(.nowPlaying))
 }
 ```
 
@@ -30,12 +30,12 @@ import AppIntents
 
 @available(iOS 27.0, *)
 func retireNowPlaying(_ episode: EpisodeEntity) async throws {
-    // Retract a specific entity from one context...
-    try await RelevantEntities.shared.removeEntities([episode], from: .audio(.nowPlaying))
-    // ...clear the whole context...
-    try await RelevantEntities.shared.removeAllEntities(for: .audio(.nowPlaying))
-    // ...or clear everything TravelTracking published, across all contexts.
-    try await RelevantEntities.shared.removeAllEntities()
+	// Retract a specific entity from one context...
+	try await RelevantEntities.shared.removeEntities([episode], from: .audio(.nowPlaying))
+	// ...clear the whole context...
+	try await RelevantEntities.shared.removeAllEntities(for: .audio(.nowPlaying))
+	// ...or clear everything TravelTracking published, across all contexts.
+	try await RelevantEntities.shared.removeAllEntities()
 }
 ```
 
@@ -50,7 +50,7 @@ import AppIntents
 
 @available(iOS 27.0, *)
 func nowPlayingContext() -> AppEntityContext {
-    .audio(.nowPlaying)                    // the system's Now Playing control / complication
+	.audio(.nowPlaying)                    // the system's Now Playing control / complication
 }
 
 // Workout contexts need the HealthKit overlay.
@@ -58,7 +58,7 @@ import HealthKit
 
 @available(iOS 27.0, *)
 func runningContext() -> AppEntityContext {
-    .audio(.workout(activityType: .running))   // e.g. surface a running playlist when a run starts
+	.audio(.workout(activityType: .running))   // e.g. surface a running playlist when a run starts
 }
 ```
 
@@ -75,11 +75,11 @@ import RelevanceKit                  // optional — RelevantContext is re-expor
 @available(iOS 17.0, *)
 @available(tvOS, unavailable)
 func publishRelevantWidgets(_ intents: [TravelGalleryWidgetIntent],
-                            relevance: RelevantContext) async throws {
-    let relevant = intents.map {
-        RelevantIntent($0, widgetKind: "TravelGallery", relevance: relevance)
-    }
-    try await RelevantIntentManager.shared.updateRelevantIntents(relevant)
+							relevance: RelevantContext) async throws {
+	let relevant = intents.map {
+		RelevantIntent($0, widgetKind: "TravelGallery", relevance: relevance)
+	}
+	try await RelevantIntentManager.shared.updateRelevantIntents(relevant)
 }
 ```
 

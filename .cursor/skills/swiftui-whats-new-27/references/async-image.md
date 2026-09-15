@@ -21,9 +21,9 @@ The new `init(request:)` initializers take a `URLRequest` instead of a `URL`, so
 
 ```swift
 AsyncImage(request: URLRequest(url: imageURL, cachePolicy: .returnCacheDataElseLoad)) { image in
-    image.resizable().scaledToFit()
+	image.resizable().scaledToFit()
 } placeholder: {
-    ProgressView()
+	ProgressView()
 }
 // URLRequest.CachePolicy: .returnCacheDataElseLoad, .returnCacheDataDontLoad,
 // .reloadIgnoringLocalCacheData, .reloadRevalidatingCacheData, .useProtocolCachePolicy
@@ -37,23 +37,23 @@ AsyncImage(request: URLRequest(url: imageURL, cachePolicy: .returnCacheDataElseL
 
 ```swift
 struct GalleryView: View {
-    private static let imageSession: URLSession = {
-        let configuration = URLSessionConfiguration.default
-        configuration.urlCache = URLCache(memoryCapacity: 64 * 1024 * 1024,
-                                           diskCapacity: 256 * 1024 * 1024)
-        return URLSession(configuration: configuration)
-    }()
+	private static let imageSession: URLSession = {
+		let configuration = URLSessionConfiguration.default
+		configuration.urlCache = URLCache(memoryCapacity: 64 * 1024 * 1024,
+										   diskCapacity: 256 * 1024 * 1024)
+		return URLSession(configuration: configuration)
+	}()
 
-    var body: some View {
-        ScrollView {
-            LazyVStack {
-                ForEach(photos) { photo in
-                    AsyncImage(request: URLRequest(url: photo.url, cachePolicy: .returnCacheDataElseLoad))
-                }
-            }
-        }
-        .asyncImageURLSession(Self.imageSession)
-    }
+	var body: some View {
+		ScrollView {
+			LazyVStack {
+				ForEach(photos) { photo in
+					AsyncImage(request: URLRequest(url: photo.url, cachePolicy: .returnCacheDataElseLoad))
+				}
+			}
+		}
+		.asyncImageURLSession(Self.imageSession)
+	}
 }
 ```
 

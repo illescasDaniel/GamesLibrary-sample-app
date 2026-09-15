@@ -14,7 +14,7 @@ If fully unoptimized builds aren't feasible (e.g., code size restrictions), sele
 
 ```c
 __attribute__((optnone)) void function_to_debug() {
-    // ...
+	// ...
 }
 ```
 
@@ -114,7 +114,7 @@ Trap reasons are human-readable descriptions encoded in debug info as artificial
 ```
 (lldb) bt
 * thread #1, stop reason = Bounds check failed: Dereferencing above bounds
-    frame #0: parse_ints_O0`parse_ints [inlined] Bounds check failed: Dereferencing above bounds
+	frame #0: parse_ints_O0`parse_ints [inlined] Bounds check failed: Dereferencing above bounds
   * frame #1: parse_ints_O0`parse_ints at parse_ints.c:39:13
 ```
 
@@ -219,7 +219,7 @@ On older OSs this symbol is not provided and so linker errors will be observed. 
 
 __attribute__((noinline))
 void __bounds_safety_soft_trap(void) {
-    // Provide a symbol for LLDB to set a breakpoint on but do nothing
+	// Provide a symbol for LLDB to set a breakpoint on but do nothing
 }
 ```
 
@@ -232,7 +232,7 @@ LLDB includes an instrumentation plugin that automatically stops on soft traps. 
 ```
 Process 779 stopped
 * thread #1, stop reason = Soft Bounds check failed: indexing above upper bound in 'ptr[idx]'
-    frame #2: main`bad_read(ptr=(ptr: 0x00016af472a8, bounds: 0x00016af472a8..0x00016af472b4), idx=3) at main.c:4:62
+	frame #2: main`bad_read(ptr=(ptr: 0x00016af472a8, bounds: 0x00016af472a8..0x00016af472b4), idx=3) at main.c:4:62
 ```
 
 The backtrace shows:
@@ -242,10 +242,10 @@ The backtrace shows:
 
 ```
 (lldb) bt
-    frame #0: libsystem_sanitizers.dylib`__bounds_safety_soft_trap
-    frame #1: main`__clang_trap_msg$Bounds check failed$indexing above upper bound in 'ptr[idx]' [inlined]
+	frame #0: libsystem_sanitizers.dylib`__bounds_safety_soft_trap
+	frame #1: main`__clang_trap_msg$Bounds check failed$indexing above upper bound in 'ptr[idx]' [inlined]
   * frame #2: main`bad_read(ptr=..., idx=3) at main.c:4:62
-    frame #3: main`main(argc=1, argv=...) at main.c:10:5
+	frame #3: main`main(argc=1, argv=...) at main.c:10:5
 ```
 
 Resume execution with `c` (continue), just like any other breakpoint.

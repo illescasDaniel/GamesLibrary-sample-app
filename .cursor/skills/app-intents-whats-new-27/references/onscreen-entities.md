@@ -17,10 +17,10 @@ import SwiftUI
 
 // EventDetailView body, trailing modifiers
 .userActivity("com.example.cometcal.viewEvent") { activity in
-    activity.appEntityIdentifier = EntityIdentifier(
-        for: EventEntity.self,
-        identifier: event.id
-    )   // the link that resolves "this"
+	activity.appEntityIdentifier = EntityIdentifier(
+		for: EventEntity.self,
+		identifier: event.id
+	)   // the link that resolves "this"
 }
 ```
 
@@ -31,11 +31,11 @@ import AppIntents
 
 @available(iOS 18.2, *)
 func makeActivity(for event: EventEntity) -> NSUserActivity {
-    let activity = NSUserActivity(activityType: "com.example.cometcal.viewEvent")
-    activity.title = event.title
-    activity.appEntityIdentifier = EntityIdentifier(for: EventEntity.self, identifier: event.id)
-    activity.becomeCurrent()
-    return activity
+	let activity = NSUserActivity(activityType: "com.example.cometcal.viewEvent")
+	activity.title = event.title
+	activity.appEntityIdentifier = EntityIdentifier(for: EventEntity.self, identifier: event.id)
+	activity.becomeCurrent()
+	return activity
 }
 ```
 
@@ -50,7 +50,7 @@ When a screen shows a list rather than a single detail view, annotate the rows s
 ```swift
 // CalendarListView body, on the event list
 .appEntityIdentifier(forSelectionType: EventEntity.ID.self) { eventID in
-    EntityIdentifier(for: EventEntity.self, identifier: eventID)
+	EntityIdentifier(for: EventEntity.self, identifier: eventID)
 }
 ```
 

@@ -117,14 +117,14 @@ Every per-target / per-setting action that needs to happen must have its own tas
 - Phase 4 (Plan & Approve) is one task that completes when the user picks Run/Cancel.
 - On Run, Phase 4 step 5 parses the plan and creates fine-grained tasks. For each apply task it embeds that target's delta (extracted from the corresponding `Audit <target>` task's description) into the apply task's own `description` so Phase 5 doesn't have to look it up again.
   - For each **Enhanced Security** sub-item that's checked:
-    - **Enable Enhanced Security**: `Enable Enhanced Security at project level` (one task). On pbxproj-only projects, this task encapsulates the guide-and-verify flow described in Phase 5 Step 1a.
-    - **Update entitlements**: one `Apply Enhanced Security entitlements to <target>` per target needing changes.
-    - **Hardware memory tagging**: `Apply Hardware Memory Tagging` (one task; walks supported targets internally).
-    - **Checked pointer arithmetic**: `Apply Checked Pointer Arithmetic` (one task; walks supported targets internally).
+	- **Enable Enhanced Security**: `Enable Enhanced Security at project level` (one task). On pbxproj-only projects, this task encapsulates the guide-and-verify flow described in Phase 5 Step 1a.
+	- **Update entitlements**: one `Apply Enhanced Security entitlements to <target>` per target needing changes.
+	- **Hardware memory tagging**: `Apply Hardware Memory Tagging` (one task; walks supported targets internally).
+	- **Checked pointer arithmetic**: `Apply Checked Pointer Arithmetic` (one task; walks supported targets internally).
   - For each **Warnings** sub-item that's checked:
-    - `Apply Compiler Warnings` if that sub-item is checked.
-    - `Apply Static Analyzer Warnings` if that sub-item is checked.
-    - `Apply Clang-Tidy Warnings` if that sub-item is checked.
+	- `Apply Compiler Warnings` if that sub-item is checked.
+	- `Apply Static Analyzer Warnings` if that sub-item is checked.
+	- `Apply Clang-Tidy Warnings` if that sub-item is checked.
   - `Apply Additional Diagnostic Settings` if checked.
   - `Emit Bounds Safety Adoption guidance` if checked.
   - One `Inquire about <MACRO> on <target>` per Phase-6 candidate (only if "Inquire about disabled settings" is checked).

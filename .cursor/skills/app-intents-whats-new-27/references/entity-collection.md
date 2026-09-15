@@ -12,30 +12,30 @@ The core adoption decision. With `[Entity]`, the system resolves and hydrates ev
 ```swift
 // AVOID: forces the system to hydrate every entity during parameter resolution.
 struct DisableAlarmsIntent: AppIntent {
-    static var title: LocalizedStringResource = "Disable Alarms"
+	static var title: LocalizedStringResource = "Disable Alarms"
 
-    @Parameter(title: "Alarms")
-    var alarms: [AlarmEntity]   // hundreds of full entities materialized up front
+	@Parameter(title: "Alarms")
+	var alarms: [AlarmEntity]   // hundreds of full entities materialized up front
 
-    func perform() async throws -> some IntentResult {
-        try await AlarmService.disable(alarms.map(\.id))
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		try await AlarmService.disable(alarms.map(\.id))
+		return .result()
+	}
 }
 
 // PREFER: identifiers carried cheaply; no forced hydration.
 @available(iOS 27.0, *)
 struct DisableAlarmsIntent: AppIntent {
-    static var title: LocalizedStringResource = "Disable Alarms"
+	static var title: LocalizedStringResource = "Disable Alarms"
 
-    @Parameter(title: "Alarms")
-    var alarms: EntityCollection<AlarmEntity>
+	@Parameter(title: "Alarms")
+	var alarms: EntityCollection<AlarmEntity>
 
-    func perform() async throws -> some IntentResult {
-        // Only ids are needed, so nothing is hydrated.
-        try await AlarmService.disable(alarms.identifiers)
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		// Only ids are needed, so nothing is hydrated.
+		try await AlarmService.disable(alarms.identifiers)
+		return .result()
+	}
 }
 ```
 
@@ -48,10 +48,10 @@ struct DisableAlarmsIntent: AppIntent {
 ```swift
 @available(iOS 27.0, *)
 func makeCollections(ids: [AlarmEntity.ID], entities: [AlarmEntity]) {
-    let cheap = EntityCollection<AlarmEntity>(identifiers: ids)   // ids only
-    let cached = EntityCollection(entities: entities)            // pre-caches entities
-    let literal: EntityCollection<AlarmEntity> = [ids[0], ids[1]] // array-literal sugar
-    _ = (cheap, cached, literal)
+	let cheap = EntityCollection<AlarmEntity>(identifiers: ids)   // ids only
+	let cached = EntityCollection(entities: entities)            // pre-caches entities
+	let literal: EntityCollection<AlarmEntity> = [ids[0], ids[1]] // array-literal sugar
+	_ = (cheap, cached, literal)
 }
 ```
 
@@ -64,17 +64,17 @@ When you need the full entities, call `resolvedEntities() async throws -> [Entit
 ```swift
 @available(iOS 27.0, *)
 func perform(alarms: EntityCollection<AlarmEntity>) async throws {
-    // AVOID: re-resolving per iteration (each call may run the default query).
-    for id in alarms.identifiers {
-        let all = try await alarms.resolvedEntities()   // wasteful in a loop
-        _ = all.first { $0.id == id }
-    }
+	// AVOID: re-resolving per iteration (each call may run the default query).
+	for id in alarms.identifiers {
+		let all = try await alarms.resolvedEntities()   // wasteful in a loop
+		_ = all.first { $0.id == id }
+	}
 
-    // PREFER: hydrate once, then work against the array.
-    let entities = try await alarms.resolvedEntities()
-    for entity in entities {
-        await process(entity)
-    }
+	// PREFER: hydrate once, then work against the array.
+	let entities = try await alarms.resolvedEntities()
+	for entity in entities {
+		await process(entity)
+	}
 }
 ```
 
@@ -87,15 +87,15 @@ The `identifiers` property is public and directly accessible. `count` and `isEmp
 ```swift
 @available(iOS 27.0, *)
 func editCollection(_ alarms: inout EntityCollection<AlarmEntity>, extra: AlarmEntity) {
-    guard !alarms.isEmpty else { return }
-    for id in alarms {                 // Collection iteration yields Entity.ID
-        print(id)
-    }
-    alarms.append(extra)               // appends extra.id
-    if alarms.contains(extra) {        // membership by entity (Entity.ID: Equatable)
-        alarms.remove(extra)
-    }
-    print(alarms.count)
+	guard !alarms.isEmpty else { return }
+	for id in alarms {                 // Collection iteration yields Entity.ID
+		print(id)
+	}
+	alarms.append(extra)               // appends extra.id
+	if alarms.contains(extra) {        // membership by entity (Entity.ID: Equatable)
+		alarms.remove(extra)
+	}
+	print(alarms.count)
 }
 ```
 
@@ -108,12 +108,12 @@ func editCollection(_ alarms: inout EntityCollection<AlarmEntity>, extra: AlarmE
 ```swift
 @available(iOS 27.0, *)
 struct PlaylistEntity: AppEntity {
-    let id: UUID
+	let id: UUID
 
-    @Property(title: "Songs")
-    var songs: EntityCollection<SongEntity>   // ids stored; hydrate on demand
+	@Property(title: "Songs")
+	var songs: EntityCollection<SongEntity>   // ids stored; hydrate on demand
 
-    static var defaultQuery = PlaylistQuery()
+	static var defaultQuery = PlaylistQuery()
 }
 ```
 
@@ -130,15 +130,15 @@ When the user's deployment target is below SDK 27 and the answer needs `EntityCo
 ```swift
 @available(iOS 27.0, *)
 struct DisableAlarmsIntent: AppIntent {
-    static var title: LocalizedStringResource = "Disable Alarms"
+	static var title: LocalizedStringResource = "Disable Alarms"
 
-    @Parameter(title: "Alarms")
-    var alarms: EntityCollection<AlarmEntity>
+	@Parameter(title: "Alarms")
+	var alarms: EntityCollection<AlarmEntity>
 
-    func perform() async throws -> some IntentResult {
-        try await AlarmService.disable(alarms.identifiers)
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		try await AlarmService.disable(alarms.identifiers)
+		return .result()
+	}
 }
 ```
 

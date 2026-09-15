@@ -7,20 +7,20 @@ import HTTIES
 @MainActor
 struct GamesNetworkDataSourceTests {
 
-    @Test
-    func givenNetworkDataSourceWhen404ThenReturnsEmptyResults() async throws {
-        let mockHTTPClient = MockHTTPClient()
-        mockHTTPClient.error = AppNetworkResponseError.unexpected(statusCode: 404)
+	@Test
+	func givenNetworkDataSourceWhen404ThenReturnsEmptyResults() async throws {
+		let mockHTTPClient = MockHTTPClient()
+		mockHTTPClient.error = AppNetworkResponseError.unexpected(statusCode: 404)
 
-        let dataSource = GamesNetworkDataSourceImpl(
-            httpClient: mockHTTPClient,
-            environment: AppEnvironment.production,
-            jsonDecoder: JSONDecoder()
-        )
+		let dataSource = GamesNetworkDataSourceImpl(
+			httpClient: mockHTTPClient,
+			environment: AppEnvironment.production,
+			jsonDecoder: JSONDecoder()
+		)
 
-        let output = try await dataSource.games(GamesInputDTO.dummy(page: 1))
+		let output = try await dataSource.games(GamesInputDTO.dummy(page: 1))
 
-        #expect(output.results.isEmpty)
-        #expect(output.count == 0)
-    }
+		#expect(output.results.isEmpty)
+		#expect(output.count == 0)
+	}
 }

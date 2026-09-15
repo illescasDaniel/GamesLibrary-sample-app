@@ -16,15 +16,15 @@ For example, this code will fail to compile:
 import SwiftUI
 
 struct ContentView: View {
-    var name: String
-    @State private var counter: Int = 0
+	var name: String
+	@State private var counter: Int = 0
 
-    init(name: String) {
-        self.counter = 42
-        self.name = name
-    }
+	init(name: String) {
+		self.counter = 42
+		self.name = name
+	}
 
-    var body: some View { Text("\(name): \(counter)") }
+	var body: some View { Text("\(name): \(counter)") }
 }
 ```
 
@@ -40,11 +40,11 @@ Assigning a new value to a `@State` property that has an initial value is an ant
 For example, the `body` for the following code will see `0` as the value for `counter`
 ```swift
 struct ContentView: View {
-    @State private var counter: Int = 0
+	@State private var counter: Int = 0
 
-    init() {
-        self.counter = 42
-    }
+	init() {
+		self.counter = 42
+	}
 }
 ```
 
@@ -75,7 +75,7 @@ struct Foo: View {
 
 extension Foo {
   init(_ bar: Int, baz: Int) {
-    self.init(bar: bar, baz) // error
+	self.init(bar: bar, baz) // error
   }
 }
 ```

@@ -11,18 +11,18 @@ If the user's deployment target is below iOS 27 / macOS 27 / watchOS 27 / tvOS 2
 
 ```swift
 struct PhotoGrid: View {
-    @State private var photoToDelete: Photo?
+	@State private var photoToDelete: Photo?
 
-    var body: some View {
-        PhotoList(deleteAction: { photoToDelete = $0 })
-            .confirmationDialog("Delete photo?", item: $photoToDelete) { photo in
-                Button("Delete \(photo.name)", role: .destructive) {
-                    delete(photo)
-                }
-            } message: { photo in
-                Text("\(photo.name) will be removed from all of your devices.")
-            }
-    }
+	var body: some View {
+		PhotoList(deleteAction: { photoToDelete = $0 })
+			.confirmationDialog("Delete photo?", item: $photoToDelete) { photo in
+				Button("Delete \(photo.name)", role: .destructive) {
+					delete(photo)
+				}
+			} message: { photo in
+				Text("\(photo.name) will be removed from all of your devices.")
+			}
+	}
 }
 ```
 
@@ -34,17 +34,17 @@ struct PhotoGrid: View {
 
 ```swift
 struct FolderView: View {
-    @State private var pendingRename: Folder?
+	@State private var pendingRename: Folder?
 
-    var body: some View {
-        FolderList(renameAction: { pendingRename = $0 })
-            .alert("Rename folder", item: $pendingRename) { folder in
-                Button("Rename") { rename(folder) }
-                Button("Cancel", role: .cancel) {}
-            } message: { folder in
-                Text("Choose a new name for \(folder.name).")
-            }
-    }
+	var body: some View {
+		FolderList(renameAction: { pendingRename = $0 })
+			.alert("Rename folder", item: $pendingRename) { folder in
+				Button("Rename") { rename(folder) }
+				Button("Cancel", role: .cancel) {}
+			} message: { folder in
+				Text("Choose a new name for \(folder.name).")
+			}
+	}
 }
 ```
 
@@ -59,33 +59,33 @@ When the user's deployment target is below SDK 27 and the answer needs a per-ite
 @State private var isConfirmingDelete = false
 
 var body: some View {
-    SomeContent()
-        .modifier(DeleteConfirmation(item: $photoToDelete, isPresented: $isConfirmingDelete))
+	SomeContent()
+		.modifier(DeleteConfirmation(item: $photoToDelete, isPresented: $isConfirmingDelete))
 }
 
 private struct DeleteConfirmation: ViewModifier {
-    @Binding var item: Photo?
-    @Binding var isPresented: Bool
+	@Binding var item: Photo?
+	@Binding var isPresented: Bool
 
-    func body(content: Content) -> some View {
-        if #available(iOS 27, *) {
-            content.confirmationDialog("Delete photo?", item: $item) { photo in
-                Button("Delete \(photo.name)", role: .destructive) { /* delete */ }
-            } message: { photo in
-                Text("\(photo.name) will be removed.")
-            }
-        } else {
-            content.confirmationDialog(
-                "Delete photo?",
-                isPresented: $isPresented,
-                presenting: item
-            ) { photo in
-                Button("Delete \(photo.name)", role: .destructive) { /* delete */ }
-            } message: { photo in
-                Text("\(photo.name) will be removed.")
-            }
-        }
-    }
+	func body(content: Content) -> some View {
+		if #available(iOS 27, *) {
+			content.confirmationDialog("Delete photo?", item: $item) { photo in
+				Button("Delete \(photo.name)", role: .destructive) { /* delete */ }
+			} message: { photo in
+				Text("\(photo.name) will be removed.")
+			}
+		} else {
+			content.confirmationDialog(
+				"Delete photo?",
+				isPresented: $isPresented,
+				presenting: item
+			) { photo in
+				Button("Delete \(photo.name)", role: .destructive) { /* delete */ }
+			} message: { photo in
+				Text("\(photo.name) will be removed.")
+			}
+		}
+	}
 }
 ```
 

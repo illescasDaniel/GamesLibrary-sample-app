@@ -38,7 +38,7 @@ struct ComposeDraft { /* ... */ }
 @available(iOS 18.0, *)
 @AppIntent(schema: .mail.createDraft)
 struct ComposeDraft {
-    func perform() async throws -> some IntentResult { /* ... */ }
+	func perform() async throws -> some IntentResult { /* ... */ }
 }
 ```
 
@@ -56,22 +56,22 @@ Use a concrete schema only when you can confirm it exists in your SDK. The `cale
 @available(iOS 27.0, *)
 @AppIntent(schema: .calendar.createEvent)
 struct CreateEventIntent {
-    var title: String
-    var startDate: Date
-    var endDate: Date?
-    var location: EventLocation?
-    var calendar: CalendarEntity
-    var isAllDay: Bool
-    var attendees: [AttendeeEntity]
+	var title: String
+	var startDate: Date
+	var endDate: Date?
+	var location: EventLocation?
+	var calendar: CalendarEntity
+	var isAllDay: Bool
+	var attendees: [AttendeeEntity]
 
-    @Dependency
-    var calendarManager: CalendarManager
+	@Dependency
+	var calendarManager: CalendarManager
 
-    func perform() async throws -> some ReturnsValue<EventEntity> {
-        // Create the event from the schema-provided values and return the entity.
-        let event = try calendarManager.createEvent(/* ... */)
-        return .result(value: event.entity)
-    }
+	func perform() async throws -> some ReturnsValue<EventEntity> {
+		// Create the event from the schema-provided values and return the entity.
+		let event = try calendarManager.createEvent(/* ... */)
+		return .result(value: event.entity)
+	}
 }
 ```
 
@@ -89,21 +89,21 @@ Schemas also standardize the app entities an intent returns or takes as paramete
 @available(iOS 27.0, *)
 @AppEntity(schema: .calendar.event)
 struct EventEntity: IndexedEntity, OwnershipProvidingEntity {
-    static let defaultQuery = EventEntityQuery()
+	static let defaultQuery = EventEntityQuery()
 
-    var id: UUID
-    var calendar: CalendarEntity
-    var title: String
-    var startDate: Date
-    var endDate: Date
-    var status: EventEntityStatus?
-    // ... the other properties the schema defines ...
+	var id: UUID
+	var calendar: CalendarEntity
+	var title: String
+	var startDate: Date
+	var endDate: Date
+	var status: EventEntityStatus?
+	// ... the other properties the schema defines ...
 
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
+	var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
 
-    struct EventEntityQuery: EntityQuery {
-        func entities(for identifiers: [UUID]) async throws -> [EventEntity] { [] }
-    }
+	struct EventEntityQuery: EntityQuery {
+		func entities(for identifiers: [UUID]) async throws -> [EventEntity] { [] }
+	}
 }
 ```
 
@@ -113,18 +113,18 @@ Entities that never persist can adopt `TransientAppEntity` â€” CometCal's attend
 @available(iOS 27.0, *)
 @AppEntity(schema: .calendar.attendee)
 struct AttendeeEntity: TransientAppEntity {
-    var person: IntentPerson
-    var status: ParticipantStatus?
-    // ... the properties the schema defines ...
+	var person: IntentPerson
+	var status: ParticipantStatus?
+	// ... the properties the schema defines ...
 }
 
 @available(iOS 27.0, *)
 @AppEntity(schema: .calendar.calendar)
 struct CalendarEntity: IndexedEntity {
-    static let defaultQuery = CalendarEntityQuery()
-    let id: UUID
-    var title: String
-    // ...
+	static let defaultQuery = CalendarEntityQuery()
+	let id: UUID
+	var title: String
+	// ...
 }
 ```
 
@@ -134,15 +134,15 @@ An `@AppEnum(schema:)` constrains a parameter to a fixed set of cases. CometCal'
 @available(iOS 27.0, *)
 @AppEnum(schema: .calendar.eventStatus)
 enum EventEntityStatus: String {
-    case confirmed
-    case tentative
-    case cancelled
+	case confirmed
+	case tentative
+	case cancelled
 
-    static let caseDisplayRepresentations: [Self: DisplayRepresentation] = [
-        .confirmed: "Confirmed",
-        .tentative: "Tentative",
-        .cancelled: "Cancelled",
-    ]
+	static let caseDisplayRepresentations: [Self: DisplayRepresentation] = [
+		.confirmed: "Confirmed",
+		.tentative: "Tentative",
+		.cancelled: "Cancelled",
+	]
 }
 ```
 
@@ -162,10 +162,10 @@ If an existing intent's properties already match a schema, just add the macro â€
 @available(iOS 27.0, *)
 @AppIntent(schema: .calendar.createEvent)
 struct CreateEventIntentAI {
-    static let isAssistantOnly: Bool = true   // hidden from Shortcuts; serves Siri / Apple Intelligence only
-    var title: String
-    var startDate: Date
-    func perform() async throws -> some ReturnsValue<EventEntity> { /* ... */ }
+	static let isAssistantOnly: Bool = true   // hidden from Shortcuts; serves Siri / Apple Intelligence only
+	var title: String
+	var startDate: Date
+	func perform() async throws -> some ReturnsValue<EventEntity> { /* ... */ }
 }
 ```
 
@@ -185,9 +185,9 @@ When the user's deployment target is below a schema's floor, gate the type. The 
 @available(iOS 27.0, *)
 @AppIntent(schema: .calendar.createEvent)
 struct CreateEventIntent {
-    var title: String
-    var startDate: Date
-    func perform() async throws -> some ReturnsValue<EventEntity> { /* ... */ }
+	var title: String
+	var startDate: Date
+	func perform() async throws -> some ReturnsValue<EventEntity> { /* ... */ }
 }
 ```
 

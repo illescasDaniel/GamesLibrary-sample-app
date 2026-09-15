@@ -12,14 +12,14 @@ iOS 26 replaces the boolean `openAppWhenRun` flag with a declarative `IntentMode
 ```swift
 @available(iOS 26.0, *)
 struct TagPhotosIntent: AppIntent {
-    static let title: LocalizedStringResource = "Tag Photos"
-    // Try to tag headlessly; escalate to the app only when needed.
-    static var supportedModes: IntentModes { [.background, .foreground(.dynamic)] }
+	static let title: LocalizedStringResource = "Tag Photos"
+	// Try to tag headlessly; escalate to the app only when needed.
+	static var supportedModes: IntentModes { [.background, .foreground(.dynamic)] }
 
-    func perform() async throws -> some IntentResult {
-        // ...
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		// ...
+		return .result()
+	}
 }
 ```
 
@@ -32,22 +32,22 @@ An intent declared `[.background, .foreground(.dynamic)]` starts in the backgrou
 ```swift
 @available(iOS 26.0, *)
 struct GetCrowdStatusIntent: AppIntent {
-    static let title: LocalizedStringResource = "Get Crowd Status"
-    static var supportedModes: IntentModes { [.background, .foreground(.dynamic)] }
+	static let title: LocalizedStringResource = "Get Crowd Status"
+	static var supportedModes: IntentModes { [.background, .foreground(.dynamic)] }
 
-    @Parameter var landmark: LandmarkEntity
+	@Parameter var landmark: LandmarkEntity
 
-    func perform() async throws -> some IntentResult {
-        guard try await needsFullEditor(for: landmark) else {
-            return .result()   // finished in the background, never touched UI
-        }
-        guard systemContext.currentMode.canContinueInForeground else {
-            throw needsToContinueInForegroundError("Open \(landmark.name) to review crowd status")
-        }
-        try await continueInForeground("Continue in the app?", alwaysConfirm: false)
-        await presentCrowdStatus(for: landmark)   // now foreground — safe to present UI
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		guard try await needsFullEditor(for: landmark) else {
+			return .result()   // finished in the background, never touched UI
+		}
+		guard systemContext.currentMode.canContinueInForeground else {
+			throw needsToContinueInForegroundError("Open \(landmark.name) to review crowd status")
+		}
+		try await continueInForeground("Continue in the app?", alwaysConfirm: false)
+		await presentCrowdStatus(for: landmark)   // now foreground — safe to present UI
+		return .result()
+	}
 }
 ```
 
@@ -60,15 +60,15 @@ struct GetCrowdStatusIntent: AppIntent {
 ```swift
 @available(iOS 26.0, *)
 struct DeleteLandmarkIntent: AppIntent, UndoableIntent {
-    static let title: LocalizedStringResource = "Delete Landmark"
-    @Parameter var landmark: LandmarkEntity
+	static let title: LocalizedStringResource = "Delete Landmark"
+	@Parameter var landmark: LandmarkEntity
 
-    @MainActor
-    func perform() async throws -> some IntentResult {
-        let snapshot = try await ModelData.shared.delete(landmark)
-        undoManager?.registerUndo(withTarget: ModelData.shared) { $0.restore(snapshot) }
-        return .result()
-    }
+	@MainActor
+	func perform() async throws -> some IntentResult {
+		let snapshot = try await ModelData.shared.delete(landmark)
+		undoManager?.registerUndo(withTarget: ModelData.shared) { $0.restore(snapshot) }
+		return .result()
+	}
 }
 ```
 
@@ -81,17 +81,17 @@ struct DeleteLandmarkIntent: AppIntent, UndoableIntent {
 ```swift
 @available(iOS 26.4, *)
 struct GetCrowdStatusIntent: AppIntent, CancellableIntent {
-    static let title: LocalizedStringResource = "Get Crowd Status"
-    @Parameter var landmark: LandmarkEntity
+	static let title: LocalizedStringResource = "Get Crowd Status"
+	@Parameter var landmark: LandmarkEntity
 
-    func perform() async throws -> some IntentResult {
-        try await withIntentCancellationHandler {
-            try await ModelData.shared.fetchCrowdStatus(for: landmark)
-        } onCancel: { reason in
-            ModelData.shared.stopFetch(dueTo: reason)   // .timeout or .userCancelled
-        }
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		try await withIntentCancellationHandler {
+			try await ModelData.shared.fetchCrowdStatus(for: landmark)
+		} onCancel: { reason in
+			ModelData.shared.stopFetch(dueTo: reason)   // .timeout or .userCancelled
+		}
+		return .result()
+	}
 }
 ```
 
@@ -106,22 +106,22 @@ On iOS, iPadOS, watchOS, tvOS, and visionOS a background App Intent gets only ab
 ```swift
 @available(iOS 27.0, *)
 struct TagPhotosIntent: AppIntent, LongRunningIntent, CancellableIntent {
-    static let title: LocalizedStringResource = "Tag Photos"
-    static var supportedModes: IntentModes { .background }
+	static let title: LocalizedStringResource = "Tag Photos"
+	static var supportedModes: IntentModes { .background }
 
-    func perform() async throws -> some IntentResult {
-        // The system observes self.progress via KVO and mirrors it to the Live Activity.
-        progress.localizedDescription = "Tagging photos…"   // becomes the Live Activity title
-        let tagged = try await performBackgroundTask(options: .requiresGPU) {
-            try await ModelData.shared.tagPhotos { done, total in
-                self.progress.totalUnitCount = Int64(total)
-                self.progress.completedUnitCount = Int64(done)  // drives the progress bar
-            }
-        } onCancel: { reason in
-            ModelData.shared.abortTagging(reason: reason)   // .timeout or .userCancelled
-        }
-        return .result(dialog: "Tagged \(tagged) photos")
-    }
+	func perform() async throws -> some IntentResult {
+		// The system observes self.progress via KVO and mirrors it to the Live Activity.
+		progress.localizedDescription = "Tagging photos…"   // becomes the Live Activity title
+		let tagged = try await performBackgroundTask(options: .requiresGPU) {
+			try await ModelData.shared.tagPhotos { done, total in
+				self.progress.totalUnitCount = Int64(total)
+				self.progress.completedUnitCount = Int64(done)  // drives the progress bar
+			}
+		} onCancel: { reason in
+			ModelData.shared.abortTagging(reason: reason)   // .timeout or .userCancelled
+		}
+		return .result(dialog: "Tagged \(tagged) photos")
+	}
 }
 ```
 
@@ -134,17 +134,17 @@ struct TagPhotosIntent: AppIntent, LongRunningIntent, CancellableIntent {
 ```swift
 @available(iOS 27.0, *)
 struct AdvanceNavigationIntent: AppIntent {
-    static let title: LocalizedStringResource = "Advance Navigation"
-    static var supportedModes: IntentModes { .background }
-    // Needs the main app's live navigator singleton.
-    static var allowedExecutionTargets: IntentExecutionTargets { .main }
+	static let title: LocalizedStringResource = "Advance Navigation"
+	static var supportedModes: IntentModes { .background }
+	// Needs the main app's live navigator singleton.
+	static var allowedExecutionTargets: IntentExecutionTargets { .main }
 
-    @Parameter var meters: Double
+	@Parameter var meters: Double
 
-    func perform() async throws -> some IntentResult {
-        Navigator.shared.advance(by: meters)   // only valid in the main process
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		Navigator.shared.advance(by: meters)   // only valid in the main process
+		return .result()
+	}
 }
 ```
 

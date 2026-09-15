@@ -34,22 +34,22 @@ Using a collection's indices, or `.self` on an index, as the identifier is the m
 // "the element at id 3 changed" rather than "element B moved from 3 to 4",
 // so row state resets and moves animate as replacements.
 struct ItemList: View {
-    @State private var items: [Item] = []
+	@State private var items: [Item] = []
 
-    var body: some View {
-        List {
-            ForEach(items.indices, id: \.self) { index in
-                ItemRow(item: items[index])
-            }
-        }
-    }
+	var body: some View {
+		List {
+			ForEach(items.indices, id: \.self) { index in
+				ItemRow(item: items[index])
+			}
+		}
+	}
 }
 ```
 
 ```swift
 // PREFER: Identify each element by a property that travels with the element.
 ForEach(items, id: \.id) { item in
-    ItemRow(item: item)
+	ItemRow(item: item)
 }
 ```
 
@@ -63,7 +63,7 @@ Using `.enumerated()` is not itself an anti-pattern. It is a reasonable way to g
 // AVOID: `.enumerated()` with the offset as id.
 // Same failure mode as `items.indices`: the id is the position, not the element.
 ForEach(items.enumerated(), id: \.offset) { index, item in
-    ItemRow(number: index + 1, item: item)
+	ItemRow(number: index + 1, item: item)
 }
 ```
 
@@ -71,7 +71,7 @@ ForEach(items.enumerated(), id: \.offset) { index, item in
 // PREFER: `.enumerated()` is fine; the id comes from the element, and the
 // index is just row data passed to the row view.
 ForEach(items.enumerated(), id: \.element.id) { index, item in
-    ItemRow(number: index + 1, item: item)
+	ItemRow(number: index + 1, item: item)
 }
 ```
 
@@ -91,20 +91,20 @@ An `Identifiable` type whose `id` is generated fresh each time `body` runs looks
 // The `let id = UUID()` default itself is fine - the bug is creating the
 // values somewhere that doesn't outlive `body`.
 struct Item: Identifiable {
-    let id = UUID()
-    var title: String
+	let id = UUID()
+	var title: String
 }
 
 struct ContentView: View {
-    let titles: [String]
+	let titles: [String]
 
-    var body: some View {
-        List {
-            ForEach(titles.map { Item(title: $0) }) { item in
-                Text(item.title)
-            }
-        }
-    }
+	var body: some View {
+		List {
+			ForEach(titles.map { Item(title: $0) }) { item in
+				Text(item.title)
+			}
+		}
+	}
 }
 ```
 
@@ -116,10 +116,10 @@ A `let id = UUID()` default works as long as the value itself is stored somewher
 // Because the property is `let`, the computed `id` can't change as the
 // element is edited.
 struct Document: Identifiable {
-    let url: URL              // where the file lives; assigned at creation
-    var displayName: String   // user-editable
+	let url: URL              // where the file lives; assigned at creation
+	var displayName: String   // user-editable
 
-    var id: URL { url }
+	var id: URL { url }
 }
 ```
 
@@ -129,16 +129,16 @@ struct Document: Identifiable {
 @MainActor
 @Observable
 final class ItemStore {
-    var items: [Item] = []
+	var items: [Item] = []
 
-    func add(title: String) {
-        items.append(Item(id: UUID(), title: title))
-    }
+	func add(title: String) {
+		items.append(Item(id: UUID(), title: title))
+	}
 }
 
 struct Item: Identifiable {
-    let id: UUID
-    var title: String
+	let id: UUID
+	var title: String
 }
 ```
 
@@ -149,12 +149,12 @@ struct Item: Identifiable {
 ```swift
 // PREFER: Identifiable conformance; the identity is declared once on the type.
 struct Item: Identifiable {
-    let id: UUID
-    var title: String
+	let id: UUID
+	var title: String
 }
 
 ForEach(items) { item in
-    ItemRow(item: item)
+	ItemRow(item: item)
 }
 ```
 
@@ -162,7 +162,7 @@ ForEach(items) { item in
 // Acceptable when the element type isn't yours to change, or when the id
 // lives on a different type (e.g. a value type wrapping a reference).
 ForEach(items, id: \.serverID) { item in
-    ItemRow(item: item)
+	ItemRow(item: item)
 }
 ```
 
@@ -179,15 +179,15 @@ The common anti-pattern is using the entire element as the id - either `id: \.se
 // diff - long strings, nested arrays, the lot. Cost scales with both the
 // collection size and the per-element field count.
 struct Article: Hashable {
-    let title: String
-    let body: String        // potentially large
-    let tags: [String]
-    let author: Author
-    let publishedAt: Date
+	let title: String
+	let body: String        // potentially large
+	let tags: [String]
+	let author: Author
+	let publishedAt: Date
 }
 
 ForEach(articles, id: \.self) { article in
-    ArticleRow(article: article)
+	ArticleRow(article: article)
 }
 ```
 
@@ -196,16 +196,16 @@ ForEach(articles, id: \.self) { article in
 // the element. The full struct is still passed to the row view; only the
 // id is hashed during diffing.
 struct Article: Identifiable, Hashable {
-    let id: UUID
-    let title: String
-    let body: String
-    let tags: [String]
-    let author: Author
-    let publishedAt: Date
+	let id: UUID
+	let title: String
+	let body: String
+	let tags: [String]
+	let author: Author
+	let publishedAt: Date
 }
 
 ForEach(articles) { article in
-    ArticleRow(article: article)
+	ArticleRow(article: article)
 }
 ```
 
@@ -225,8 +225,8 @@ The common trap is deriving the id from a property that is mutated in place (for
 // which makes ForEach think the row was removed and a new one inserted.
 // The text field loses focus on every keystroke.
 struct Item: Identifiable {
-    var id: String { title }
-    var title: String
+	var id: String { title }
+	var title: String
 }
 ```
 
@@ -234,8 +234,8 @@ struct Item: Identifiable {
 // PREFER: id is independent of any mutable content. Editing `title` leaves
 // identity untouched, so the row keeps its state and focus.
 struct Item: Identifiable {
-    let id: UUID
-    var title: String
+	let id: UUID
+	var title: String
 }
 ```
 
@@ -251,20 +251,20 @@ The collection passed to `ForEach` is evaluated every time the enclosing view's 
 // even when the change that invalidated this view has nothing to do with
 // `items` or `searchText`.
 struct ItemList: View {
-    let items: [Item]
-    let searchText: String
+	let items: [Item]
+	let searchText: String
 
-    var body: some View {
-        List {
-            ForEach(
-                items
-                    .filter { $0.title.localizedCaseInsensitiveContains(searchText) }
-                    .sorted { $0.title < $1.title }
-            ) { item in
-                ItemRow(item: item)
-            }
-        }
-    }
+	var body: some View {
+		List {
+			ForEach(
+				items
+					.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+					.sorted { $0.title < $1.title }
+			) { item in
+				ItemRow(item: item)
+			}
+		}
+	}
 }
 ```
 
@@ -277,33 +277,33 @@ Cache the derived collection on the model or in view state, and recompute it onl
 @MainActor
 @Observable
 final class ItemListModel {
-    var items: [Item] = [] {
-        didSet { recomputeVisibleItems() }
-    }
+	var items: [Item] = [] {
+		didSet { recomputeVisibleItems() }
+	}
 
-    var searchText: String = "" {
-        didSet { recomputeVisibleItems() }
-    }
+	var searchText: String = "" {
+		didSet { recomputeVisibleItems() }
+	}
 
-    private(set) var visibleItems: [Item] = []
+	private(set) var visibleItems: [Item] = []
 
-    private func recomputeVisibleItems() {
-        visibleItems = items
-            .filter { $0.title.localizedCaseInsensitiveContains(searchText) }
-            .sorted { $0.title < $1.title }
-    }
+	private func recomputeVisibleItems() {
+		visibleItems = items
+			.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+			.sorted { $0.title < $1.title }
+	}
 }
 
 struct ItemList: View {
-    let model: ItemListModel
+	let model: ItemListModel
 
-    var body: some View {
-        List {
-            ForEach(model.visibleItems) { item in
-                ItemRow(item: item)
-            }
-        }
-    }
+	var body: some View {
+		List {
+			ForEach(model.visibleItems) { item in
+				ItemRow(item: item)
+			}
+		}
+	}
 }
 ```
 
@@ -322,27 +322,27 @@ A row's final id combines the explicit id from `ForEach` with a bit of structura
 // structural identity depend on which case ran. To compute ids, SwiftUI
 // has to evaluate every row's body, even for long lists.
 struct ItemRow: View {
-    var item: Item
+	var item: Item
 
-    var body: some View {
-        switch item.kind {
-        case .plain:       Text(item.title)
-        case .highlighted: Text(item.title).bold()
-        case .disabled:    Text(item.title).foregroundStyle(.secondary)
-        }
-    }
+	var body: some View {
+		switch item.kind {
+		case .plain:       Text(item.title)
+		case .highlighted: Text(item.title).bold()
+		case .disabled:    Text(item.title).foregroundStyle(.secondary)
+		}
+	}
 }
 
 struct ItemList: View {
-    let items: [Item]
+	let items: [Item]
 
-    var body: some View {
-        List {
-            ForEach(items) { item in
-                ItemRow(item: item)
-            }
-        }
-    }
+	var body: some View {
+		List {
+			ForEach(items) { item in
+				ItemRow(item: item)
+			}
+		}
+	}
 }
 ```
 
@@ -351,17 +351,17 @@ struct ItemList: View {
 // - one top-level view regardless of which case ran. SwiftUI can template
 // ids from the ForEach without walking every row.
 struct ItemRow: View {
-    var item: Item
+	var item: Item
 
-    var body: some View {
-        VStack {
-            switch item.kind {
-            case .plain:       Text(item.title)
-            case .highlighted: Text(item.title).bold()
-            case .disabled:    Text(item.title).foregroundStyle(.secondary)
-            }
-        }
-    }
+	var body: some View {
+		VStack {
+			switch item.kind {
+			case .plain:       Text(item.title)
+			case .highlighted: Text(item.title).bold()
+			case .disabled:    Text(item.title).foregroundStyle(.secondary)
+			}
+		}
+	}
 }
 ```
 
@@ -384,9 +384,9 @@ For `List` rows, prefer unary. The fix is usually as simple as wrapping `body` i
 // depending on `namedFont.name.count`, so the row builder does not produce
 // a constant number of views and the List fast path is defeated.
 ForEach(namedFonts) { namedFont in
-    if namedFont.name.count != 2 {
-        Text(namedFont.name)
-    }
+	if namedFont.name.count != 2 {
+		Text(namedFont.name)
+	}
 }
 ```
 
@@ -394,11 +394,11 @@ ForEach(namedFonts) { namedFont in
 // PREFER: wrap in a single-root container so the row is always exactly one
 // top-level view; the `if` becomes interior content.
 ForEach(namedFonts) { namedFont in
-    VStack {
-        if namedFont.name.count != 2 {
-            Text(namedFont.name)
-        }
-    }
+	VStack {
+		if namedFont.name.count != 2 {
+			Text(namedFont.name)
+		}
+	}
 }
 ```
 
@@ -413,15 +413,15 @@ If the intent is actually "skip this element", filter the collection before pass
 // opaque to SwiftUI, so the List can't template ids and falls back to
 // evaluating every row's body.
 ForEach(items) { item in
-    rowView(for: item) // returns AnyView
+	rowView(for: item) // returns AnyView
 }
 
 func rowView(for item: Item) -> AnyView {
-    switch item.kind {
-    case .plain:       return AnyView(Text(item.title))
-    case .highlighted: return AnyView(Text(item.title).bold())
-    case .disabled:    return AnyView(Text(item.title).foregroundStyle(.secondary))
-    }
+	switch item.kind {
+	case .plain:       return AnyView(Text(item.title))
+	case .highlighted: return AnyView(Text(item.title).bold())
+	case .disabled:    return AnyView(Text(item.title).foregroundStyle(.secondary))
+	}
 }
 ```
 
@@ -430,21 +430,21 @@ func rowView(for item: Item) -> AnyView {
 // inside a single-root container. The row's static shape is visible to
 // SwiftUI, so it can template ids across the list.
 struct ItemRow: View {
-    var item: Item
+	var item: Item
 
-    var body: some View {
-        VStack {
-            switch item.kind {
-            case .plain:       Text(item.title)
-            case .highlighted: Text(item.title).bold()
-            case .disabled:    Text(item.title).foregroundStyle(.secondary)
-            }
-        }
-    }
+	var body: some View {
+		VStack {
+			switch item.kind {
+			case .plain:       Text(item.title)
+			case .highlighted: Text(item.title).bold()
+			case .disabled:    Text(item.title).foregroundStyle(.secondary)
+			}
+		}
+	}
 }
 
 ForEach(items) { item in
-    ItemRow(item: item)
+	ItemRow(item: item)
 }
 ```
 

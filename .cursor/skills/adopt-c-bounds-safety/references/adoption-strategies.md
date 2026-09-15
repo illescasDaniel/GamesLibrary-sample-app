@@ -104,25 +104,25 @@ e.g.:
 ```c
 // BEFORE
 int find_zero(int *__counted_by(count) elements, size_t count) {
-    int idx = -1;
-    while (idx < count && *elements != 0) {
-        // error: assignment to 'int *__single __counted_by(count)' 'elements' requires corresponding assignment to 'count'
-        ++elements;
-        ++idx;
-    }
-    return idx;
+	int idx = -1;
+	while (idx < count && *elements != 0) {
+		// error: assignment to 'int *__single __counted_by(count)' 'elements' requires corresponding assignment to 'count'
+		++elements;
+		++idx;
+	}
+	return idx;
 }
 
 // AFTER
 int find_zero(int *__counted_by(count) elements, size_t count) {
-    int idx = -1;
-    size_t original_count = count;
-    while (idx < original_count && *elements != 0) {
-        ++elements;
-        --count;
-        ++idx;
-    }
-    return idx;
+	int idx = -1;
+	size_t original_count = count;
+	while (idx < original_count && *elements != 0) {
+		++elements;
+		--count;
+		++idx;
+	}
+	return idx;
 }
 ```
 
@@ -174,8 +174,8 @@ Every commit during adoption is preceded by a stop-and-review step. During that 
 1. Before staging anything, list **all** working-tree changes and inspect their diff using the captured VCS commands (e.g. `git status` + `git diff HEAD`) to enumerate them. This includes both Claude's edits and any further edits the user made while the stop was open. Do not assume the working tree contains only what Claude wrote.
 2. Classify each modified or new file as **source-code** (`.c`, `.h`, validation files) or **build-system** (Xcode `project.pbxproj`, CMakeLists, Makefiles, any per-file flag entry).
 3. Check the result against the commit's declared scope (stated at each commit site below — e.g. "source-code only", "build-system only", or "headers + validation file"):
-    - If every changed file fits the scope, stage exactly those files (Claude's + user's) by explicit path and commit using the captured VCS commands.
-    - If the user's edits span kinds that don't all fit the scope — for example, source-code edits appearing during a build-system-only commit — **stop and ask the user** how to split them: which go into the current commit, which should be deferred to the next one, and which (if any) should be dropped. Apply their answer, then commit.
+	- If every changed file fits the scope, stage exactly those files (Claude's + user's) by explicit path and commit using the captured VCS commands.
+	- If the user's edits span kinds that don't all fit the scope — for example, source-code edits appearing during a build-system-only commit — **stop and ask the user** how to split them: which go into the current commit, which should be deferred to the next one, and which (if any) should be dropped. Apply their answer, then commit.
 4. Always specify explicit paths when staging or committing — never let unrelated working-tree changes (e.g. `.DS_Store`, scratch files) get picked up. On git, this rules out `git add -A`, `git add .`, `git commit -a`, and any flag or shorthand that auto-includes modified files.
 5. Do not propose folding user edits into a previously-made commit (e.g. `git commit --amend`) unless the user explicitly asks for it.
 
@@ -249,7 +249,7 @@ For each `__unsafe_indexable` decision on a public-API parameter or return:
    - Header: <header path>
    - Implementation file: <file>.c
    - Original signature (with __unsafe_indexable):
-     <verbatim signature>
+	 <verbatim signature>
    - Reason for __unsafe_indexable: <one line — e.g. "length-prefixed buffer; bound is buf[0]">
 
    See [Safe Wrappers for Public APIs](common-patterns-and-pitfalls.md#safe-wrappers-for-public-apis) for the recipe.
@@ -297,25 +297,25 @@ Enable `-fbounds-safety` in implementation files one at a time. Use the order co
 3. Run the project's tests and fix any runtime traps. See [runtime-debugging.md](runtime-debugging.md). *(Skip this sub-step if the user could not provide a way to run the tests — see the warning at the top of this section.)*
 4. **Stop and ask the user to review the changes for this file before committing.** Before summarizing what changed, communicate the following three things in this order:
 
-    1. Identify the file: state that the source-file changes under review are for `<filename>` (the actual file path).
-    2. Explain what will happen on approval: the changes will be committed in two steps — first, the source-code changes committed with `-fbounds-safety` switched off for this file; second, a build-system change that re-enables `-fbounds-safety` for this file. This split is done to make it easy to revert the enablement later without losing the source-code improvements.
-    3. Invite the user to inspect the changes, make any further changes they need, and approve when ready to commit.
+	1. Identify the file: state that the source-file changes under review are for `<filename>` (the actual file path).
+	2. Explain what will happen on approval: the changes will be committed in two steps — first, the source-code changes committed with `-fbounds-safety` switched off for this file; second, a build-system change that re-enables `-fbounds-safety` for this file. This split is done to make it easy to revert the enablement later without losing the source-code improvements.
+	3. Invite the user to inspect the changes, make any further changes they need, and approve when ready to commit.
 
-    Then summarize the actual changes (annotations added, refactors, any unsafe forges introduced). Wait for the user's explicit approval. If they request adjustments, apply them, re-run the project's tests, and ask again. Only proceed to step 5 once the user has explicitly approved.
+	Then summarize the actual changes (annotations added, refactors, any unsafe forges introduced). Wait for the user's explicit approval. If they request adjustments, apply them, re-run the project's tests, and ask again. Only proceed to step 5 once the user has explicitly approved.
 5. Commit the work for this file as **two separate commits**. This structure is MANDATORY — do NOT combine into a single commit.
 
-    **5a. Source-changes commit.**
-    - Temporarily clear `-fbounds-safety` from this file's per-file build flags.
-    - Verify the source still compiles without the flag.
-    - If it does not compile, make the minimum changes needed to compile cleanly with the flag off, then **stop and tell the user explicitly: we stopped because additional source changes were needed since the file did not compile with `-fbounds-safety` disabled. Ask them to review the changes, make any necessary further changes, and continue when they approve.** Apply any requested adjustments and re-verify the build before proceeding. When execution resumes, the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure applies to whatever the user touched during this sub-stop.
-    - Commit following the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure. Scope: **source-code only** (annotations, refactoring). Any build-system changes in the working tree are deferred to 5b — if the user's edits span both kinds, the shared procedure will stop and ask.
+	**5a. Source-changes commit.**
+	- Temporarily clear `-fbounds-safety` from this file's per-file build flags.
+	- Verify the source still compiles without the flag.
+	- If it does not compile, make the minimum changes needed to compile cleanly with the flag off, then **stop and tell the user explicitly: we stopped because additional source changes were needed since the file did not compile with `-fbounds-safety` disabled. Ask them to review the changes, make any necessary further changes, and continue when they approve.** Apply any requested adjustments and re-verify the build before proceeding. When execution resumes, the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure applies to whatever the user touched during this sub-stop.
+	- Commit following the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure. Scope: **source-code only** (annotations, refactoring). Any build-system changes in the working tree are deferred to 5b — if the user's edits span both kinds, the shared procedure will stop and ask.
 
-    **5b. Build-system commit.**
-    - Re-add `-fbounds-safety` as a per-file build flag for this file.
-    - Verify it still compiles.
-    - Commit following the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure. Scope: **build-system only**. If the user added source-code edits between 5a and now, the shared procedure will stop and ask how to handle them — do not silently bundle them into this commit.
+	**5b. Build-system commit.**
+	- Re-add `-fbounds-safety` as a per-file build flag for this file.
+	- Verify it still compiles.
+	- Commit following the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure. Scope: **build-system only**. If the user added source-code edits between 5a and now, the shared procedure will stop and ask how to handle them — do not silently bundle them into this commit.
 
-    Rationale: this separates source churn from the act of enabling the flag. If enablement has to be reverted later, only commit 5b is reverted — the source-code improvements from 5a remain. Collapsing into one commit loses this property.
+	Rationale: this separates source churn from the act of enabling the flag. If enablement has to be reverted later, only commit 5b is reverted — the source-code improvements from 5a remain. Collapsing into one commit loses this property.
 
 6. Repeat the above until every file in the adoption order is either adopted or explicitly skipped via [Skipping a file's enablement](#skipping-a-files-enablement) below.
 
@@ -420,11 +420,11 @@ When all per-item Safe Wrapper tasks are complete, the `5.1 Commit Safe Wrapper 
 1. **Verify the target still compiles.** Fix any compilation errors introduced by the batch. *(Note: the legacy entry points are `__ptrcheck_unavailable_r`, so an un-switched caller is a compile error here — this step is what guarantees every caller migrated. Under [partial-target adoption](#skipping-a-files-enablement), the attribute only fires in adopted TUs; callers in skipped files keep compiling against the legacy shim.)*
 2. **Run the project's tests.** Use the same test command captured during the `Confirm how to run tests` task in Moment A. Fix any failing tests. *(Skip if the user could not provide a way to run the tests, mirroring §3 step 3.)*
 3. **Stop and ask the user to review the changes before committing.** Mirror §3 step 4's structure — communicate, in this order:
-    1. Identify the scope. Tell the user something like: *"The changes introduce Safe Wrappers on the unsafe interfaces identified earlier. Each legacy function is now a thin shim that delegates to a `*Safe` variant with explicit count parameters, and every internal caller has been redirected to use the `*Safe` variant directly."* Then list which functions were wrapped.
-    2. Explain what will happen on approval: a single commit (or one tightly-related cluster) covering the entire batch. Unlike per-file enablement — which committed the source changes and the build-system change separately — this is one source-only commit; there's no build-system component.
-    3. Invite the user to inspect the changes, make any further changes they need, and approve when ready to commit.
+	1. Identify the scope. Tell the user something like: *"The changes introduce Safe Wrappers on the unsafe interfaces identified earlier. Each legacy function is now a thin shim that delegates to a `*Safe` variant with explicit count parameters, and every internal caller has been redirected to use the `*Safe` variant directly."* Then list which functions were wrapped.
+	2. Explain what will happen on approval: a single commit (or one tightly-related cluster) covering the entire batch. Unlike per-file enablement — which committed the source changes and the build-system change separately — this is one source-only commit; there's no build-system component.
+	3. Invite the user to inspect the changes, make any further changes they need, and approve when ready to commit.
 
-    Then summarize the actual changes. Wait for explicit approval. If the user requests adjustments, apply them, re-verify (steps 1 and 2), and re-present.
+	Then summarize the actual changes. Wait for explicit approval. If the user requests adjustments, apply them, re-verify (steps 1 and 2), and re-present.
 4. **On approval, commit** following the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure. Scope: **source-code only** (the wrapper functions, the legacy shim retypings, the `__ptrcheck_unavailable_r` markers, and every caller switched to `*Safe`).
 
 #### 6. Initial Adoption Complete
@@ -519,13 +519,13 @@ The step is split across two tasks (`3a.` and `3b.`) plus the per-item tasks cap
 
 1. **No-captures shortcut.** If no `Add Safe Wrapper for <funcName>` per-item tasks were created during §1, mark `3a.` complete with a one-line "no Safe Wrappers captured" note. `3b.` will auto-complete with the same note when it surfaces.
 2. **Opt-in stop.** Otherwise, stop and ask the user whether to apply the captured wrappers. Communicate, in this order:
-    1. List the candidate wrappers (function names, with the one-line "Reason for `__unsafe_indexable`" captured during §1).
-    2. Explain that applying these means modest source-file changes — new `*Safe` variants in the implementation file, the legacy functions become thin shims that delegate to their `*Safe` variant, and the legacy declarations are marked `__ptrcheck_unavailable_r` in the public header. Internal callers of the legacy API are **not** re-routed — they continue to call the legacy function (which now goes through the shim), so existing implementation code is left as-is.
-    3. Ask whether to proceed, decline, or amend the candidate list. Make explicit that declining (or amending to drop every wrapper) results in **zero source-file changes and zero commits** — the captured per-item tasks are simply marked completed with a "user declined" note and adoption proceeds to the milestone.
+	1. List the candidate wrappers (function names, with the one-line "Reason for `__unsafe_indexable`" captured during §1).
+	2. Explain that applying these means modest source-file changes — new `*Safe` variants in the implementation file, the legacy functions become thin shims that delegate to their `*Safe` variant, and the legacy declarations are marked `__ptrcheck_unavailable_r` in the public header. Internal callers of the legacy API are **not** re-routed — they continue to call the legacy function (which now goes through the shim), so existing implementation code is left as-is.
+	3. Ask whether to proceed, decline, or amend the candidate list. Make explicit that declining (or amending to drop every wrapper) results in **zero source-file changes and zero commits** — the captured per-item tasks are simply marked completed with a "user declined" note and adoption proceeds to the milestone.
 3. **Apply the answer.**
-    - On **decline**: mark every per-item `Add Safe Wrapper for <funcName>` task complete with a "user declined" note, mark `3a.` complete with the same note, and let `3b.` auto-complete with the same note when it surfaces. No commit.
-    - On **amendment**: edit the candidate list per user direction (e.g. mark a subset declined, leave the rest pending), then mark `3a.` complete.
-    - On **approval**: mark `3a.` complete. Per-items unblock and you work each one (next subsection).
+	- On **decline**: mark every per-item `Add Safe Wrapper for <funcName>` task complete with a "user declined" note, mark `3a.` complete with the same note, and let `3b.` auto-complete with the same note when it surfaces. No commit.
+	- On **amendment**: edit the candidate list per user direction (e.g. mark a subset declined, leave the rest pending), then mark `3a.` complete.
+	- On **approval**: mark `3a.` complete. Per-items unblock and you work each one (next subsection).
 
 #### Per-item application (between `3a.` and `3b.`)
 
@@ -546,11 +546,11 @@ When `3b.` surfaces, branch on the state left by `3a.`:
 
 1. **Verify the target still compiles.** Fix compilation errors.
 2. **Stop and ask the user to review** before committing. Mirror §5.1 step 3's structure — communicate, in this order:
-    1. Identify the scope. Tell the user something like: *"The changes introduce Safe Wrappers on the unsafe interfaces identified when annotating the public headers. Each legacy function is now a thin shim that delegates to a `*Safe` variant with explicit count parameters. Internal callers of the legacy API are unchanged — they continue to call the legacy function (which now goes through the shim), so the implementation footprint stays minimal."* Then list which functions were wrapped.
-    2. Explain what will happen on approval: a single commit (or one tightly-related cluster) covering the entire batch — source-only, with no separate build-system commit.
-    3. Invite the user to inspect the changes, make any further changes they need, and approve when ready to commit.
+	1. Identify the scope. Tell the user something like: *"The changes introduce Safe Wrappers on the unsafe interfaces identified when annotating the public headers. Each legacy function is now a thin shim that delegates to a `*Safe` variant with explicit count parameters. Internal callers of the legacy API are unchanged — they continue to call the legacy function (which now goes through the shim), so the implementation footprint stays minimal."* Then list which functions were wrapped.
+	2. Explain what will happen on approval: a single commit (or one tightly-related cluster) covering the entire batch — source-only, with no separate build-system commit.
+	3. Invite the user to inspect the changes, make any further changes they need, and approve when ready to commit.
 
-    Then summarize the actual changes. Wait for explicit approval. If the user requests adjustments, apply them, re-verify (step 1 above), and re-present.
+	Then summarize the actual changes. Wait for explicit approval. If the user requests adjustments, apply them, re-verify (step 1 above), and re-present.
 3. **On approval, commit** following the [Commit hygiene at review stops](#commit-hygiene-at-review-stops) procedure. Scope: **source-code only** (the new `*Safe` definitions, the legacy shim rewrites, and the `__ptrcheck_unavailable_r` markers in the public header).
 
 ### 4. Header-only adoption complete

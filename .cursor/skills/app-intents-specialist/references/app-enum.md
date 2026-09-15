@@ -12,10 +12,10 @@ When a shortcut is saved, an `AppEnum` value is serialized as `rawValue.descript
 // top — or alphabetizing the cases — shifts every number. A shortcut a user
 // saved as "large" (2) now deserializes as whatever case became 2. Silent.
 enum DrinkSize: Int, AppEnum {
-    case small
-    case medium
-    case large
-    // later edit inserts `case mini` above `small`, or the cases get sorted…
+	case small
+	case medium
+	case large
+	// later edit inserts `case mini` above `small`, or the cases get sorted…
 }
 ```
 
@@ -24,13 +24,13 @@ enum DrinkSize: Int, AppEnum {
 // ever APPEND new cases. Reordering the source is now cosmetic — the persisted
 // string ("small"/"medium"/"large") is pinned to its case regardless of position.
 enum DrinkSize: String, AppEnum {
-    case small = "small"
-    case medium = "medium"
-    case large = "large"
-    case mini = "mini"      // appended later — safe; existing shortcuts unaffected
+	case small = "small"
+	case medium = "medium"
+	case large = "large"
+	case mini = "mini"      // appended later — safe; existing shortcuts unaffected
 
-    // caseDisplayRepresentations required by AppEnum but omitted here for brevity —
-    // see the next section (a missing entry is a runtime fatalError, not a build error).
+	// caseDisplayRepresentations required by AppEnum but omitted here for brevity —
+	// see the next section (a missing entry is a runtime fatalError, not a build error).
 }
 ```
 
@@ -45,17 +45,17 @@ Treat shipped raw values like a wire format: renaming a case's *display* text (i
 // checked for exhaustiveness. When `mini` reaches any display path, the framework's
 // unsafeDisplayRepresentation force-unwraps a nil lookup and fatalErrors.
 enum DrinkSize: String, AppEnum {
-    case small = "small"
-    case medium = "medium"
-    case large = "large"
-    case mini = "mini"      // added to the enum…
+	case small = "small"
+	case medium = "medium"
+	case large = "large"
+	case mini = "mini"      // added to the enum…
 
-    static let caseDisplayRepresentations: [DrinkSize: DisplayRepresentation] = [
-        .small: "Small",
-        .medium: "Medium",
-        .large: "Large",
-        // …but never added here. Crash at display time, not at build time.
-    ]
+	static let caseDisplayRepresentations: [DrinkSize: DisplayRepresentation] = [
+		.small: "Small",
+		.medium: "Medium",
+		.large: "Large",
+		// …but never added here. Crash at display time, not at build time.
+	]
 }
 ```
 
@@ -63,17 +63,17 @@ enum DrinkSize: String, AppEnum {
 // PREFER: one entry per case. When you append a raw value (section above), add
 // its display representation in the same edit — the two changes are inseparable.
 enum DrinkSize: String, AppEnum {
-    case small = "small"
-    case medium = "medium"
-    case large = "large"
-    case mini = "mini"
+	case small = "small"
+	case medium = "medium"
+	case large = "large"
+	case mini = "mini"
 
-    static let caseDisplayRepresentations: [DrinkSize: DisplayRepresentation] = [
-        .small: "Small",
-        .medium: "Medium",
-        .large: "Large",
-        .mini: "Mini",      // added alongside the case
-    ]
+	static let caseDisplayRepresentations: [DrinkSize: DisplayRepresentation] = [
+		.small: "Small",
+		.medium: "Medium",
+		.large: "Large",
+		.mini: "Mini",      // added alongside the case
+	]
 }
 ```
 

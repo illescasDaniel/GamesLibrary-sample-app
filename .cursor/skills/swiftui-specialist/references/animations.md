@@ -5,9 +5,9 @@ To make the properties of a custom `View` or `Shape` participate in SwiftUI anim
 ```swift
 @Animatable
 struct CoolShape: Shape {
-    var width: CGFloat
-    var angle: Angle
-    // ...
+	var width: CGFloat
+	var angle: Angle
+	// ...
 }
 ```
 
@@ -16,11 +16,11 @@ If the property cannot participate in `animatableData`, the `@Animatable` macro 
 ```swift
 @Animatable
 struct CoolShape: Shape {
-    var width: CGFloat
-    var angle: Angle
-    var isOpaque: Bool // ❌ Cannot automatically synthesize 'animatableData'.
-                       // Mark this property with '@AnimatableIgnored'.
-                       // Conform the type of this property to 'Animatable' or 'VectorArithmetic'.
+	var width: CGFloat
+	var angle: Angle
+	var isOpaque: Bool // ❌ Cannot automatically synthesize 'animatableData'.
+					   // Mark this property with '@AnimatableIgnored'.
+					   // Conform the type of this property to 'Animatable' or 'VectorArithmetic'.
 }
 ```
 
@@ -29,9 +29,9 @@ If changes to this property need to be animated, conform its type to either `Ani
 ```swift
 @Animatable
 struct CoolShape: Shape {
-    var width: CGFloat
-    var angle: Angle
-    @AnimatableIgnored var isOpaque: Bool // opt-out the Bool property from 'animatableData'
+	var width: CGFloat
+	var angle: Angle
+	@AnimatableIgnored var isOpaque: Bool // opt-out the Bool property from 'animatableData'
 }
 ```
 
@@ -46,19 +46,19 @@ For deployment target >= 26.0, use `AnimatableValues`:
 // long-running animations don't accumulate unbounded values, and whose
 // `amplitude` must be clamped to `maxAmplitude` on every tick.
 struct WaveShape: Shape {
-    var amplitude: CGFloat
-    var phase: CGFloat
-    var maxAmplitude: CGFloat
+	var amplitude: CGFloat
+	var phase: CGFloat
+	var maxAmplitude: CGFloat
 
-    var animatableData: AnimatableValues<CGFloat, CGFloat> {
-        get { AnimatableValues(amplitude, phase) }
-        set {
-            amplitude = min(max(newValue.value.0, 0), maxAmplitude)
-            phase = newValue.value.1.truncatingRemainder(dividingBy: 2 * .pi)
-        }
-    }
+	var animatableData: AnimatableValues<CGFloat, CGFloat> {
+		get { AnimatableValues(amplitude, phase) }
+		set {
+			amplitude = min(max(newValue.value.0, 0), maxAmplitude)
+			phase = newValue.value.1.truncatingRemainder(dividingBy: 2 * .pi)
+		}
+	}
 
-    // ...
+	// ...
 }
 ```
 
@@ -66,18 +66,18 @@ For earlier deployment targets, use `AnimatablePair`:
 
 ```swift
 struct WaveShape: Shape {
-    var amplitude: CGFloat
-    var phase: CGFloat
-    var maxAmplitude: CGFloat
+	var amplitude: CGFloat
+	var phase: CGFloat
+	var maxAmplitude: CGFloat
 
-    var animatableData: AnimatablePair<CGFloat, CGFloat> {
-        get { AnimatablePair(amplitude, phase) }
-        set {
-            amplitude = min(max(newValue.first, 0), maxAmplitude)
-            phase = newValue.second.truncatingRemainder(dividingBy: 2 * .pi)
-        }
-    }
+	var animatableData: AnimatablePair<CGFloat, CGFloat> {
+		get { AnimatablePair(amplitude, phase) }
+		set {
+			amplitude = min(max(newValue.first, 0), maxAmplitude)
+			phase = newValue.second.truncatingRemainder(dividingBy: 2 * .pi)
+		}
+	}
 
-    // ...
+	// ...
 }
 ```

@@ -18,19 +18,19 @@ import AppIntentsTesting
 
 @available(iOS 27.0, macOS 27.0, watchOS 27.0, tvOS 27.0, visionOS 27.0, *)
 class CalendarTestCase: XCTestCase {
-    let app = XCUIApplication()
-    let definitions = IntentDefinitions(bundleIdentifier: "com.example.CometCal")   // your app's bundle id
+	let app = XCUIApplication()
+	let definitions = IntentDefinitions(bundleIdentifier: "com.example.CometCal")   // your app's bundle id
 
-    var eventEntity: AppEntityDefinition { definitions.entities["EventEntity"] }
-    var calendarEntity: AppEntityDefinition { definitions.entities["CalendarEntity"] }
-    var createEvent: AppIntentDefinition { definitions.intents["CreateEventIntent"] }
-    var openEvent: AppIntentDefinition { definitions.intents["OpenEventIntent"] }
-    var seedSampleEvents: AppIntentDefinition { definitions.intents["SeedSampleEventsIntent"] }
+	var eventEntity: AppEntityDefinition { definitions.entities["EventEntity"] }
+	var calendarEntity: AppEntityDefinition { definitions.entities["CalendarEntity"] }
+	var createEvent: AppIntentDefinition { definitions.intents["CreateEventIntent"] }
+	var openEvent: AppIntentDefinition { definitions.intents["OpenEventIntent"] }
+	var seedSampleEvents: AppIntentDefinition { definitions.intents["SeedSampleEventsIntent"] }
 
-    override func setUp() async throws {
-        try await super.setUp()
-        try await seedSampleEvents.makeIntent().run()   // out-of-process seed → known data
-    }
+	override func setUp() async throws {
+		try await super.setUp()
+		try await seedSampleEvents.makeIntent().run()   // out-of-process seed → known data
+	}
 }
 ```
 
@@ -44,26 +44,26 @@ class CalendarTestCase: XCTestCase {
 
 ```swift
 final class IntentExecutionTests: CalendarTestCase {
-    func testCreateEventReturnsEntity() async throws {
-        let result = try await createEvent.makeIntent(
-            title: "Asteroid Dodgeball Practice",
-            startDate: Date(),
-            isAllDay: false,
-            calendar: "Deep Space"
-        ).run()
-        XCTAssertEqual(try result.value.title, "Asteroid Dodgeball Practice")   // typed read → try
-    }
+	func testCreateEventReturnsEntity() async throws {
+		let result = try await createEvent.makeIntent(
+			title: "Asteroid Dodgeball Practice",
+			startDate: Date(),
+			isAllDay: false,
+			calendar: "Deep Space"
+		).run()
+		XCTAssertEqual(try result.value.title, "Asteroid Dodgeball Practice")   // typed read → try
+	}
 
-    func testUpdateTakesTheReturnedEntity() async throws {
-        let created = try await createEvent.makeIntent(
-            title: "Temp Event", startDate: Date(), isAllDay: false, calendar: "Mission Control"
-        ).run()
-        let updated = try await definitions.intents["UpdateEventIntent"].makeIntent(
-            event: created.value,                    // returned entity as a parameter — no `try`
-            title: "Temp Event (Revised)"
-        ).run()
-        XCTAssertEqual(try updated.value.title, "Temp Event (Revised)")
-    }
+	func testUpdateTakesTheReturnedEntity() async throws {
+		let created = try await createEvent.makeIntent(
+			title: "Temp Event", startDate: Date(), isAllDay: false, calendar: "Mission Control"
+		).run()
+		let updated = try await definitions.intents["UpdateEventIntent"].makeIntent(
+			event: created.value,                    // returned entity as a parameter — no `try`
+			title: "Temp Event (Revised)"
+		).run()
+		XCTAssertEqual(try updated.value.title, "Temp Event (Revised)")
+	}
 }
 ```
 
@@ -85,12 +85,12 @@ For a `perform()` that throws (CometCal's `FetchEventIntent` throws when no even
 
 ```swift
 func testFetchMissingEventThrows() async {
-    do {
-        _ = try await definitions.intents["FetchEventIntent"].makeIntent(title: "No Such Event").run()
-        XCTFail("Expected FetchEventIntent to throw when no event matches")
-    } catch {
-        // expected — the intent throws eventNotFound
-    }
+	do {
+		_ = try await definitions.intents["FetchEventIntent"].makeIntent(title: "No Such Event").run()
+		XCTFail("Expected FetchEventIntent to throw when no event matches")
+	} catch {
+		// expected — the intent throws eventNotFound
+	}
 }
 ```
 
@@ -102,19 +102,19 @@ Exercise an entity's query through its `AppEntityDefinition`; the call dispatche
 
 ```swift
 final class EntityQueryTests: CalendarTestCase {
-    func testStringQueryMatchesSeededEvent() async throws {
-        // "Cosmic Ray Calibration" is one of the seeded events.
-        let results = try await eventEntity.entities(matching: "Cosmic Ray")
-        XCTAssertEqual(results.count, 1)
-        XCTAssertEqual(try results[0].title, "Cosmic Ray Calibration")
-    }
+	func testStringQueryMatchesSeededEvent() async throws {
+		// "Cosmic Ray Calibration" is one of the seeded events.
+		let results = try await eventEntity.entities(matching: "Cosmic Ray")
+		XCTAssertEqual(results.count, 1)
+		XCTAssertEqual(try results[0].title, "Cosmic Ray Calibration")
+	}
 
-    func testAllAndSuggested() async throws {
-        let all = try await eventEntity.allEntities()
-        XCTAssertFalse(all.isEmpty)
-        let suggested = try await eventEntity.suggestedEntities()
-        XCTAssertFalse(suggested.isEmpty)
-    }
+	func testAllAndSuggested() async throws {
+		let all = try await eventEntity.allEntities()
+		XCTAssertFalse(all.isEmpty)
+		let suggested = try await eventEntity.suggestedEntities()
+		XCTAssertFalse(suggested.isEmpty)
+	}
 }
 ```
 
@@ -126,17 +126,17 @@ final class EntityQueryTests: CalendarTestCase {
 
 ```swift
 final class EventValueQueryTests: CalendarTestCase {
-    func testValueQueryReturnsItems() async throws {
-        // Illustrative: assumes CometCal exposes an EventValueQuery. "Cosmic Ray Calibration" is seeded.
-        let result = try await definitions.valueQueries["EventValueQuery"].values(for: "Cosmic Ray")
-        XCTAssertEqual(result.items.count, 1)
+	func testValueQueryReturnsItems() async throws {
+		// Illustrative: assumes CometCal exposes an EventValueQuery. "Cosmic Ray Calibration" is seeded.
+		let result = try await definitions.valueQueries["EventValueQuery"].values(for: "Cosmic Ray")
+		XCTAssertEqual(result.items.count, 1)
 
-        let first: DynamicPropertyPath = result.items[0]        // element → path (non-throwing)
-        XCTAssertEqual(try first.title, "Cosmic Ray Calibration")   // typed read → try
+		let first: DynamicPropertyPath = result.items[0]        // element → path (non-throwing)
+		XCTAssertEqual(try first.title, "Cosmic Ray Calibration")   // typed read → try
 
-        let empty = try await definitions.valueQueries["EventValueQuery"].values(for: "nope")
-        XCTAssertTrue(empty.items.isEmpty)
-    }
+		let empty = try await definitions.valueQueries["EventValueQuery"].values(for: "nope")
+		XCTAssertTrue(empty.items.isEmpty)
+	}
 }
 ```
 
@@ -148,21 +148,21 @@ final class EventValueQueryTests: CalendarTestCase {
 
 ```swift
 final class ViewAnnotationTests: CalendarTestCase {
-    @MainActor
-    func testEventDetailIsAnnotated() async throws {
-        let events = try await eventEntity.entities(matching: "Crew Lunch at the Nebula Cafe")
-        let event = try XCTUnwrap(events.first)
+	@MainActor
+	func testEventDetailIsAnnotated() async throws {
+		let events = try await eventEntity.entities(matching: "Crew Lunch at the Nebula Cafe")
+		let event = try XCTUnwrap(events.first)
 
-        try await openEvent.makeIntent(target: event).run()          // navigate the UI
+		try await openEvent.makeIntent(target: event).run()          // navigate the UI
 
-        XCTAssertTrue(app.staticTexts["Crew Lunch at the Nebula Cafe"].waitForExistence(timeout: 5))
+		XCTAssertTrue(app.staticTexts["Crew Lunch at the Nebula Cafe"].waitForExistence(timeout: 5))
 
-        let annotations = try await eventEntity.viewAnnotations()
-        XCTAssertEqual(annotations.count, 1)
-        let annotation = try XCTUnwrap(annotations.first)
-        XCTAssertEqual(try annotation.entity.title, "Crew Lunch at the Nebula Cafe")
-        XCTAssertTrue(annotation.isSelected)   // the detail screen selects the event it shows
-    }
+		let annotations = try await eventEntity.viewAnnotations()
+		XCTAssertEqual(annotations.count, 1)
+		let annotation = try XCTUnwrap(annotations.first)
+		XCTAssertEqual(try annotation.entity.title, "Crew Lunch at the Nebula Cafe")
+		XCTAssertTrue(annotation.isSelected)   // the detail screen selects the event it shows
+	}
 }
 ```
 
@@ -176,19 +176,19 @@ final class ViewAnnotationTests: CalendarTestCase {
 
 ```swift
 final class SpotlightTests: CalendarTestCase {
-    func testNewEventIsIndexed() async throws {
-        let before = try await eventEntity.spotlightQuery("Supernova Viewing Party")
-        XCTAssertTrue(before.isEmpty)
+	func testNewEventIsIndexed() async throws {
+		let before = try await eventEntity.spotlightQuery("Supernova Viewing Party")
+		XCTAssertTrue(before.isEmpty)
 
-        _ = try await createEvent.makeIntent(
-            title: "Supernova Viewing Party", startDate: Date(), isAllDay: false, calendar: "Deep Space"
-        ).run()
-        try await Task.sleep(for: .seconds(1))    // Spotlight indexing is asynchronous
+		_ = try await createEvent.makeIntent(
+			title: "Supernova Viewing Party", startDate: Date(), isAllDay: false, calendar: "Deep Space"
+		).run()
+		try await Task.sleep(for: .seconds(1))    // Spotlight indexing is asynchronous
 
-        let hits = try await eventEntity.spotlightQuery("Supernova Viewing Party")
-        XCTAssertEqual(hits.count, 1)
-        XCTAssertEqual(try hits[0].title, "Supernova Viewing Party")
-    }
+		let hits = try await eventEntity.spotlightQuery("Supernova Viewing Party")
+		XCTAssertEqual(hits.count, 1)
+		XCTAssertEqual(try hits[0].title, "Supernova Viewing Party")
+	}
 }
 ```
 
@@ -202,14 +202,14 @@ Because everything runs **out-of-process against the installed app**, you can't 
 
 ```swift
 final class DataSeedingTests: CalendarTestCase {
-    func testResetProducesKnownCalendars() async throws {
-        try await definitions.intents["ResetTestDataIntent"].makeIntent().run()
+	func testResetProducesKnownCalendars() async throws {
+		try await definitions.intents["ResetTestDataIntent"].makeIntent().run()
 
-        let calendars = try await calendarEntity.allEntities()
-        let titles: [String] = try calendars.map { try $0.title }
-        XCTAssertTrue(titles.contains("Mission Control"))
-        XCTAssertTrue(titles.contains("Deep Space"))
-    }
+		let calendars = try await calendarEntity.allEntities()
+		let titles: [String] = try calendars.map { try $0.title }
+		XCTAssertTrue(titles.contains("Mission Control"))
+		XCTAssertTrue(titles.contains("Deep Space"))
+	}
 }
 ```
 
@@ -225,14 +225,14 @@ import AppIntentsTesting
 
 @available(iOS 27.0, macOS 27.0, watchOS 27.0, tvOS 27.0, visionOS 27.0, *)
 final class GatedTests: XCTestCase {
-    let definitions = IntentDefinitions(bundleIdentifier: "com.example.CometCal")   // your app's bundle id
+	let definitions = IntentDefinitions(bundleIdentifier: "com.example.CometCal")   // your app's bundle id
 
-    func testRunsUnderGate() async throws {
-        let result = try await definitions.intents["CreateCalendarIntent"].makeIntent(
-            name: "Occupy Saturn", color: "red"
-        ).run()
-        XCTAssertEqual(try result.value.title, "Occupy Saturn")
-    }
+	func testRunsUnderGate() async throws {
+		let result = try await definitions.intents["CreateCalendarIntent"].makeIntent(
+			name: "Occupy Saturn", color: "red"
+		).run()
+		XCTAssertEqual(try result.value.title, "Occupy Saturn")
+	}
 }
 ```
 

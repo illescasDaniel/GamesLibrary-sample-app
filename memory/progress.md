@@ -21,4 +21,4 @@ Working tree on `develop` — not yet committed.
 ### Open
 
 - [x] Commit hexagonal + SDD + memory-bank work when Daniel asks
-- [ ] Re-indent project source with tabs (per `AGENTS.md`)
+- [x] Re-indent project source with tabs (per `AGENTS.md`)

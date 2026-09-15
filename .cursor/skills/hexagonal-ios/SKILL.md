@@ -32,10 +32,10 @@ Mock the inbound port, inject into the real ViewModel:
 
 ```swift
 #Preview {
-    GameListView(viewModel: GamesListViewModel(
-        searchGames: MockSearchGamesUseCase(result: .success([...])),
-        logger: BetterLogger(name: "Preview")
-    ))
+	GameListView(viewModel: GamesListViewModel(
+		searchGames: MockSearchGamesUseCase(result: .success([...])),
+		logger: BetterLogger(name: "Preview")
+	))
 }
 ```
 

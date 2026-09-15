@@ -8,7 +8,7 @@ _Last updated: 2026-09-15_
 
 ## Current focus
 
-Re-indenting project source with tabs (per `AGENTS.md`); hexagonal/SDD refactor committed.
+Hexagonal/SDD refactor and tab re-indent committed on `develop`.
 
 ## Just changed
 

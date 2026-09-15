@@ -19,30 +19,30 @@ For value-type inputs, this applies to every view, not just subviews extracted f
 // count tick, preferences toggle — even though it only displays
 // `avatarURL`.
 struct User {
-    var name: String
-    var bio: String
-    var avatarURL: URL
-    var followerCount: Int
-    // ... more fields
+	var name: String
+	var bio: String
+	var avatarURL: URL
+	var followerCount: Int
+	// ... more fields
 }
 
 struct AvatarBadge: View {
-    let user: User
+	let user: User
 
-    var body: some View {
-        AsyncImage(url: user.avatarURL)
-    }
+	var body: some View {
+		AsyncImage(url: user.avatarURL)
+	}
 }
 ```
 
 ```swift
 // PREFER: Take only the field the view actually reads.
 struct AvatarBadge: View {
-    let avatarURL: URL
+	let avatarURL: URL
 
-    var body: some View {
-        AsyncImage(url: avatarURL)
-    }
+	var body: some View {
+		AsyncImage(url: avatarURL)
+	}
 }
 ```
 
@@ -60,22 +60,22 @@ The "narrow inputs" rule above already mitigates this — a subview that takes `
 // the previous value just to decide whether the row changed, and every
 // subview that takes it as input pays the same cost.
 struct Article {
-    let id: UUID
-    let title: String
-    let author: String
-    let body: String                  // can be 50KB+
-    let comments: [Comment]           // can be hundreds
-    let related: [RelatedArticle]
-    let editorialNotes: [Note]
-    // ... many more fields
+	let id: UUID
+	let title: String
+	let author: String
+	let body: String                  // can be 50KB+
+	let comments: [Comment]           // can be hundreds
+	let related: [RelatedArticle]
+	let editorialNotes: [Note]
+	// ... many more fields
 }
 
 struct ArticleRow: View {
-    let article: Article
+	let article: Article
 
-    var body: some View {
-        Text(article.title)
-    }
+	var body: some View {
+		Text(article.title)
+	}
 }
 ```
 
@@ -86,11 +86,11 @@ struct ArticleRow: View {
 // render. Nothing in the view tree pays a deep-comparison cost over
 // `body`, `comments`, or `related`.
 struct ArticleRow: View {
-    let title: String
+	let title: String
 
-    var body: some View {
-        Text(title)
-    }
+	var body: some View {
+		Text(title)
+	}
 }
 ```
 
@@ -121,7 +121,7 @@ Mark `@Observable` classes with `@MainActor` unless the project has Main Actor d
 // flag the model.
 @Observable
 final class OrderModel {
-    var status: DeliveryStatus = .placed
+	var status: DeliveryStatus = .placed
 }
 ```
 
@@ -133,7 +133,7 @@ final class OrderModel {
 @MainActor
 @Observable
 final class OrderModel {
-    var status: DeliveryStatus = .placed
+	var status: DeliveryStatus = .placed
 }
 ```
 
@@ -148,13 +148,13 @@ This applies to all OS releases that support `@Observable` (iOS 17 / macOS 14 an
 // Every assignment to `status` invalidates observing views, even if the
 // value hasn't actually changed.
 enum DeliveryStatus {
-    case placed, preparing, shipped, delivered
+	case placed, preparing, shipped, delivered
 }
 
 @MainActor
 @Observable
 final class OrderModel {
-    var status: DeliveryStatus = .placed
+	var status: DeliveryStatus = .placed
 }
 ```
 
@@ -163,13 +163,13 @@ final class OrderModel {
 // short-circuit redundant invalidations when the same status is set
 // again.
 enum DeliveryStatus: Equatable {
-    case placed, preparing, shipped, delivered
+	case placed, preparing, shipped, delivered
 }
 
 @MainActor
 @Observable
 final class OrderModel {
-    var status: DeliveryStatus = .placed
+	var status: DeliveryStatus = .placed
 }
 ```
 
@@ -179,15 +179,15 @@ The same principle applies to collection properties. When a property is an `Arra
 // AVOID: Ingredient is not Equatable, so assigning the same array of
 // ingredients to `recipe.ingredients` always invalidates observing views.
 struct Ingredient {
-    var name: String
-    var quantity: Double
-    var unit: String
+	var name: String
+	var quantity: Double
+	var unit: String
 }
 
 @MainActor
 @Observable
 final class RecipeModel {
-    var ingredients: [Ingredient] = []
+	var ingredients: [Ingredient] = []
 }
 ```
 
@@ -196,15 +196,15 @@ final class RecipeModel {
 // conformance to compare element-wise, so the @Observable setter skips
 // redundant invalidations when the same ingredients are set again.
 struct Ingredient: Equatable, Identifiable {
-    var name: String
-    var quantity: Double
-    var unit: String
+	var name: String
+	var quantity: Double
+	var unit: String
 }
 
 @MainActor
 @Observable
 final class RecipeModel {
-    var ingredients: [Ingredient] = []
+	var ingredients: [Ingredient] = []
 }
 ```
 
@@ -225,19 +225,19 @@ Computed properties still establish dependencies transitively: a computed `var s
 @MainActor
 @Observable
 final class AppState {
-    var users: [User] = []
-    var currentUserID: User.ID?
+	var users: [User] = []
+	var currentUserID: User.ID?
 }
 
 struct CurrentUserBadge: View {
-    let state: AppState
+	let state: AppState
 
-    var body: some View {
-        if let id = state.currentUserID,
-           let user = state.users.first(where: { $0.id == id }) {
-            Text(user.name)
-        }
-    }
+	var body: some View {
+		if let id = state.currentUserID,
+		   let user = state.users.first(where: { $0.id == id }) {
+			Text(user.name)
+		}
+	}
 }
 ```
 
@@ -250,22 +250,22 @@ struct CurrentUserBadge: View {
 @MainActor
 @Observable
 final class AppState {
-    var users: [User] = []
-    var currentUserID: User.ID?
+	var users: [User] = []
+	var currentUserID: User.ID?
 
-    var currentUser: User? {
-        users.first { $0.id == currentUserID }
-    }
+	var currentUser: User? {
+		users.first { $0.id == currentUserID }
+	}
 }
 
 struct CurrentUserBadge: View {
-    let state: AppState
+	let state: AppState
 
-    var body: some View {
-        if let user = state.currentUser {
-            Text(user.name)
-        }
-    }
+	var body: some View {
+		if let user = state.currentUser {
+			Text(user.name)
+		}
+	}
 }
 ```
 
@@ -276,28 +276,28 @@ struct CurrentUserBadge: View {
 @MainActor
 @Observable
 final class AppState {
-    var users: [User] = [] {
-        didSet { recomputeCurrentUser() }
-    }
-    var currentUserID: User.ID? {
-        didSet { recomputeCurrentUser() }
-    }
+	var users: [User] = [] {
+		didSet { recomputeCurrentUser() }
+	}
+	var currentUserID: User.ID? {
+		didSet { recomputeCurrentUser() }
+	}
 
-    private(set) var currentUser: User?
+	private(set) var currentUser: User?
 
-    private func recomputeCurrentUser() {
-        currentUser = users.first { $0.id == currentUserID }
-    }
+	private func recomputeCurrentUser() {
+		currentUser = users.first { $0.id == currentUserID }
+	}
 }
 
 struct CurrentUserBadge: View {
-    let state: AppState
+	let state: AppState
 
-    var body: some View {
-        if let user = state.currentUser {
-            Text(user.name)
-        }
-    }
+	var body: some View {
+		if let user = state.currentUser {
+			Text(user.name)
+		}
+	}
 }
 ```
 
@@ -320,22 +320,22 @@ When iterating a collection from an `@Observable` model, the list view that hold
 // body reads `state.users`, so any edit to any user invalidates every
 // row — not just the one whose data changed.
 struct UserList: View {
-    let state: AppState
+	let state: AppState
 
-    var body: some View {
-        ForEach(state.users.indices, id: \.self) { index in
-            UserRow(state: state, index: index)
-        }
-    }
+	var body: some View {
+		ForEach(state.users.indices, id: \.self) { index in
+			UserRow(state: state, index: index)
+		}
+	}
 }
 
 struct UserRow: View {
-    let state: AppState
-    let index: Int
+	let state: AppState
+	let index: Int
 
-    var body: some View {
-        Text(state.users[index].name)
-    }
+	var body: some View {
+		Text(state.users[index].name)
+	}
 }
 ```
 
@@ -346,21 +346,21 @@ struct UserRow: View {
 // doesn't re-run any row's body; editing one user's name re-runs only
 // that row.
 struct UserList: View {
-    let state: AppState
+	let state: AppState
 
-    var body: some View {
-        ForEach(state.users) { user in
-            UserRow(name: user.name)
-        }
-    }
+	var body: some View {
+		ForEach(state.users) { user in
+			UserRow(name: user.name)
+		}
+	}
 }
 
 struct UserRow: View {
-    let name: String
+	let name: String
 
-    var body: some View {
-        Text(name)
-    }
+	var body: some View {
+		Text(name)
+	}
 }
 ```
 
@@ -379,50 +379,50 @@ The instances must be persisted. Vending a freshly-constructed `@Observable` on 
 @MainActor
 @Observable
 final class User: Identifiable {
-    let id: UUID
-    var name: String
-    var email: String
-    var avatarURL: URL
+	let id: UUID
+	var name: String
+	var email: String
+	var avatarURL: URL
 
-    init(id: UUID = UUID(), name: String, email: String, avatarURL: URL) {
-        self.id = id
-        self.name = name
-        self.email = email
-        self.avatarURL = avatarURL
-    }
+	init(id: UUID = UUID(), name: String, email: String, avatarURL: URL) {
+		self.id = id
+		self.name = name
+		self.email = email
+		self.avatarURL = avatarURL
+	}
 }
 
 @MainActor
 @Observable
 final class AppState {
-    var users: [User] = []  // persisted; each User's identity is stable
-    // ... mutations modify existing User instances in place
+	var users: [User] = []  // persisted; each User's identity is stable
+	// ... mutations modify existing User instances in place
 }
 
 struct UserList: View {
-    let state: AppState
+	let state: AppState
 
-    var body: some View {
-        ForEach(state.users) { user in
-            UserRow(user: user)
-        }
-    }
+	var body: some View {
+		ForEach(state.users) { user in
+			UserRow(user: user)
+		}
+	}
 }
 
 struct UserRow: View {
-    let user: User
+	let user: User
 
-    var body: some View {
-        HStack {
-            AsyncImage(url: user.avatarURL)
-                .frame(width: 32, height: 32)
-                .clipShape(Circle())
-            VStack(alignment: .leading) {
-                Text(user.name).font(.headline)
-                Text(user.email).font(.caption)
-            }
-        }
-    }
+	var body: some View {
+		HStack {
+			AsyncImage(url: user.avatarURL)
+				.frame(width: 32, height: 32)
+				.clipShape(Circle())
+			VStack(alignment: .leading) {
+				Text(user.name).font(.headline)
+				Text(user.email).font(.caption)
+			}
+		}
+	}
 }
 ```
 
@@ -439,34 +439,34 @@ The fix is to expose the struct's fields as individual properties on the `@Obser
 // dependency on `session.user`. Editing `preferences` (or any other
 // field of `user`) also invalidates the view.
 struct User {
-    var name: String
-    var email: String
-    var avatarURL: URL
-    var preferences: Preferences
+	var name: String
+	var email: String
+	var avatarURL: URL
+	var preferences: Preferences
 }
 
 @MainActor
 @Observable
 final class UserSession {
-    var user: User
+	var user: User
 
-    init(user: User) { self.user = user }
+	init(user: User) { self.user = user }
 }
 
 struct ProfileBadge: View {
-    let session: UserSession
+	let session: UserSession
 
-    var body: some View {
-        HStack {
-            AsyncImage(url: session.user.avatarURL)
-                .frame(width: 32, height: 32)
-                .clipShape(Circle())
-            VStack(alignment: .leading) {
-                Text(session.user.name).font(.headline)
-                Text(session.user.email).font(.caption)
-            }
-        }
-    }
+	var body: some View {
+		HStack {
+			AsyncImage(url: session.user.avatarURL)
+				.frame(width: 32, height: 32)
+				.clipShape(Circle())
+			VStack(alignment: .leading) {
+				Text(session.user.name).font(.headline)
+				Text(session.user.email).font(.caption)
+			}
+		}
+	}
 }
 ```
 
@@ -478,33 +478,33 @@ struct ProfileBadge: View {
 @MainActor
 @Observable
 final class UserSession {
-    var userName: String
-    var userEmail: String
-    var avatarURL: URL
-    var preferences: Preferences
+	var userName: String
+	var userEmail: String
+	var avatarURL: URL
+	var preferences: Preferences
 
-    init(user: User) {
-        self.userName = user.name
-        self.userEmail = user.email
-        self.avatarURL = user.avatarURL
-        self.preferences = user.preferences
-    }
+	init(user: User) {
+		self.userName = user.name
+		self.userEmail = user.email
+		self.avatarURL = user.avatarURL
+		self.preferences = user.preferences
+	}
 }
 
 struct ProfileBadge: View {
-    let session: UserSession
+	let session: UserSession
 
-    var body: some View {
-        HStack {
-            AsyncImage(url: session.avatarURL)
-                .frame(width: 32, height: 32)
-                .clipShape(Circle())
-            VStack(alignment: .leading) {
-                Text(session.userName).font(.headline)
-                Text(session.userEmail).font(.caption)
-            }
-        }
-    }
+	var body: some View {
+		HStack {
+			AsyncImage(url: session.avatarURL)
+				.frame(width: 32, height: 32)
+				.clipShape(Circle())
+			VStack(alignment: .leading) {
+				Text(session.userName).font(.headline)
+				Text(session.userEmail).font(.caption)
+			}
+		}
+	}
 }
 ```
 
@@ -523,17 +523,17 @@ If the view's body is expensive (deep hierarchy, many children), this causes unn
 // .onChange. Every change to `counter` creates a dependency and
 // re-evaluates the expensive ScrollView hierarchy.
 struct ContentView: View {
-    @State private var model = Model()
-    @Environment(\.counter) private var counter
+	@State private var model = Model()
+	@Environment(\.counter) private var counter
 
-    var body: some View {
-        ScrollView {
-            // ... expensive view hierarchy ...
-        }
-        .onChange(of: counter) {
-            model.counter = counter
-        }
-    }
+	var body: some View {
+		ScrollView {
+			// ... expensive view hierarchy ...
+		}
+		.onChange(of: counter) {
+			model.counter = counter
+		}
+	}
 }
 ```
 
@@ -543,32 +543,32 @@ struct ContentView: View {
 // the modifier's body re-runs, not ContentView's. The host view's
 // dependency surface doesn't include `counter` at all.
 struct CounterSyncModifier: ViewModifier {
-    let model: Model
-    @Environment(\.counter) private var counter
+	let model: Model
+	@Environment(\.counter) private var counter
 
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: counter) {
-                model.counter = counter
-            }
-    }
+	func body(content: Content) -> some View {
+		content
+			.onChange(of: counter) {
+				model.counter = counter
+			}
+	}
 }
 
 extension View {
-    func counterSync(model: Model) -> some View {
-        modifier(CounterSyncModifier(model: model))
-    }
+	func counterSync(model: Model) -> some View {
+		modifier(CounterSyncModifier(model: model))
+	}
 }
 
 struct ContentView: View {
-    @State private var model = Model()
+	@State private var model = Model()
 
-    var body: some View {
-        ScrollView {
-            // ... expensive view hierarchy ...
-        }
-        .counterSync(model: model)
-    }
+	var body: some View {
+		ScrollView {
+			// ... expensive view hierarchy ...
+		}
+		.counterSync(model: model)
+	}
 }
 ```
 
@@ -579,69 +579,69 @@ The same principle applies to any dependency type - `@Binding`, `@Observable` pr
 // solely for side effects. Changes to either re-evaluate the
 // expensive editor body.
 struct EditorView: View {
-    var document: DocumentModel
-    @Binding var isActive: Bool
-    @State private var model = EditorModel()
+	var document: DocumentModel
+	@Binding var isActive: Bool
+	@State private var model = EditorModel()
 
-    var body: some View {
-        ScrollView {
-            // ... expensive text editor hierarchy ...
-        }
-        .onChange(of: document.wordCount) {
-            model.updateStatistics(wordCount: document.wordCount)
-        }
-        .onChange(of: isActive) {
-            model.setActive(isActive)
-        }
-    }
+	var body: some View {
+		ScrollView {
+			// ... expensive text editor hierarchy ...
+		}
+		.onChange(of: document.wordCount) {
+			model.updateStatistics(wordCount: document.wordCount)
+		}
+		.onChange(of: isActive) {
+			model.setActive(isActive)
+		}
+	}
 }
 ```
 
 ```swift
 // PREFER: Extract both side effects into a single ViewModifier.
 struct EditorChangesModifier: ViewModifier {
-    var document: DocumentModel
-    @Binding var isActive: Bool
-    let model: EditorModel
+	var document: DocumentModel
+	@Binding var isActive: Bool
+	let model: EditorModel
 
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: document.wordCount) {
-                model.updateStatistics(wordCount: document.wordCount)
-            }
-            .onChange(of: isActive) {
-                model.setActive(isActive)
-            }
-    }
+	func body(content: Content) -> some View {
+		content
+			.onChange(of: document.wordCount) {
+				model.updateStatistics(wordCount: document.wordCount)
+			}
+			.onChange(of: isActive) {
+				model.setActive(isActive)
+			}
+	}
 }
 
 extension View {
-    func editorChanges(
-        document: DocumentModel,
-        isActive: Binding<Bool>,
-        model: EditorModel
-    ) -> some View {
-        modifier(
-            EditorChangesModifier(
-                document: document,
-                isActive: isActive,
-                model: model
-            )
-        )
-    }
+	func editorChanges(
+		document: DocumentModel,
+		isActive: Binding<Bool>,
+		model: EditorModel
+	) -> some View {
+		modifier(
+			EditorChangesModifier(
+				document: document,
+				isActive: isActive,
+				model: model
+			)
+		)
+	}
 }
 
 struct EditorView: View {
-    var document: DocumentModel
-    @Binding var isActive: Bool
-    @State private var model = EditorModel()
+	var document: DocumentModel
+	@Binding var isActive: Bool
+	@State private var model = EditorModel()
 
-    var body: some View {
-        ScrollView {
-            // ... expensive text editor hierarchy ...
-        }
-        .editorChanges(document: document, isActive: $isActive, model: model)
-    }
+	var body: some View {
+		ScrollView {
+			// ... expensive text editor hierarchy ...
+		}
+		.editorChanges(document: document, isActive: $isActive, model: model)
+	}
 }
 ```
 
@@ -662,32 +662,32 @@ Always prefer to use a KeyPath-based Binding with subscripts instead of a get-se
 ```swift
 @Observable
 final class ScoreboardModel {
-    private(set) var scores: [String: Int] = [
-        "Alice": 42, "Bob": 17, "Carol": 99,
-    ]
+	private(set) var scores: [String: Int] = [
+		"Alice": 42, "Bob": 17, "Carol": 99,
+	]
 
-    let players = ["Alice", "Bob", "Carol"]
+	let players = ["Alice", "Bob", "Carol"]
 
-    // A subscript with a labeled argument can be used as a functional
-    // 'projection' into the underlying model if given a Binding to it.
-    subscript(scoreFor player: String) -> Int {
-        get { scores[player, default: 0] }
-        set { scores[player] = newValue }
-    }
+	// A subscript with a labeled argument can be used as a functional
+	// 'projection' into the underlying model if given a Binding to it.
+	subscript(scoreFor player: String) -> Int {
+		get { scores[player, default: 0] }
+		set { scores[player] = newValue }
+	}
 }
 
 /// Basic view with two-way binding to a score.
 struct PlayerScoreRow: View {
-    var player: String
-    @Binding var score: Int
+	var player: String
+	@Binding var score: Int
 
-    var body: some View {
-        HStack {
-            Text(player)
-                .frame(width: 80, alignment: .leading)
-            Stepper("\(score) pts", value: $score, in: 0...999)
-        }
-    }
+	var body: some View {
+		HStack {
+			Text(player)
+				.frame(width: 80, alignment: .leading)
+			Stepper("\(score) pts", value: $score, in: 0...999)
+		}
+	}
 }
 ```
 
@@ -696,29 +696,29 @@ Don't use a closure to produce the binding for `PlayerScoreRow`. Instead use a b
 ```swift
 /// Parent view.
 struct ScoreboardView: View {
-    @State private var model = ScoreboardModel()
+	@State private var model = ScoreboardModel()
 
-    var body: some View {
-        NavigationStack {
-            List(model.players, id: \.self) { player in
-                // ❌ BAD: Creating a closure means a new heap allocation each
-                // time `body` is run and can result in issues with comparison,
-                // triggering unnecessary invalidations.
-                let badModelBinding = Binding(
-                    get: { model[scoreFor: player] }
-                    set: { model[scoreFor: player] = newValue }
-                )
-                PlayerScoreRow(player: player, score: badModelBinding)
+	var body: some View {
+		NavigationStack {
+			List(model.players, id: \.self) { player in
+				// ❌ BAD: Creating a closure means a new heap allocation each
+				// time `body` is run and can result in issues with comparison,
+				// triggering unnecessary invalidations.
+				let badModelBinding = Binding(
+					get: { model[scoreFor: player] }
+					set: { model[scoreFor: player] = newValue }
+				)
+				PlayerScoreRow(player: player, score: badModelBinding)
 
-                // ✅ GOOD: A subscript with a labeled argument can be used as a
-                // functional 'projection' into the underlying model if given a
-                // Binding to it.
-                @Bindable var model = model
-                PlayerScoreRow(player: player, score: $model[scoreFor: player])
-            }
-            .navigationTitle("Scoreboard")
-        }
-    }
+				// ✅ GOOD: A subscript with a labeled argument can be used as a
+				// functional 'projection' into the underlying model if given a
+				// Binding to it.
+				@Bindable var model = model
+				PlayerScoreRow(player: player, score: $model[scoreFor: player])
+			}
+			.navigationTitle("Scoreboard")
+		}
+	}
 }
 ```
 
@@ -744,8 +744,8 @@ extension PlayerModel {
   /// Projects whether playback is active. Setting it to `false` pauses by
   /// zeroing the rate, and `true` resumes at normal speed.
   fileprivate subscript(playback _: PlaybackProjection) -> Bool {
-    get { rate > 0 }
-    set { rate = newValue ? 1 : 0 }
+	get { rate > 0 }
+	set { rate = newValue ? 1 : 0 }
   }
 }
 
@@ -758,8 +758,8 @@ extension PlayerModel {
   /// Projects whether playback is active. Setting it to `false` pauses by
   /// zeroing the rate, and `true` resumes at normal speed.
   fileprivate var isPlaying: Bool {
-    get { rate > 0 }
-    set { rate = newValue ? 1 : 0 }
+	get { rate > 0 }
+	set { rate = newValue ? 1 : 0 }
   }
 }
 
@@ -777,16 +777,16 @@ Create custom environment, transaction and container values by extending the rel
 
 ```swift
 extension EnvironmentValues {
-    @Entry var myCustomValue: String = "Default value"
-    @Entry var anotherCustomValue = true
+	@Entry var myCustomValue: String = "Default value"
+	@Entry var anotherCustomValue = true
 }
 
 extension Transaction {
-    @Entry var myCustomValue: String = "Default value"
+	@Entry var myCustomValue: String = "Default value"
 }
 
 extension ContainerValues {
-    @Entry var myCustomValue: String = "Default value"
+	@Entry var myCustomValue: String = "Default value"
 }
 ```
 
@@ -794,7 +794,7 @@ Since the default value for `FocusedValues` is always nil, `FocusedValue`s entri
 
 ```swift
 extension FocusedValues {
-    @Entry var myCustomValue: String?
+	@Entry var myCustomValue: String?
 }
 ```
 

@@ -12,20 +12,20 @@ The same logical entity often lives on more than one of a person's devices — a
 ```swift
 @available(iOS 27.0, *)
 struct LandmarkEntity: SyncableEntity {
-    // LocalID = the local store UUID; StableID = the CloudKit record name.
-    let id: SyncableEntityIdentifier<UUID, String>
+	// LocalID = the local store UUID; StableID = the CloudKit record name.
+	let id: SyncableEntityIdentifier<UUID, String>
 
-    @Property(title: "Name") var name: String
+	@Property(title: "Name") var name: String
 
-    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Landmark")
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(name)") }
+	static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Landmark")
+	var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(name)") }
 
-    static let defaultQuery = LandmarkEntityQuery()
+	static let defaultQuery = LandmarkEntityQuery()
 
-    init(local: UUID, cloudKitID: String, name: String) {
-        self.id = SyncableEntityIdentifier(local: local, stable: cloudKitID)
-        self.name = name
-    }
+	init(local: UUID, cloudKitID: String, name: String) {
+		self.id = SyncableEntityIdentifier(local: local, stable: cloudKitID)
+		self.name = name
+	}
 }
 ```
 
@@ -40,17 +40,17 @@ The designated initializer, `init(local:stable:)`, takes both keys as non-option
 ```swift
 @available(iOS 27.0, *)
 struct LandmarkEntityQuery: EntityQuery {
-    func entities(for identifiers: [LandmarkEntity.ID]) async throws -> [LandmarkEntity] {
-        var results: [LandmarkEntity] = []
-        for id in identifiers {
-            if let local = id.local, let hit = try await ModelData.shared.landmark(localID: local) {
-                results.append(LandmarkEntity(hit))          // fast path, same device
-            } else if let stable = id.stable, let hit = try await ModelData.shared.landmark(cloudKitID: stable) {
-                results.append(LandmarkEntity(hit))          // cross-device fallback
-            }
-        }
-        return results
-    }
+	func entities(for identifiers: [LandmarkEntity.ID]) async throws -> [LandmarkEntity] {
+		var results: [LandmarkEntity] = []
+		for id in identifiers {
+			if let local = id.local, let hit = try await ModelData.shared.landmark(localID: local) {
+				results.append(LandmarkEntity(hit))          // fast path, same device
+			} else if let stable = id.stable, let hit = try await ModelData.shared.landmark(cloudKitID: stable) {
+				results.append(LandmarkEntity(hit))          // cross-device fallback
+			}
+		}
+		return results
+	}
 }
 ```
 
@@ -84,21 +84,21 @@ Because `.unknown == []`, there is no separate "ownership is undetermined" value
 ```swift
 @available(iOS 27.0, *)
 struct TravelPhotoEntity: OwnershipProvidingEntity {
-    let id: UUID
-    @Property(title: "Caption") var caption: String
-    let source: PhotoSource   // .mine / .sharedWithMe / .sharedPublicly
+	let id: UUID
+	@Property(title: "Caption") var caption: String
+	let source: PhotoSource   // .mine / .sharedWithMe / .sharedPublicly
 
-    var ownership: EntityOwnership {
-        switch source {
-        case .mine:            return []          // own/private data — no shared/public bits
-        case .sharedWithMe:    return .shared
-        case .sharedPublicly:  return .public
-        }
-    }
+	var ownership: EntityOwnership {
+		switch source {
+		case .mine:            return []          // own/private data — no shared/public bits
+		case .sharedWithMe:    return .shared
+		case .sharedPublicly:  return .public
+		}
+	}
 
-    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Travel Photo")
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(caption)") }
-    static let defaultQuery = TravelPhotoQuery()
+	static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Travel Photo")
+	var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(caption)") }
+	static let defaultQuery = TravelPhotoQuery()
 }
 ```
 
@@ -111,14 +111,14 @@ When the user's deployment target is below SDK 27 and the answer needs any of th
 ```swift
 @available(iOS 27.0, *)
 struct LandmarkEntity: SyncableEntity {
-    let id: SyncableEntityIdentifier<UUID, String>
-    // …
+	let id: SyncableEntityIdentifier<UUID, String>
+	// …
 }
 
 // Fallback for deployment targets below iOS 27: a plain AppEntity keyed on the local id.
 struct LegacyLandmarkEntity: AppEntity {
-    let id: UUID
-    // …
+	let id: UUID
+	// …
 }
 ```
 

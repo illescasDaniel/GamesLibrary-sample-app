@@ -17,10 +17,10 @@ For example, this code will fail to compile:
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        Text("Hello")
-            .overlay(Color.blue.opacity(0.70).blendMode(.overlay))
-    }
+	var body: some View {
+		Text("Hello")
+			.overlay(Color.blue.opacity(0.70).blendMode(.overlay))
+	}
 }
 ```
 
@@ -31,10 +31,10 @@ Use the trailing-closure variant of `overlay` or `background` instead of passing
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        Rectangle()
-            .overlay { Color.blue.opacity(0.3).blendMode(.overlay) }
-    }
+	var body: some View {
+		Rectangle()
+			.overlay { Color.blue.opacity(0.3).blendMode(.overlay) }
+	}
 }
 ```
 
@@ -57,7 +57,7 @@ For example, this code will fail to compile if `MyPackage` also declares a `Colo
 ```swift
 // In MyPackage:
 public struct Color {
-    public static let clear = Color()
+	public static let clear = Color()
 }
 
 // In your app:
@@ -65,9 +65,9 @@ import SwiftUI
 import MyPackage
 
 struct ContentView: View {
-    var body: some View {
-        Color.clear
-    }
+	var body: some View {
+		Color.clear
+	}
 }
 ```
 
@@ -79,9 +79,9 @@ import SwiftUI
 import MyPackage
 
 struct ContentView: View {
-    var body: some View {
-        SwiftUI.Color.clear
-    }
+	var body: some View {
+		SwiftUI.Color.clear
+	}
 }
 ```
 
@@ -106,22 +106,22 @@ For example, this code will fail to compile:
 import SwiftUI
 
 struct CardView<Content: View>: View {
-    var content: Content
-    var body: some View { content }
-    init(@ContentBuilder content: () -> Content) {
-        self.content = content()
-    }
+	var content: Content
+	var body: some View { content }
+	init(@ContentBuilder content: () -> Content) {
+		self.content = content()
+	}
 }
 
 extension CardView where Content == VStack<TupleView<(Text, Text)>> {
-    init(title: String, subtitle: String) {
-        self = CardView {
-            VStack {
-                Text(title)
-                Text(subtitle)
-            }
-        }
-    }
+	init(title: String, subtitle: String) {
+		self = CardView {
+			VStack {
+				Text(title)
+				Text(subtitle)
+			}
+		}
+	}
 }
 ```
 
@@ -132,22 +132,22 @@ Avoid hard-coding `TupleContent` or `TupleView` in generic type parameters. If y
 import SwiftUI
 
 struct CardView<Content: View>: View {
-    var content: Content
-    var body: some View { content }
-    init(@ContentBuilder content: () -> Content) {
-        self.content = content()
-    }
+	var content: Content
+	var body: some View { content }
+	init(@ContentBuilder content: () -> Content) {
+		self.content = content()
+	}
 }
 
 extension CardView where Content == VStack<TupleContent<Text, Text>> {
-    init(title: String, subtitle: String) {
-        self = CardView {
-            VStack {
-                Text(title)
-                Text(subtitle)
-            }
-        }
-    }
+	init(title: String, subtitle: String) {
+		self = CardView {
+			VStack {
+				Text(title)
+				Text(subtitle)
+			}
+		}
+	}
 }
 ```
 
@@ -157,24 +157,24 @@ or if your deployment target is lower than any Apple OS 27.0, you can do the equ
 import SwiftUI
 
 struct CardView<Content: View>: View {
-    var content: Content
-    var body: some View { content }
-    init(@ContentBuilder content: () -> Content) {
-        self.content = content()
-    }
+	var content: Content
+	var body: some View { content }
+	init(@ContentBuilder content: () -> Content) {
+		self.content = content()
+	}
 }
 
 extension CardView where Content == VStack<TupleView<(Text, Text)>> {
-    init(title: String, subtitle: String) {
-        self = CardView {
-            VStack {
-                TupleView((
-                    Text(title),
-                    Text(subtitle)
-                ))
-            }
-        }
-    }
+	init(title: String, subtitle: String) {
+		self = CardView {
+			VStack {
+				TupleView((
+					Text(title),
+					Text(subtitle)
+				))
+			}
+		}
+	}
 }
 ```
 
@@ -198,9 +198,9 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    var body: some View {
-        Group { }
-    }
+	var body: some View {
+		Group { }
+	}
 }
 ```
 
@@ -212,11 +212,11 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    var body: some View {
-        Group {
-            EmptyContent()
-        }
-    }
+	var body: some View {
+		Group {
+			EmptyContent()
+		}
+	}
 }
 ```
 
@@ -228,13 +228,13 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    var body: some View {
-        Group {
-            #if MY_CONDITION
-            MyView()
-            #endif
-        }
-    }
+	var body: some View {
+		Group {
+			#if MY_CONDITION
+			MyView()
+			#endif
+		}
+	}
 }
 ```
 
@@ -246,15 +246,15 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    var body: some View {
-        Group {
-            #if MY_CONDITION
-            MyView()
-            #else
-            EmptyContent()
-            #endif
-        }
-    }
+	var body: some View {
+		Group {
+			#if MY_CONDITION
+			MyView()
+			#else
+			EmptyContent()
+			#endif
+		}
+	}
 }
 ```
 
@@ -277,66 +277,66 @@ import SwiftUI
 import Charts
 
 struct DataPoint {
-    var index: Int
-    var rate: Double
-    var signal: Double
-    var noise: Double
-    var errors: Double
-    var throughput: Double
-    var txRate: Double
-    var rxRate: Double
-    var txFrames: Double
-    var rxFrames: Double
-    var channel: Double
-    var bandwidth: Double
-    var defaultValue: Double
+	var index: Int
+	var rate: Double
+	var signal: Double
+	var noise: Double
+	var errors: Double
+	var throughput: Double
+	var txRate: Double
+	var rxRate: Double
+	var txFrames: Double
+	var rxFrames: Double
+	var channel: Double
+	var bandwidth: Double
+	var defaultValue: Double
 }
 
 struct MetricChartView: View {
-    var selectedMetric: String
-    var dataPoints: [DataPoint]
+	var selectedMetric: String
+	var dataPoints: [DataPoint]
 
-    var body: some View {
-        Chart(dataPoints, id: \.index) { dataPoint in
-            if selectedMetric == "Rate" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rate))
-                    .foregroundStyle(.blue)
-            } else if selectedMetric == "Signal" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.signal))
-                    .foregroundStyle(.green)
-            } else if selectedMetric == "Noise" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.noise))
-                    .foregroundStyle(.red)
-            } else if selectedMetric == "Errors" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.errors))
-                    .foregroundStyle(.orange)
-            } else if selectedMetric == "Throughput" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.throughput))
-                    .foregroundStyle(.purple)
-            } else if selectedMetric == "TX Rate" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txRate))
-                    .foregroundStyle(.cyan)
-            } else if selectedMetric == "RX Rate" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxRate))
-                    .foregroundStyle(.mint)
-            } else if selectedMetric == "TX Frames" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txFrames))
-                    .foregroundStyle(.indigo)
-            } else if selectedMetric == "RX Frames" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxFrames))
-                    .foregroundStyle(.brown)
-            } else if selectedMetric == "Channel" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.channel))
-                    .foregroundStyle(.teal)
-            } else if selectedMetric == "Bandwidth" {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.bandwidth))
-                    .foregroundStyle(.pink)
-            } else {
-                LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.defaultValue))
-                    .foregroundStyle(.gray)
-            }
-        }
-    }
+	var body: some View {
+		Chart(dataPoints, id: \.index) { dataPoint in
+			if selectedMetric == "Rate" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rate))
+					.foregroundStyle(.blue)
+			} else if selectedMetric == "Signal" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.signal))
+					.foregroundStyle(.green)
+			} else if selectedMetric == "Noise" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.noise))
+					.foregroundStyle(.red)
+			} else if selectedMetric == "Errors" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.errors))
+					.foregroundStyle(.orange)
+			} else if selectedMetric == "Throughput" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.throughput))
+					.foregroundStyle(.purple)
+			} else if selectedMetric == "TX Rate" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txRate))
+					.foregroundStyle(.cyan)
+			} else if selectedMetric == "RX Rate" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxRate))
+					.foregroundStyle(.mint)
+			} else if selectedMetric == "TX Frames" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txFrames))
+					.foregroundStyle(.indigo)
+			} else if selectedMetric == "RX Frames" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxFrames))
+					.foregroundStyle(.brown)
+			} else if selectedMetric == "Channel" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.channel))
+					.foregroundStyle(.teal)
+			} else if selectedMetric == "Bandwidth" {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.bandwidth))
+					.foregroundStyle(.pink)
+			} else {
+				LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.defaultValue))
+					.foregroundStyle(.gray)
+			}
+		}
+	}
 }
 ```
 
@@ -348,55 +348,55 @@ import SwiftUI
 import Charts
 
 struct MetricChartView: View {
-    var selectedMetric: String
-    var dataPoints: [DataPoint]
+	var selectedMetric: String
+	var dataPoints: [DataPoint]
 
-    var body: some View {
-        Chart(dataPoints, id: \.index) { dataPoint in
-            marks(for: dataPoint)
-        }
-    }
+	var body: some View {
+		Chart(dataPoints, id: \.index) { dataPoint in
+			marks(for: dataPoint)
+		}
+	}
 
-    @ChartContentBuilder
-    private func marks(for dataPoint: DataPoint) -> some ChartContent {
-        if selectedMetric == "Rate" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rate))
-                .foregroundStyle(.blue)
-        } else if selectedMetric == "Signal" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.signal))
-                .foregroundStyle(.green)
-        } else if selectedMetric == "Noise" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.noise))
-                .foregroundStyle(.red)
-        } else if selectedMetric == "Errors" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.errors))
-                .foregroundStyle(.orange)
-        } else if selectedMetric == "Throughput" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.throughput))
-                .foregroundStyle(.purple)
-        } else if selectedMetric == "TX Rate" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txRate))
-                .foregroundStyle(.cyan)
-        } else if selectedMetric == "RX Rate" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxRate))
-                .foregroundStyle(.mint)
-        } else if selectedMetric == "TX Frames" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txFrames))
-                .foregroundStyle(.indigo)
-        } else if selectedMetric == "RX Frames" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxFrames))
-                .foregroundStyle(.brown)
-        } else if selectedMetric == "Channel" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.channel))
-                .foregroundStyle(.teal)
-        } else if selectedMetric == "Bandwidth" {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.bandwidth))
-                .foregroundStyle(.pink)
-        } else {
-            LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.defaultValue))
-                .foregroundStyle(.gray)
-        }
-    }
+	@ChartContentBuilder
+	private func marks(for dataPoint: DataPoint) -> some ChartContent {
+		if selectedMetric == "Rate" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rate))
+				.foregroundStyle(.blue)
+		} else if selectedMetric == "Signal" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.signal))
+				.foregroundStyle(.green)
+		} else if selectedMetric == "Noise" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.noise))
+				.foregroundStyle(.red)
+		} else if selectedMetric == "Errors" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.errors))
+				.foregroundStyle(.orange)
+		} else if selectedMetric == "Throughput" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.throughput))
+				.foregroundStyle(.purple)
+		} else if selectedMetric == "TX Rate" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txRate))
+				.foregroundStyle(.cyan)
+		} else if selectedMetric == "RX Rate" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxRate))
+				.foregroundStyle(.mint)
+		} else if selectedMetric == "TX Frames" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.txFrames))
+				.foregroundStyle(.indigo)
+		} else if selectedMetric == "RX Frames" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.rxFrames))
+				.foregroundStyle(.brown)
+		} else if selectedMetric == "Channel" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.channel))
+				.foregroundStyle(.teal)
+		} else if selectedMetric == "Bandwidth" {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.bandwidth))
+				.foregroundStyle(.pink)
+		} else {
+			LineMark(x: .value("X", dataPoint.index), y: .value("Y", dataPoint.defaultValue))
+				.foregroundStyle(.gray)
+		}
+	}
 }
 ```
 

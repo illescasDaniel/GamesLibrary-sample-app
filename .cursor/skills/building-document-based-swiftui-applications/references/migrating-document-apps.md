@@ -46,37 +46,37 @@ Adopt the `Document` protocol to take advantage of direct URL access, Swift conc
 
 ```swift
 struct OldTextDocument: FileDocument {
-    static let readableContentTypes = [UTType.plainText]
+	static let readableContentTypes = [UTType.plainText]
 
-    var text: String
+	var text: String
 
-    init(text: String = "") {
-        self.text = text
-    }
+	init(text: String = "") {
+		self.text = text
+	}
 
-    init(configuration: ReadConfiguration) throws {
-        if let data = configuration.file.regularFileContents {
-            text = String(data: data, encoding: .utf8) ?? ""
-        } else {
-            text = ""
-        }
-    }
+	init(configuration: ReadConfiguration) throws {
+		if let data = configuration.file.regularFileContents {
+			text = String(data: data, encoding: .utf8) ?? ""
+		} else {
+			text = ""
+		}
+	}
 
-    func fileWrapper(
-        configuration: WriteConfiguration
-    ) throws -> FileWrapper {
-        let data = Data(text.utf8)
-        return FileWrapper(regularFileWithContents: data)
-    }
+	func fileWrapper(
+		configuration: WriteConfiguration
+	) throws -> FileWrapper {
+		let data = Data(text.utf8)
+		return FileWrapper(regularFileWithContents: data)
+	}
 }
 
 @main
 struct MyApp: App {
-    var body: some Scene {
-        DocumentGroup(newDocument: OldTextDocument()) { configuration in
-            TextEditor(text: configuration.$document.text)
-        }
-    }
+	var body: some Scene {
+		DocumentGroup(newDocument: OldTextDocument()) { configuration in
+			TextEditor(text: configuration.$document.text)
+		}
+	}
 }
 ```
 
@@ -85,76 +85,76 @@ struct MyApp: App {
 ```swift
 @Observable
 final class TextDocument: Document {
-    static let readableContentTypes = [UTType.plainText]
+	static let readableContentTypes = [UTType.plainText]
 
-    var text: String
+	var text: String
 
-    init(text: String = "") {
-        self.text = text
-    }
+	init(text: String = "") {
+		self.text = text
+	}
 
-    func reader(
-        configuration: sending ReadConfiguration
-    ) -> sending FileWrapperDocumentReader<String> {
-        FileWrapperDocumentReader(configuration) { fileWrapper in
-            guard let data =
-                fileWrapper.regularFileContents else {
-                throw CocoaError(.fileReadCorruptFile)
-            }
-            return String(decoding: data, as: UTF8.self)
-        }
-    }
+	func reader(
+		configuration: sending ReadConfiguration
+	) -> sending FileWrapperDocumentReader<String> {
+		FileWrapperDocumentReader(configuration) { fileWrapper in
+			guard let data =
+				fileWrapper.regularFileContents else {
+				throw CocoaError(.fileReadCorruptFile)
+			}
+			return String(decoding: data, as: UTF8.self)
+		}
+	}
 
-    func writer(
-        configuration: sending WriteConfiguration
-    ) -> sending FileWrapperDocumentWriter<String> {
-        FileWrapperDocumentWriter(configuration) { snapshot, previous in
-            FileWrapper(
-                regularFileWithContents: Data(snapshot.utf8)
-            )
-        }
-    }
+	func writer(
+		configuration: sending WriteConfiguration
+	) -> sending FileWrapperDocumentWriter<String> {
+		FileWrapperDocumentWriter(configuration) { snapshot, previous in
+			FileWrapper(
+				regularFileWithContents: Data(snapshot.utf8)
+			)
+		}
+	}
 
-    @MainActor
-    func snapshot(
-        contentType: UTType
-    ) async throws -> sending String {
-        text
-    }
+	@MainActor
+	func snapshot(
+		contentType: UTType
+	) async throws -> sending String {
+		text
+	}
 
-    @MainActor
-    func apply(
-        snapshot: sending String, previous: sending String?
-    ) async throws {
-        text = snapshot
-    }
+	@MainActor
+	func apply(
+		snapshot: sending String, previous: sending String?
+	) async throws {
+		text = snapshot
+	}
 }
 
 struct TextDocumentView: View {
-    @Bindable var document: TextDocument
-    @Environment(\.undoManager) private var undoManager
+	@Bindable var document: TextDocument
+	@Environment(\.undoManager) private var undoManager
 
-    var body: some View {
-        TextEditor(text: $document.text)
-            .onChange(of: document.text) { oldValue, _ in
-                undoManager?.registerUndo(
-                    withTarget: document
-                ) { document in
-                    document.text = oldValue
-                }
-            }
-    }
+	var body: some View {
+		TextEditor(text: $document.text)
+			.onChange(of: document.text) { oldValue, _ in
+				undoManager?.registerUndo(
+					withTarget: document
+				) { document in
+					document.text = oldValue
+				}
+			}
+	}
 }
 
 @main
 struct MyApp: App {
-    var body: some Scene {
-        DocumentGroup { document in
-            TextDocumentView(document: document)
-        } makeDocument: { configuration, context in
-            TextDocument()
-        }
-    }
+	var body: some Scene {
+		DocumentGroup { document in
+			TextDocumentView(document: document)
+		} makeDocument: { configuration, context in
+			TextDocument()
+		}
+	}
 }
 ```
 
@@ -194,44 +194,44 @@ struct MyApp: App {
 
 ```swift
 final class OldTextDocument: ReferenceFileDocument {
-    typealias Snapshot = String
+	typealias Snapshot = String
 
-    static let readableContentTypes = [UTType.plainText]
+	static let readableContentTypes = [UTType.plainText]
 
-    @Published var text: String
-    var undoManager: UndoManager?
+	@Published var text: String
+	var undoManager: UndoManager?
 
-    init() {
-        text = ""
-    }
+	init() {
+		text = ""
+	}
 
-    required init(configuration: ReadConfiguration) throws {
-        if let data = configuration.file.regularFileContents {
-            text = String(data: data, encoding: .utf8) ?? ""
-        } else {
-            text = ""
-        }
-    }
+	required init(configuration: ReadConfiguration) throws {
+		if let data = configuration.file.regularFileContents {
+			text = String(data: data, encoding: .utf8) ?? ""
+		} else {
+			text = ""
+		}
+	}
 
-    func snapshot(contentType: UTType) throws -> String {
-        text
-    }
+	func snapshot(contentType: UTType) throws -> String {
+		text
+	}
 
-    func fileWrapper(
-        snapshot: String, configuration: WriteConfiguration
-    ) throws -> FileWrapper {
-        let data = snapshot.data(using: .utf8) ?? Data()
-        return FileWrapper(regularFileWithContents: data)
-    }
+	func fileWrapper(
+		snapshot: String, configuration: WriteConfiguration
+	) throws -> FileWrapper {
+		let data = snapshot.data(using: .utf8) ?? Data()
+		return FileWrapper(regularFileWithContents: data)
+	}
 
-    func updateText(_ newText: String) {
-        let previous = text
-        text = newText
-        undoManager?.registerUndo(withTarget: self) { document in
-            document.updateText(previous)
-        }
-        undoManager?.setActionName("Edit")
-    }
+	func updateText(_ newText: String) {
+		let previous = text
+		text = newText
+		undoManager?.registerUndo(withTarget: self) { document in
+			document.updateText(previous)
+		}
+		undoManager?.setActionName("Edit")
+	}
 }
 ```
 
@@ -240,65 +240,65 @@ final class OldTextDocument: ReferenceFileDocument {
 ```swift
 @Observable
 final class TextDocument: Document {
-    static let readableContentTypes = [UTType.plainText]
+	static let readableContentTypes = [UTType.plainText]
 
-    var text: String
+	var text: String
 
-    init(text: String = "") {
-        self.text = text
-    }
+	init(text: String = "") {
+		self.text = text
+	}
 
-    func reader(
-        configuration: sending ReadConfiguration
-    ) -> sending FileWrapperDocumentReader<String> {
-        FileWrapperDocumentReader(configuration) { fileWrapper in
-            guard let data =
-                fileWrapper.regularFileContents else {
-                throw CocoaError(.fileReadCorruptFile)
-            }
-            return String(decoding: data, as: UTF8.self)
-        }
-    }
+	func reader(
+		configuration: sending ReadConfiguration
+	) -> sending FileWrapperDocumentReader<String> {
+		FileWrapperDocumentReader(configuration) { fileWrapper in
+			guard let data =
+				fileWrapper.regularFileContents else {
+				throw CocoaError(.fileReadCorruptFile)
+			}
+			return String(decoding: data, as: UTF8.self)
+		}
+	}
 
-    func writer(
-        configuration: sending WriteConfiguration
-    ) -> sending FileWrapperDocumentWriter<String> {
-        FileWrapperDocumentWriter(configuration) { snapshot, previous in
-            FileWrapper(
-                regularFileWithContents: Data(snapshot.utf8)
-            )
-        }
-    }
+	func writer(
+		configuration: sending WriteConfiguration
+	) -> sending FileWrapperDocumentWriter<String> {
+		FileWrapperDocumentWriter(configuration) { snapshot, previous in
+			FileWrapper(
+				regularFileWithContents: Data(snapshot.utf8)
+			)
+		}
+	}
 
-    @MainActor
-    func snapshot(
-        contentType: UTType
-    ) async throws -> sending String {
-        text
-    }
+	@MainActor
+	func snapshot(
+		contentType: UTType
+	) async throws -> sending String {
+		text
+	}
 
-    @MainActor
-    func apply(
-        snapshot: sending String, previous: sending String?
-    ) async throws {
-        text = snapshot
-    }
+	@MainActor
+	func apply(
+		snapshot: sending String, previous: sending String?
+	) async throws {
+		text = snapshot
+	}
 }
 
 struct TextDocumentView: View {
-    @Bindable var document: TextDocument
-    @Environment(\.undoManager) private var undoManager
+	@Bindable var document: TextDocument
+	@Environment(\.undoManager) private var undoManager
 
-    var body: some View {
-        TextEditor(text: $document.text)
-            .onChange(of: document.text) { oldValue, _ in
-                undoManager?.registerUndo(
-                    withTarget: document
-                ) { document in
-                    document.text = oldValue
-                }
-            }
-    }
+	var body: some View {
+		TextEditor(text: $document.text)
+			.onChange(of: document.text) { oldValue, _ in
+				undoManager?.registerUndo(
+					withTarget: document
+				) { document in
+					document.text = oldValue
+				}
+			}
+	}
 }
 ```
 

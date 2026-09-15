@@ -26,27 +26,27 @@ import GeoToolbox
 @available(iOS 27.0, *)
 @UnionValue
 enum EventLocation {
-    case place(PlaceDescriptor)    // PlaceDescriptor from GeoToolbox
-    case address(String)
+	case place(PlaceDescriptor)    // PlaceDescriptor from GeoToolbox
+	case address(String)
 }
 
 @available(iOS 27.0, *)
 @AppIntent(schema: .calendar.createEvent)
 struct CreateEventIntent {
 
-    // Shortcuts renders a case picker (Place vs. Address) then collects the value.
-    var location: EventLocation?
+	// Shortcuts renders a case picker (Place vs. Address) then collects the value.
+	var location: EventLocation?
 
-    @MainActor
-    func perform() async throws -> some ReturnsValue<EventEntity> {
-        // switch over the selected case
-        if case .address(let str) = location {
-            // use the free-text address
-        } else if case .place(let place) = location {
-            // use the structured PlaceDescriptor
-        }
-        // ...
-    }
+	@MainActor
+	func perform() async throws -> some ReturnsValue<EventEntity> {
+		// switch over the selected case
+		if case .address(let str) = location {
+			// use the free-text address
+		} else if case .place(let place) = location {
+			// use the structured PlaceDescriptor
+		}
+		// ...
+	}
 }
 ```
 
@@ -55,19 +55,19 @@ CometCal reaches `EventLocation` through the `.calendar.createEvent` schema, so 
 ```swift
 @available(iOS 27.0, *)
 struct SetEventLocationIntent: AppIntent {
-    static let title: LocalizedStringResource = "Set Event Location"
+	static let title: LocalizedStringResource = "Set Event Location"
 
-    // Shortcuts renders a case picker (Place vs. Address), then collects the value.
-    @Parameter(title: "Location")
-    var location: EventLocation
+	// Shortcuts renders a case picker (Place vs. Address), then collects the value.
+	@Parameter(title: "Location")
+	var location: EventLocation
 
-    func perform() async throws -> some IntentResult {
-        switch location {
-        case .place(let place):    _ = place    // structured PlaceDescriptor
-        case .address(let text):   _ = text     // free-text address
-        }
-        return .result()
-    }
+	func perform() async throws -> some IntentResult {
+		switch location {
+		case .place(let place):    _ = place    // structured PlaceDescriptor
+		case .address(let text):   _ = text     // free-text address
+		}
+		return .result()
+	}
 }
 ```
 
@@ -80,12 +80,12 @@ Let the macro synthesize the `Cases` enum; do not hand-roll it. Provide user-fac
 ```swift
 @available(iOS 27.0, *)
 extension EventLocation {
-    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Event Location" }
+	static var typeDisplayRepresentation: TypeDisplayRepresentation { "Event Location" }
 
-    static let caseDisplayRepresentations: [Cases: DisplayRepresentation] = [
-        .place: "Place",
-        .address: "Address",
-    ]
+	static let caseDisplayRepresentations: [Cases: DisplayRepresentation] = [
+		.place: "Place",
+		.address: "Address",
+	]
 }
 ```
 
@@ -101,10 +101,10 @@ A union parameter exposes two components for `Summary` interpolation: `\.$parame
 @available(iOS 27.0, *)
 @AppIntent(schema: .calendar.createEvent)
 struct CreateEventIntent {
-    static var parameterSummary: some ParameterSummary {
-        Summary("Create event at \(\.$location.type): \(\.$location.value)")
-    }
-    // ...
+	static var parameterSummary: some ParameterSummary {
+		Summary("Create event at \(\.$location.type): \(\.$location.value)")
+	}
+	// ...
 }
 ```
 
@@ -124,15 +124,15 @@ When the user's deployment target is below SDK 27 and the answer needs a `@Union
 @available(iOS 27.0, *)
 @UnionValue
 enum EventLocation {
-    case place(PlaceDescriptor)
-    case address(String)
+	case place(PlaceDescriptor)
+	case address(String)
 }
 
 @available(iOS 27.0, *)
 @AppIntent(schema: .calendar.createEvent)
 struct CreateEventIntent {
-    var location: EventLocation?
-    // ...
+	var location: EventLocation?
+	// ...
 }
 ```
 

@@ -13,7 +13,7 @@ iOS 27 adds a way to run a system-provided shortcut from an interactive widget. 
 // You compare or pass it through — you never construct it yourself.
 @available(iOS 27.0, *)
 func makeRunIntent(for shortcut: SystemShortcut) -> RunSystemShortcutIntent {
-    RunSystemShortcutIntent(shortcut: shortcut)
+	RunSystemShortcutIntent(shortcut: shortcut)
 }
 ```
 
@@ -29,9 +29,9 @@ func makeRunIntent(for shortcut: SystemShortcut) -> RunSystemShortcutIntent {
 // configuration entry (a value the system resolved — not one the app built).
 @available(iOS 27.0, *)
 private var runShortcutButton: some View {
-    Button(intent: RunSystemShortcutIntent(shortcut: entry.configuration.shortcut)) {
-        Label("Run Shortcut", systemImage: "bolt")
-    }
+	Button(intent: RunSystemShortcutIntent(shortcut: entry.configuration.shortcut)) {
+		Label("Run Shortcut", systemImage: "bolt")
+	}
 }
 ```
 
@@ -40,9 +40,9 @@ If you do not have a specific `SystemShortcut` in hand, use the parameterless in
 ```swift
 @available(iOS 27.0, *)
 private var runShortcutButton: some View {
-    Button(intent: RunSystemShortcutIntent()) {
-        Label("Run Shortcut", systemImage: "bolt")
-    }
+	Button(intent: RunSystemShortcutIntent()) {
+		Label("Run Shortcut", systemImage: "bolt")
+	}
 }
 ```
 

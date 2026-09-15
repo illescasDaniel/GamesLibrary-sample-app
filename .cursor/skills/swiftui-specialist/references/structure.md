@@ -16,41 +16,41 @@ Factor large bodies into individual `View` types, not into computed properties o
 // which re-evaluates `header`, `details`, AND `footer` together — even
 // though only `details` actually reads `isExpanded`.
 struct ProfileView: View {
-    @State private var isExpanded = false
-    let user: User
-    let stats: Stats
+	@State private var isExpanded = false
+	let user: User
+	let stats: Stats
 
-    var body: some View {
-        VStack {
-            header
-            details
-            footer
-        }
-    }
+	var body: some View {
+		VStack {
+			header
+			details
+			footer
+		}
+	}
 
-    private var header: some View {
-        HStack {
-            Image(systemName: "person.circle")
-            Text(user.name).font(.title)
-        }
-    }
+	private var header: some View {
+		HStack {
+			Image(systemName: "person.circle")
+			Text(user.name).font(.title)
+		}
+	}
 
-    private var details: some View {
-        Group {
-            if isExpanded {
-                Text(user.bio)
-                Text(user.location)
-            }
-        }
-    }
+	private var details: some View {
+		Group {
+			if isExpanded {
+				Text(user.bio)
+				Text(user.location)
+			}
+		}
+	}
 
-    private var footer: some View {
-        HStack {
-            Label("\(stats.followers)", systemImage: "person.2")
-            Label("\(stats.posts)", systemImage: "doc.text")
-        }
-        .font(.caption)
-    }
+	private var footer: some View {
+		HStack {
+			Label("\(stats.followers)", systemImage: "person.2")
+			Label("\(stats.posts)", systemImage: "doc.text")
+		}
+		.font(.caption)
+	}
 }
 ```
 
@@ -60,59 +60,59 @@ struct ProfileView: View {
 // `ProfileDetails`; `ProfileHeader` and `ProfileFooter` are skipped
 // because none of their inputs changed.
 struct ProfileView: View {
-    @State private var isExpanded = false
-    let user: User
-    let stats: Stats
+	@State private var isExpanded = false
+	let user: User
+	let stats: Stats
 
-    var body: some View {
-        VStack {
-            ProfileHeader(name: user.name)
-            ProfileDetails(
-                bio: user.bio,
-                location: user.location,
-                isExpanded: isExpanded
-            )
-            ProfileFooter(followers: stats.followers, posts: stats.posts)
-            Button(isExpanded ? "Less" : "More") { isExpanded.toggle() }
-        }
-    }
+	var body: some View {
+		VStack {
+			ProfileHeader(name: user.name)
+			ProfileDetails(
+				bio: user.bio,
+				location: user.location,
+				isExpanded: isExpanded
+			)
+			ProfileFooter(followers: stats.followers, posts: stats.posts)
+			Button(isExpanded ? "Less" : "More") { isExpanded.toggle() }
+		}
+	}
 }
 
 struct ProfileHeader: View {
-    let name: String
+	let name: String
 
-    var body: some View {
-        HStack {
-            Image(systemName: "person.circle")
-            Text(name).font(.title)
-        }
-    }
+	var body: some View {
+		HStack {
+			Image(systemName: "person.circle")
+			Text(name).font(.title)
+		}
+	}
 }
 
 struct ProfileDetails: View {
-    let bio: String
-    let location: String
-    let isExpanded: Bool
+	let bio: String
+	let location: String
+	let isExpanded: Bool
 
-    var body: some View {
-        if isExpanded {
-            Text(bio)
-            Text(location)
-        }
-    }
+	var body: some View {
+		if isExpanded {
+			Text(bio)
+			Text(location)
+		}
+	}
 }
 
 struct ProfileFooter: View {
-    let followers: Int
-    let posts: Int
+	let followers: Int
+	let posts: Int
 
-    var body: some View {
-        HStack {
-            Label("\(followers)", systemImage: "person.2")
-            Label("\(posts)", systemImage: "doc.text")
-        }
-        .font(.caption)
-    }
+	var body: some View {
+		HStack {
+			Label("\(followers)", systemImage: "person.2")
+			Label("\(posts)", systemImage: "doc.text")
+		}
+		.font(.caption)
+	}
 }
 ```
 
@@ -129,78 +129,78 @@ The most common write-from-requirements case where this rule gets dropped: a pro
 // `View` type that takes only the fields it renders. The parent stays
 // thin — it just composes the sections.
 struct ProductDetailView: View {
-    let product: Product
+	let product: Product
 
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                ProductHeader(name: product.name, price: product.price)
-                ProductGallery(images: product.imageURLs)
-                ProductDescription(text: product.descriptionText)
-                ProductReviews(
-                    averageStars: product.averageStars,
-                    reviewCount: product.reviewCount
-                )
-            }
-            .padding()
-        }
-    }
+	var body: some View {
+		ScrollView {
+			VStack(alignment: .leading, spacing: 24) {
+				ProductHeader(name: product.name, price: product.price)
+				ProductGallery(images: product.imageURLs)
+				ProductDescription(text: product.descriptionText)
+				ProductReviews(
+					averageStars: product.averageStars,
+					reviewCount: product.reviewCount
+				)
+			}
+			.padding()
+		}
+	}
 }
 
 struct ProductHeader: View {
-    let name: String
-    let price: Decimal
+	let name: String
+	let price: Decimal
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(name).font(.largeTitle).fontWeight(.bold)
-            Text(price, format: .currency(code: "USD"))
-                .font(.title2)
-                .foregroundStyle(.secondary)
-        }
-    }
+	var body: some View {
+		VStack(alignment: .leading, spacing: 4) {
+			Text(name).font(.largeTitle).fontWeight(.bold)
+			Text(price, format: .currency(code: "USD"))
+				.font(.title2)
+				.foregroundStyle(.secondary)
+		}
+	}
 }
 
 struct ProductGallery: View {
-    let images: [URL]
+	let images: [URL]
 
-    var body: some View {
-        ScrollView(.horizontal) {
-            HStack {
-                ForEach(images, id: \.self) { url in
-                    AsyncImage(url: url) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        Color.secondary.opacity(0.2)
-                    }
-                    .frame(width: 120, height: 120)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                }
-            }
-        }
-    }
+	var body: some View {
+		ScrollView(.horizontal) {
+			HStack {
+				ForEach(images, id: \.self) { url in
+					AsyncImage(url: url) { image in
+						image.resizable().scaledToFill()
+					} placeholder: {
+						Color.secondary.opacity(0.2)
+					}
+					.frame(width: 120, height: 120)
+					.clipShape(RoundedRectangle(cornerRadius: 12))
+				}
+			}
+		}
+	}
 }
 
 struct ProductDescription: View {
-    let text: String
+	let text: String
 
-    var body: some View {
-        Text(text).font(.body)
-    }
+	var body: some View {
+		Text(text).font(.body)
+	}
 }
 
 struct ProductReviews: View {
-    let averageStars: Double
-    let reviewCount: Int
+	let averageStars: Double
+	let reviewCount: Int
 
-    var body: some View {
-        HStack {
-            Label("\(averageStars, specifier: "%.1f")", systemImage: "star.fill")
-            Text("(\(reviewCount) reviews)")
-                .foregroundStyle(.secondary)
-        }
-        .font(.subheadline)
-    }
+	var body: some View {
+		HStack {
+			Label("\(averageStars, specifier: "%.1f")", systemImage: "star.fill")
+			Text("(\(reviewCount) reviews)")
+				.foregroundStyle(.secondary)
+		}
+		.font(.subheadline)
+	}
 }
 ```
 
@@ -216,22 +216,22 @@ A view's `init` runs every time the parent re-evaluates its body, which can be m
 // and the formatted string is rebuilt — even though the inputs haven't
 // changed.
 struct WeatherCard: View {
-    let summary: WeatherSummary
-    let formattedDate: String
+	let summary: WeatherSummary
+	let formattedDate: String
 
-    init(rawJSON: Data, date: Date) {
-        self.summary = try! JSONDecoder().decode(WeatherSummary.self, from: rawJSON)
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        self.formattedDate = formatter.string(from: date)
-    }
+	init(rawJSON: Data, date: Date) {
+		self.summary = try! JSONDecoder().decode(WeatherSummary.self, from: rawJSON)
+		let formatter = DateFormatter()
+		formatter.dateStyle = .medium
+		self.formattedDate = formatter.string(from: date)
+	}
 
-    var body: some View {
-        VStack {
-            Text(summary.headline)
-            Text(formattedDate)
-        }
-    }
+	var body: some View {
+		VStack {
+			Text(summary.headline)
+			Text(formattedDate)
+		}
+	}
 }
 ```
 
@@ -240,15 +240,15 @@ struct WeatherCard: View {
 // model layer (or in a `.task`); formatting uses SwiftUI's built-in
 // `Text(_:format:)` which is cached and locale-aware.
 struct WeatherCard: View {
-    let summary: WeatherSummary
-    let date: Date
+	let summary: WeatherSummary
+	let date: Date
 
-    var body: some View {
-        VStack {
-            Text(summary.headline)
-            Text(date, format: .dateTime.day().month().year())
-        }
-    }
+	var body: some View {
+		VStack {
+			Text(summary.headline)
+			Text(date, format: .dateTime.day().month().year())
+		}
+	}
 }
 ```
 
@@ -265,7 +265,7 @@ The "single child" rule is specifically about *one concrete view*. A `Group` who
 // an extra type that every chained modifier must type-check against, for
 // no behavioral benefit.
 Group {
-    Text(status)
+	Text(status)
 }
 .padding(.horizontal, 8)
 .background(.thinMaterial, in: Capsule())
@@ -274,8 +274,8 @@ Group {
 ```swift
 // PREFER: Drop the Group and chain the modifiers directly on the child.
 Text(status)
-    .padding(.horizontal, 8)
-    .background(.thinMaterial, in: Capsule())
+	.padding(.horizontal, 8)
+	.background(.thinMaterial, in: Capsule())
 ```
 
 ```swift
@@ -283,9 +283,9 @@ Text(status)
 // apply to each child as a unit without needing an HStack/VStack
 // container that would change layout.
 Group {
-    Button("Save", action: onSave)
-    Button("Cancel", action: onCancel)
-    Button("Delete", role: .destructive, action: onDelete)
+	Button("Save", action: onSave)
+	Button("Cancel", action: onCancel)
+	Button("Delete", role: .destructive, action: onDelete)
 }
 .buttonStyle(.borderedProminent)
 .controlSize(.large)
@@ -298,13 +298,13 @@ Group {
 // view, and removing the Group would either drop the modifier from one
 // branch or force you to repeat it on both.
 Group {
-    if let label {
-        Text(label)
-            .padding(4)
-            .background(.thinMaterial, in: Capsule())
-    } else {
-        Color.clear
-    }
+	if let label {
+		Text(label)
+			.padding(4)
+			.background(.thinMaterial, in: Capsule())
+	} else {
+		Color.clear
+	}
 }
 .accessibilityHidden(label == nil)
 ```

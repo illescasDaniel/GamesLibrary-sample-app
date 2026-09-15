@@ -71,23 +71,23 @@ Add `UIApplicationSceneManifest` to the app's Info.plist:
 ```xml
 <key>UIApplicationSceneManifest</key>
 <dict>
-    <key>UIApplicationSupportsMultipleScenes</key>
-    <false/>
-    <key>UISceneConfigurations</key>
-    <dict>
-        <key>UIWindowSceneSessionRoleApplication</key>
-        <array>
-            <dict>
-                <key>UISceneConfigurationName</key>
-                <string>Default Configuration</string>
-                <key>UISceneDelegateClassName</key>
-                <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-                <!-- Include UISceneStoryboardFile only for storyboard-based apps -->
-                <key>UISceneStoryboardFile</key>
-                <string>Main</string>
-            </dict>
-        </array>
-    </dict>
+	<key>UIApplicationSupportsMultipleScenes</key>
+	<false/>
+	<key>UISceneConfigurations</key>
+	<dict>
+		<key>UIWindowSceneSessionRoleApplication</key>
+		<array>
+			<dict>
+				<key>UISceneConfigurationName</key>
+				<string>Default Configuration</string>
+				<key>UISceneDelegateClassName</key>
+				<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				<!-- Include UISceneStoryboardFile only for storyboard-based apps -->
+				<key>UISceneStoryboardFile</key>
+				<string>Main</string>
+			</dict>
+		</array>
+	</dict>
 </dict>
 ```
 
@@ -100,17 +100,17 @@ Info.plist still needs a minimal manifest (without `UISceneConfigurations`):
 ```xml
 <key>UIApplicationSceneManifest</key>
 <dict>
-    <key>UIApplicationSupportsMultipleScenes</key>
-    <false/>
+	<key>UIApplicationSupportsMultipleScenes</key>
+	<false/>
 </dict>
 ```
 
 ```swift
 // In AppDelegate.swift
 func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-    let config = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    config.delegateClass = SceneDelegate.self
-    return config
+	let config = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+	config.delegateClass = SceneDelegate.self
+	return config
 }
 ```
 
@@ -131,7 +131,7 @@ System handles window creation. SceneDelegate only needs the `window` property:
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    var window: UIWindow?
+	var window: UIWindow?
 }
 ```
 
@@ -144,14 +144,14 @@ Move window creation from AppDelegate to scene delegate:
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    var window: UIWindow?
+	var window: UIWindow?
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = scene as? UIWindowScene else { return }
-        window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = ViewController() // Replace with actual root VC
-        window?.makeKeyAndVisible()
-    }
+	func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+		guard let windowScene = scene as? UIWindowScene else { return }
+		window = UIWindow(windowScene: windowScene)
+		window?.rootViewController = ViewController() // Replace with actual root VC
+		window?.makeKeyAndVisible()
+	}
 }
 ```
 

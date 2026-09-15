@@ -33,8 +33,8 @@ You are updating a UIKit codebase to properly account for modern layout margins 
 ## 1. Replace deprecated layout guides
 
 - Replace all uses of `topLayoutGuide` and `bottomLayoutGuide` with `view.safeAreaLayoutGuide`. For example:
-    - `topLayoutGuide.bottomAnchor` → `safeAreaLayoutGuide.topAnchor`
-    - `bottomLayoutGuide.topAnchor` → `safeAreaLayoutGuide.bottomAnchor`
+	- `topLayoutGuide.bottomAnchor` → `safeAreaLayoutGuide.topAnchor`
+	- `bottomLayoutGuide.topAnchor` → `safeAreaLayoutGuide.bottomAnchor`
 
 ## 2. Fix hardcoded status bar / navigation bar offsets
 
@@ -62,12 +62,12 @@ You are updating a UIKit codebase to properly account for modern layout margins 
 - Do NOT assume top and bottom safe area insets are equal or that one can be derived from the other. The top inset (status bar, Dynamic Island) and the bottom inset (home indicator) are independent values that vary by device and orientation.
 - Do NOT assume hardware features like the notch, Dynamic Island, or camera housing are at a fixed edge or position. These features move depending on device orientation and vary across device generations. Code should never check for a specific device model or orientation to decide which edge has the sensor housing — rely solely on `safeAreaInsets` and `safeAreaLayoutGuide`, which already encode the correct geometry for the current device and orientation.
 - Watch for patterns like:
-    - Using `safeAreaInsets.top` for both top and bottom
-    - Using `safeAreaInsets.left` for both left and right
-    - Calculating a single "horizontal inset" as `safeAreaInsets.left` and applying it to both sides
-    - Using `max(safeAreaInsets.left, safeAreaInsets.right)` for both sides (unless the design explicitly requires symmetric padding)
-    - Checking device model strings or `UIDevice` to infer which edges have hardware obstructions
-    - Assuming the notch/Dynamic Island is always on the top edge
+	- Using `safeAreaInsets.top` for both top and bottom
+	- Using `safeAreaInsets.left` for both left and right
+	- Calculating a single "horizontal inset" as `safeAreaInsets.left` and applying it to both sides
+	- Using `max(safeAreaInsets.left, safeAreaInsets.right)` for both sides (unless the design explicitly requires symmetric padding)
+	- Checking device model strings or `UIDevice` to infer which edges have hardware obstructions
+	- Assuming the notch/Dynamic Island is always on the top edge
 - Each edge must read its own corresponding inset value.
 
 ## 7. UIScrollView considerations

@@ -6,38 +6,38 @@ import Foundation
 @MainActor
 struct GamesCacheDataSourceTests {
 
-    @Test
-    func givenDataSourceWhenSavingAndLoadingGamesThenResultIsCorrect() async {
-        let dataSource = GamesCacheDataSourceImpl(timeToLive: .seconds(60))
-        let input = GamesInputDTO.dummy(page: 1, pageSize: 20)
-        let output = GamesOutputDTO.dummy(results: [GameSearchItemDTO.dummy(id: 1)])
+	@Test
+	func givenDataSourceWhenSavingAndLoadingGamesThenResultIsCorrect() async {
+		let dataSource = GamesCacheDataSourceImpl(timeToLive: .seconds(60))
+		let input = GamesInputDTO.dummy(page: 1, pageSize: 20)
+		let output = GamesOutputDTO.dummy(results: [GameSearchItemDTO.dummy(id: 1)])
 
-        await dataSource.saveGamesCache(input: input, output: output)
-        let cached = await dataSource.loadGamesCache(input: input)
+		await dataSource.saveGamesCache(input: input, output: output)
+		let cached = await dataSource.loadGamesCache(input: input)
 
-        #expect(cached?.results.first?.id == 1)
-    }
+		#expect(cached?.results.first?.id == 1)
+	}
 
-    @Test
-    func givenDataSourceWhenSavingAndLoadingGameDetailsThenResultIsCorrect() async {
-        let dataSource = GamesCacheDataSourceImpl(timeToLive: .seconds(60))
-        let game = GameDTO.dummy(id: 123)
+	@Test
+	func givenDataSourceWhenSavingAndLoadingGameDetailsThenResultIsCorrect() async {
+		let dataSource = GamesCacheDataSourceImpl(timeToLive: .seconds(60))
+		let game = GameDTO.dummy(id: 123)
 
-        await dataSource.saveGameCache(id: 123, output: game)
-        let cached = await dataSource.loadGameCache(id: 123)
+		await dataSource.saveGameCache(id: 123, output: game)
+		let cached = await dataSource.loadGameCache(id: 123)
 
-        #expect(cached?.id == 123)
-    }
+		#expect(cached?.id == 123)
+	}
 
-    @Test
-    func givenDataSourceWithExpiredTTLWhenLoadingThenReturnsNil() async throws {
-        let dataSource = GamesCacheDataSourceImpl(timeToLive: .milliseconds(1))
-        let game = GameDTO.dummy(id: 123)
+	@Test
+	func givenDataSourceWithExpiredTTLWhenLoadingThenReturnsNil() async throws {
+		let dataSource = GamesCacheDataSourceImpl(timeToLive: .milliseconds(1))
+		let game = GameDTO.dummy(id: 123)
 
-        await dataSource.saveGameCache(id: 123, output: game)
-        try await Task.sleep(for: .milliseconds(2))
-        let cached = await dataSource.loadGameCache(id: 123)
+		await dataSource.saveGameCache(id: 123, output: game)
+		try await Task.sleep(for: .milliseconds(2))
+		let cached = await dataSource.loadGameCache(id: 123)
 
-        #expect(cached == nil)
-    }
+		#expect(cached == nil)
+	}
 }

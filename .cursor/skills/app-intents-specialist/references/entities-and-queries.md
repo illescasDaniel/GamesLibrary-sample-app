@@ -14,11 +14,11 @@ An `AppEntity` is a *reference* the system stores, not a value it copies. When a
 // different row or nothing — entities(for:) returns [] and the shortcut breaks
 // with no obvious error.
 struct NoteEntity: AppEntity {
-    static let defaultQuery = NoteEntityQuery()
-    var id: String                       // = String(arrayIndex)  ❌ positional
-    // or: var id = asset.localIdentifier ❌ device-local
-    @Property(title: "Title") var title: String
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
+	static let defaultQuery = NoteEntityQuery()
+	var id: String                       // = String(arrayIndex)  ❌ positional
+	// or: var id = asset.localIdentifier ❌ device-local
+	@Property(title: "Title") var title: String
+	var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
 }
 ```
 
@@ -27,10 +27,10 @@ struct NoteEntity: AppEntity {
 // you mint once and persist with the record. The same note resolves to the same
 // entity on every launch and every device.
 struct NoteEntity: AppEntity {
-    static let defaultQuery = NoteEntityQuery()
-    var id: UUID                         // minted once, stored with the record
-    @Property(title: "Title") var title: String
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
+	static let defaultQuery = NoteEntityQuery()
+	var id: UUID                         // minted once, stored with the record
+	@Property(title: "Title") var title: String
+	var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
 }
 ```
 
@@ -45,11 +45,11 @@ Wrapping a stored property with `@Property` is not decoration — it is what exp
 // look like part of the entity, but the system can't filter or surface them —
 // they're invisible to Find intents and property queries.
 struct NoteEntity: AppEntity {
-    static let defaultQuery = NoteEntityQuery()
-    var id: UUID
-    var title: String          // ❌ invisible to the system
-    var tagCount: Int          // ❌ invisible to the system
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
+	static let defaultQuery = NoteEntityQuery()
+	var id: UUID
+	var title: String          // ❌ invisible to the system
+	var tagCount: Int          // ❌ invisible to the system
+	var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
 }
 ```
 
@@ -58,12 +58,12 @@ struct NoteEntity: AppEntity {
 // Keep plain `var`s only for values used purely inside your own code (e.g. to
 // build displayRepresentation).
 struct NoteEntity: AppEntity {
-    static let defaultQuery = NoteEntityQuery()
-    var id: UUID
-    @Property(title: "Title") var title: String
-    @Property(title: "Tags")  var tagCount: Int
-    var iconName: String       // fine as a plain `var`: only feeds displayRepresentation
-    var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
+	static let defaultQuery = NoteEntityQuery()
+	var id: UUID
+	@Property(title: "Title") var title: String
+	@Property(title: "Tags")  var tagCount: Int
+	var iconName: String       // fine as a plain `var`: only feeds displayRepresentation
+	var displayRepresentation: DisplayRepresentation { DisplayRepresentation(title: "\(title)") }
 }
 ```
 
@@ -76,10 +76,10 @@ struct NoteEntity: AppEntity {
 // but suggestedEntities() falls back to the framework default (empty), so the
 // parameter picker is blank and the entity feels "unpickable."
 struct NoteEntityQuery: EntityQuery {
-    func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: identifiers)
-    }
-    // suggestedEntities() left to default → returns [] → empty picker
+	func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: identifiers)
+	}
+	// suggestedEntities() left to default → returns [] → empty picker
 }
 ```
 
@@ -87,13 +87,13 @@ struct NoteEntityQuery: EntityQuery {
 // PREFER: implement both. entities(for:) resolves known ids; suggestedEntities()
 // supplies the initial choices the picker displays.
 struct NoteEntityQuery: EntityQuery {
-    func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: identifiers)
-    }
+	func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: identifiers)
+	}
 
-    func suggestedEntities() async throws -> [NoteEntity] {
-        try await store.recentNotes(limit: 20)
-    }
+	func suggestedEntities() async throws -> [NoteEntity] {
+		try await store.recentNotes(limit: 20)
+	}
 }
 ```
 
@@ -103,15 +103,15 @@ If you want the picker to support free-text search (the user typing a name rathe
 // PREFER: EntityStringQuery when the picker should search by name. You own the
 // match — the framework does not filter for you.
 struct NoteEntityQuery: EntityStringQuery {
-    func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: identifiers)
-    }
-    func entities(matching string: String) async throws -> [NoteEntity] {
-        try await store.notes(titleContains: string)   // your query does the work
-    }
-    func suggestedEntities() async throws -> [NoteEntity] {
-        try await store.recentNotes(limit: 20)
-    }
+	func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: identifiers)
+	}
+	func entities(matching string: String) async throws -> [NoteEntity] {
+		try await store.notes(titleContains: string)   // your query does the work
+	}
+	func suggestedEntities() async throws -> [NoteEntity] {
+		try await store.recentNotes(limit: 20)
+	}
 }
 ```
 
@@ -123,11 +123,11 @@ struct NoteEntityQuery: EntityStringQuery {
 // AVOID: per-id fetch inside entities(for:). Ten selected notes = ten backend
 // round-trips; the resolve is N× slower than it needs to be.
 func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
-    var result: [NoteEntity] = []
-    for id in identifiers {
-        result.append(try await store.note(withID: id))   // N round-trips
-    }
-    return result
+	var result: [NoteEntity] = []
+	for id in identifiers {
+		result.append(try await store.note(withID: id))   // N round-trips
+	}
+	return result
 }
 ```
 
@@ -135,7 +135,7 @@ func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
 // PREFER: one batched query over all ids. Missing ids are simply absent from
 // the returned array — that's expected, not an error.
 func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
-    try await store.notes(withIDs: identifiers)            // single round-trip
+	try await store.notes(withIDs: identifiers)            // single round-trip
 }
 ```
 
@@ -149,12 +149,12 @@ func entities(for identifiers: [UUID]) async throws -> [NoteEntity] {
 // AVOID: EnumerableEntityQuery over an unbounded store. allEntities() loads every
 // note into memory on every Find, then the framework filters in-memory.
 struct NoteEntityQuery: EnumerableEntityQuery {
-    func entities(for ids: [UUID]) async throws -> [NoteEntity] {
-        try await store.notes(withIDs: ids)
-    }
-    func allEntities() async throws -> [NoteEntity] {
-        try await store.allNotes()          // could be tens of thousands
-    }
+	func entities(for ids: [UUID]) async throws -> [NoteEntity] {
+		try await store.notes(withIDs: ids)
+	}
+	func allEntities() async throws -> [NoteEntity] {
+		try await store.allNotes()          // could be tens of thousands
+	}
 }
 ```
 

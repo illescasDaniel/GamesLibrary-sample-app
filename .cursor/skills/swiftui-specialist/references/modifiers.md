@@ -12,26 +12,26 @@ Never write a conditional view modifier (sometimes called an `.if` modifier) tha
 // AVOID: A conditional view modifier extension.
 // This destroys structural identity every time `condition` toggles.
 extension View {
-    @ViewBuilder
-    func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
-        if condition {
-            transform(self)
-        } else {
-            self
-        }
-    }
+	@ViewBuilder
+	func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+		if condition {
+			transform(self)
+		} else {
+			self
+		}
+	}
 }
 
 // Usage of the anti-pattern:
 Text("Hello")
-    .if(isHighlighted) { $0.foregroundStyle(.red) }
+	.if(isHighlighted) { $0.foregroundStyle(.red) }
 ```
 
 ```swift
 // PREFER: Use a ternary expression in the modifier argument.
 // The view identity is preserved and SwiftUI animates the change smoothly.
 Text("Hello")
-    .foregroundStyle(isHighlighted ? .red : .primary)
+	.foregroundStyle(isHighlighted ? .red : .primary)
 ```
 
 ## Reach for `AnyShapeStyle` to keep the ternary when styles differ
@@ -45,18 +45,18 @@ Wrap each branch in `AnyShapeStyle` so the ternary type-checks and the view stay
 // `.primary` and `.tint` are different ShapeStyle types, so this splits
 // one view into two, destroying structural identity when the condition flips.
 if backgroundProminence == .increased {
-    Text(verbatim: "\(id)").monospacedDigit().foregroundStyle(.primary)
+	Text(verbatim: "\(id)").monospacedDigit().foregroundStyle(.primary)
 } else {
-    Text(verbatim: "\(id)").monospacedDigit().foregroundStyle(.tint)
+	Text(verbatim: "\(id)").monospacedDigit().foregroundStyle(.tint)
 }
 
 // PREFER: erase to AnyShapeStyle and keep one view with a ternary.
 Text(verbatim: "\(id)")
-    .monospacedDigit()
-    .foregroundStyle(
-        backgroundProminence == .increased
-            ? AnyShapeStyle(.primary)
-            : AnyShapeStyle(.tint))
+	.monospacedDigit()
+	.foregroundStyle(
+		backgroundProminence == .increased
+			? AnyShapeStyle(.primary)
+			: AnyShapeStyle(.tint))
 ```
 
 `AnyShapeStyle` is a value type, and erasing a shape style is cheap and idiomatic — it is **not** the discouraged view type-erasure (`AnyView`). Do not penalize or avoid `AnyShapeStyle`; using it to unify a ternary is the correct, preferred tool here. (When practical, picking a single style or modeling the choice without erasure is better still, but `AnyShapeStyle` is the right answer whenever the branches must produce different `ShapeStyle` types.)

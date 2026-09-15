@@ -15,12 +15,12 @@ import VisualIntelligence            // SemanticContentDescriptor lives here.
 
 @available(iOS 26.0, *)
 struct LandmarkIntentValueQuery: IntentValueQuery {
-    // Input is the system-provided descriptor, not a String or your own type.
-    func values(for input: SemanticContentDescriptor) async throws -> [LandmarkEntity] {
-        let hints = input.labels                       // e.g. ["mountain", "peak"]
-        return try await ModelData.shared.match(labels: hints,
-                                                pixelBuffer: input.pixelBuffer)
-    }
+	// Input is the system-provided descriptor, not a String or your own type.
+	func values(for input: SemanticContentDescriptor) async throws -> [LandmarkEntity] {
+		let hints = input.labels                       // e.g. ["mountain", "peak"]
+		return try await ModelData.shared.match(labels: hints,
+												pixelBuffer: input.pixelBuffer)
+	}
 }
 ```
 
@@ -37,18 +37,18 @@ import VisualIntelligence
 @available(iOS 27.0, *)
 @UnionValue
 enum LandmarkResult {
-    case landmark(LandmarkEntity)
-    case collection(LandmarkCollectionEntity)
+	case landmark(LandmarkEntity)
+	case collection(LandmarkCollectionEntity)
 }
 
 @available(iOS 27.0, *)
 struct LandmarkIntentValueQuery: IntentValueQuery {
-    func values(for input: SemanticContentDescriptor) async throws -> [LandmarkResult] {
-        var results: [LandmarkResult] = []
-        results += try await ModelData.shared.matchLandmarks(input).map(LandmarkResult.landmark)
-        results += try await ModelData.shared.matchCollections(input).map(LandmarkResult.collection)
-        return results
-    }
+	func values(for input: SemanticContentDescriptor) async throws -> [LandmarkResult] {
+		var results: [LandmarkResult] = []
+		results += try await ModelData.shared.matchLandmarks(input).map(LandmarkResult.landmark)
+		results += try await ModelData.shared.matchCollections(input).map(LandmarkResult.collection)
+		return results
+	}
 }
 ```
 
@@ -63,18 +63,18 @@ import AppIntents
 
 @available(iOS 16.0, *)
 struct OpenLandmarkIntent: OpenIntent {
-    static let title: LocalizedStringResource = "Open Landmark"
+	static let title: LocalizedStringResource = "Open Landmark"
 
-    @Parameter(title: "Landmark")
-    var target: LandmarkEntity             // OpenIntent.Value == LandmarkEntity
+	@Parameter(title: "Landmark")
+	var target: LandmarkEntity             // OpenIntent.Value == LandmarkEntity
 }
 
 @available(iOS 16.0, *)
 struct OpenLandmarkCollectionIntent: OpenIntent {
-    static let title: LocalizedStringResource = "Open Landmark Collection"
+	static let title: LocalizedStringResource = "Open Landmark Collection"
 
-    @Parameter(title: "Landmark Collection")
-    var target: LandmarkCollectionEntity
+	@Parameter(title: "Landmark Collection")
+	var target: LandmarkCollectionEntity
 }
 ```
 

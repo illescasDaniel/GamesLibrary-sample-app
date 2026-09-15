@@ -12,18 +12,18 @@ If the user's deployment target is below iOS 26 / macOS 26 / watchOS 26 / tvOS 2
 ```swift
 @available(iOS 26.0, *)
 struct LandmarkEntity: AppEntity {
-    let id: UUID
-    private let store: ModelData
+	let id: UUID
+	private let store: ModelData
 
-    init(id: UUID, store: ModelData) {
-        self.id = id
-        self.store = store
-    }
+	init(id: UUID, store: ModelData) {
+		self.id = id
+		self.store = store
+	}
 
-    @ComputedProperty
-    var isFavorite: Bool { store.landmark(id)?.isFavorite ?? false }
+	@ComputedProperty
+	var isFavorite: Bool { store.landmark(id)?.isFavorite ?? false }
 
-    static var defaultQuery = LandmarkEntityQuery()
+	static var defaultQuery = LandmarkEntityQuery()
 }
 ```
 
@@ -37,8 +37,8 @@ struct LandmarkEntity: AppEntity {
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
 @available(watchOS, unavailable) @available(tvOS, unavailable)
 extension LandmarkEntity {
-    @ComputedProperty(title: "Name", indexingKey: \.displayName)
-    var indexedName: String { store.landmark(id)?.name ?? "" }
+	@ComputedProperty(title: "Name", indexingKey: \.displayName)
+	var indexedName: String { store.landmark(id)?.name ?? "" }
 }
 ```
 
@@ -51,22 +51,22 @@ extension LandmarkEntity {
 ```swift
 @available(iOS 26.0, *)
 struct LandmarkEntity: AppEntity {
-    let id: UUID
-    private let store: ModelData
+	let id: UUID
+	private let store: ModelData
 
-    init(id: UUID, store: ModelData) {
-        self.id = id
-        self.store = store
-    }
+	init(id: UUID, store: ModelData) {
+		self.id = id
+		self.store = store
+	}
 
-    @DeferredProperty(title: "Conditions")
-    var conditions: String {
-        get async throws {
-            try await store.fetchWeather(id).summary
-        }
-    }
+	@DeferredProperty(title: "Conditions")
+	var conditions: String {
+		get async throws {
+			try await store.fetchWeather(id).summary
+		}
+	}
 
-    static var defaultQuery = LandmarkEntityQuery()
+	static var defaultQuery = LandmarkEntityQuery()
 }
 ```
 
@@ -81,12 +81,12 @@ struct LandmarkEntity: AppEntity {
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
 @available(watchOS, unavailable) @available(tvOS, unavailable)
 extension LandmarkEntity {
-    @DeferredProperty(title: "Conditions", indexingKey: \.contentDescription)
-    var conditions: String {
-        get async throws {
-            try await store.fetchWeather(id).summary
-        }
-    }
+	@DeferredProperty(title: "Conditions", indexingKey: \.contentDescription)
+	var conditions: String {
+		get async throws {
+			try await store.fetchWeather(id).summary
+		}
+	}
 }
 ```
 
@@ -103,8 +103,8 @@ When the user's deployment target is below SDK 26 and the answer needs any of th
 ```swift
 @available(iOS 26.0, *)
 extension LandmarkEntity {
-    @ComputedProperty
-    var isFavorite: Bool { store.landmark(id)?.isFavorite ?? false }
+	@ComputedProperty
+	var isFavorite: Bool { store.landmark(id)?.isFavorite ?? false }
 }
 ```
 

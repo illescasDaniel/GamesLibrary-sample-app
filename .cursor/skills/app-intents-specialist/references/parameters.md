@@ -12,12 +12,12 @@ Both `$param.requestValue(_:)` and `$param.needsValueError(_:)` prompt the user 
 // the two lines below never run on this pass. Worse, any side effect already
 // committed this pass replays on the restart.
 func perform() async throws -> some IntentResult {
-    try await log.append("starting split")          // committed…
-    guard let payer else {
-        throw $payer.needsValueError("Who paid?")     // …restart replays the append
-    }
-    let share = try await splitService.compute(for: payer)
-    return .result(value: share)
+	try await log.append("starting split")          // committed…
+	guard let payer else {
+		throw $payer.needsValueError("Who paid?")     // …restart replays the append
+	}
+	let share = try await splitService.compute(for: payer)
+	return .result(value: share)
 }
 ```
 
@@ -26,10 +26,10 @@ func perform() async throws -> some IntentResult {
 // the resolved value flows into the same invocation; nothing restarts, nothing
 // replays. Reserve needsValueError for when a restart is what you actually want.
 func perform() async throws -> some IntentResult {
-    let payer = try await $payer.requestValue("Who paid?")   // returns inline
-    try await log.append("starting split")
-    let share = try await splitService.compute(for: payer)
-    return .result(value: share)
+	let payer = try await $payer.requestValue("Who paid?")   // returns inline
+	try await log.append("starting split")
+	let share = try await splitService.compute(for: payer)
+	return .result(value: share)
 }
 ```
 
@@ -45,10 +45,10 @@ The rule "an unfilled non-optional `@Parameter` throws a needs-value error" is o
 // enum with a *picker*, and falls back to a generic dialog — the user sees no
 // useful prompt. (And a single-case enum is auto-assigned with no prompt at all.)
 struct SetPriorityIntent: AppIntent {
-    static let title: LocalizedStringResource = "Set Priority"
-    @Parameter(title: "Priority")
-    var priority: TaskPriority        // AppEnum: .low, .medium, .high
-    // ...
+	static let title: LocalizedStringResource = "Set Priority"
+	@Parameter(title: "Priority")
+	var priority: TaskPriority        // AppEnum: .low, .medium, .high
+	// ...
 }
 ```
 
@@ -57,13 +57,13 @@ struct SetPriorityIntent: AppIntent {
 // disambiguation actually uses for a multi-case AppEnum. requestValueDialog is
 // the wrong slot for an enum; it's the fallback for non-enum types.
 struct SetPriorityIntent: AppIntent {
-    static let title: LocalizedStringResource = "Set Priority"
-    @Parameter(
-        title: "Priority",
-        requestDisambiguationDialog: "Which priority level?"
-    )
-    var priority: TaskPriority
-    // ...
+	static let title: LocalizedStringResource = "Set Priority"
+	@Parameter(
+		title: "Priority",
+		requestDisambiguationDialog: "Which priority level?"
+	)
+	var priority: TaskPriority
+	// ...
 }
 ```
 
@@ -79,23 +79,23 @@ Inside a `DynamicOptionsProvider` or `EntityQuery`, the enclosing intent's other
 // options-fetch time — so this can't compile against the intent's parameters and
 // has nothing to read even conceptually.
 struct RoomQuery: EntityStringQuery {
-    func entities(matching string: String) async throws -> [RoomEntity] {
-        let building = /* ??? no access to BookRoomIntent.$building here */
-        return try await RoomStore.rooms(in: building, matching: string)
-    }
+	func entities(matching string: String) async throws -> [RoomEntity] {
+		let building = /* ??? no access to BookRoomIntent.$building here */
+		return try await RoomStore.rooms(in: building, matching: string)
+	}
 }
 ```
 
 ```swift
 // PREFER: declare the dependency; read the other parameter through its projection.
 struct RoomQuery: EntityStringQuery {
-    @IntentParameterDependency<BookRoomIntent>(\.$building)
-    var bookRoom
+	@IntentParameterDependency<BookRoomIntent>(\.$building)
+	var bookRoom
 
-    func entities(matching string: String) async throws -> [RoomEntity] {
-        guard let bookRoom else { return [] }        // building not yet chosen
-        return try await RoomStore.rooms(in: bookRoom.building, matching: string)
-    }
+	func entities(matching string: String) async throws -> [RoomEntity] {
+		guard let bookRoom else { return [] }        // building not yet chosen
+		return try await RoomStore.rooms(in: bookRoom.building, matching: string)
+	}
 }
 ```
 
@@ -110,7 +110,7 @@ Guard the optional projection (`guard let bookRoom else { return [] }`) as shown
 // it shows; `folder` and `isPinned` are never named anywhere in the summary, so
 // they simply don't appear in the Shortcuts editor — users can't set them.
 static var parameterSummary: some ParameterSummary {
-    Summary("Save \(\.$note)")
+	Summary("Save \(\.$note)")
 }
 @Parameter(title: "Note")   var note: String
 @Parameter(title: "Folder") var folder: FolderEntity
@@ -121,9 +121,9 @@ static var parameterSummary: some ParameterSummary {
 // PREFER: interpolate the parameters that belong in the sentence, and list the
 // rest in the trailing key-path block so they still surface as editable rows.
 static var parameterSummary: some ParameterSummary {
-    Summary("Save \(\.$note) to \(\.$folder)") {
-        \.$isPinned
-    }
+	Summary("Save \(\.$note) to \(\.$folder)") {
+		\.$isPinned
+	}
 }
 ```
 

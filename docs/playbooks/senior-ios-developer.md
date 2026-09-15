@@ -91,56 +91,56 @@ import SwiftUI
 
 // 1. Dependency Container
 final class AppContainer {
-    func makeDetailViewModel(id: String) -> DetailViewModel { DetailViewModel(id: id) }
-    func makeHomeViewModel() -> HomeViewModel { HomeViewModel() }
+	func makeDetailViewModel(id: String) -> DetailViewModel { DetailViewModel(id: id) }
+	func makeHomeViewModel() -> HomeViewModel { HomeViewModel() }
 }
 
 // 2. Coordinator (Navigation logic extracted from Views)
 @Observable
 final class AppCoordinator {
-    var path = NavigationPath()
-    private let container: AppContainer
+	var path = NavigationPath()
+	private let container: AppContainer
 
-    init(container: AppContainer) { self.container = container }
+	init(container: AppContainer) { self.container = container }
 
-    func push(_ route: Route) { path.append(route) }
+	func push(_ route: Route) { path.append(route) }
 
-    @ViewBuilder
-    func build(route: Route) -> some View {
-        switch route {
-        case .home:
-            HomeView(viewModel: container.makeHomeViewModel())
-        case .detail(let id):
-            DetailView(viewModel: container.makeDetailViewModel(id: id))
-        }
-    }
+	@ViewBuilder
+	func build(route: Route) -> some View {
+		switch route {
+		case .home:
+			HomeView(viewModel: container.makeHomeViewModel())
+		case .detail(let id):
+			DetailView(viewModel: container.makeDetailViewModel(id: id))
+		}
+	}
 }
 
 // 3. Composition Root
 @main
 struct EnterpriseApp: App {
-    private let container: AppContainer
-    @State private var coordinator: AppCoordinator
+	private let container: AppContainer
+	@State private var coordinator: AppCoordinator
 
-    init() {
-        let container = AppContainer()
-        self.container = container
-        self._coordinator = State(initialValue: AppCoordinator(container: container))
-    }
+	init() {
+		let container = AppContainer()
+		self.container = container
+		self._coordinator = State(initialValue: AppCoordinator(container: container))
+	}
 
-    var body: some Scene {
-        WindowGroup {
-            NavigationStack(path: $coordinator.path) {
-                // The views use @Environment to access the coordinator to push new routes,
-                // remaining completely ignorant of the AppContainer.
-                HomeView(viewModel: container.makeHomeViewModel())
-                    .navigationDestination(for: Route.self) { route in
-                        coordinator.build(route: route)
-                    }
-            }
-            .environment(coordinator)
-        }
-    }
+	var body: some Scene {
+		WindowGroup {
+			NavigationStack(path: $coordinator.path) {
+				// The views use @Environment to access the coordinator to push new routes,
+				// remaining completely ignorant of the AppContainer.
+				HomeView(viewModel: container.makeHomeViewModel())
+					.navigationDestination(for: Route.self) { route in
+						coordinator.build(route: route)
+					}
+			}
+			.environment(coordinator)
+		}
+	}
 }
 
 ```

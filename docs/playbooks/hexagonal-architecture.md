@@ -57,58 +57,58 @@ MyApp/
 │           └── ProcessPaymentUseCase.swift      # Class orchestrating tax service and payment gateway logic
 │
 └── Infrastructure/                              # OUTSIDE: I/O, Third-party Frameworks, UI, and Configurations
-    ├── Adapters/
-    │   ├── Inbound/
-    │   │   └── UI/                              # The primary driving adapter layer (SwiftUI)
-    │   │       ├── Resources/                   
-    │   │       │   ├── Assets.xcassets          # Image catalog, colors, and app icons
-    │   │       │   ├── Localizable.strings      # Text translations for the UI layer
-    │   │       │   └── Fonts/                   # Custom font files (.ttf, .otf)
-    │   │       ├── Formatters/                  
-    │   │       │   ├── CurrencyFormatter.swift  # Converts Money ValueObject into localized UI strings (e.g., "€10,00")
-    │   │       │   └── DateDisplayFormatter.swift # Converts raw Date into human-readable strings (e.g., "Oct 12")
-    │   │       ├── UserProfile/
-    │   │       │   ├── UserProfileView.swift    # SwiftUI view rendering the user's profile screen
-    │   │       │   └── UserProfileViewModel.swift # @Observable class holding UI state; calls FetchUserProfileUseCasePort
-    │   │       └── Payment/
-    │   │           ├── PaymentView.swift        # SwiftUI view for the checkout screen
-    │   │           └── PaymentViewModel.swift   # @Observable class handling UI actions; calls ProcessPaymentUseCasePort
-    │   │
-    │   └── Outbound/                            # The driven adapter layer (Databases & APIs)
-    │       ├── Repositories/
-    │       │   └── UserRepository.swift         # Implements UserRepositoryPort; coordinates SwiftData and API fallback
-    │       │
-    │       ├── Database/SwiftData/
-    │       │   ├── UserSDModel.swift            # @Model class representing the exact SQLite schema
-    │       │   └── UserSDMapper.swift           # Translates between UserSDModel (DB) and User (Domain Entity)
-    │       │
-    │       └── Network/
-    │           ├── PrimaryBackend/              
-    │           │   ├── PrimaryUserAPIClient.swift # Handles raw HTTP calls to your main server for user data
-    │           │   ├── UserDTO.swift            # Codable struct mirroring the exact JSON response shape
-    │           │   └── UserDTOMapper.swift      # Translates between UserDTO (JSON) and User (Domain Entity)
-    │           │
-    │           └── StripeService/
-    │               ├── StripeAPIClient.swift    # Implements PaymentGatewayPort; interacts with Stripe's APIs
-    │               ├── StripePaymentDTO.swift   # Codable struct representing Stripe's expected JSON format
-    │               └── StripePaymentMapper.swift # Translates Stripe's response models into Domain payment models
-    │
-    ├── DependencyInjection/
-    │   └── AppContainer.swift                   # @Observable root composition class; instantiates and wires everything
-    │
-    ├── Networking/                              
-    │   ├── HTTPClient.swift                     # Reusable URLSession wrapper for network requests; used by API clients
-    │   └── APIEndpoint.swift                    # URL builder and route definitions for backend requests
-    │
-    ├── Persistence/                             
-    │   ├── SwiftDataContainer.swift             # Initializes the ModelContainer and configures disk storage paths
-    │   └── Migrations/                          # Logic for upgrading the database schema between versions
-    │
-    ├── Configuration/                           
-    │   └── Environment.swift                    # Reads build settings (Dev/Prod URLs, API Keys) from .xcconfig files
-    │
-    └── Logging/                                 
-        └── AppLogger.swift                      # Centralized OSLog wrapper used by adapters to log non-business events
+	├── Adapters/
+	│   ├── Inbound/
+	│   │   └── UI/                              # The primary driving adapter layer (SwiftUI)
+	│   │       ├── Resources/                   
+	│   │       │   ├── Assets.xcassets          # Image catalog, colors, and app icons
+	│   │       │   ├── Localizable.strings      # Text translations for the UI layer
+	│   │       │   └── Fonts/                   # Custom font files (.ttf, .otf)
+	│   │       ├── Formatters/                  
+	│   │       │   ├── CurrencyFormatter.swift  # Converts Money ValueObject into localized UI strings (e.g., "€10,00")
+	│   │       │   └── DateDisplayFormatter.swift # Converts raw Date into human-readable strings (e.g., "Oct 12")
+	│   │       ├── UserProfile/
+	│   │       │   ├── UserProfileView.swift    # SwiftUI view rendering the user's profile screen
+	│   │       │   └── UserProfileViewModel.swift # @Observable class holding UI state; calls FetchUserProfileUseCasePort
+	│   │       └── Payment/
+	│   │           ├── PaymentView.swift        # SwiftUI view for the checkout screen
+	│   │           └── PaymentViewModel.swift   # @Observable class handling UI actions; calls ProcessPaymentUseCasePort
+	│   │
+	│   └── Outbound/                            # The driven adapter layer (Databases & APIs)
+	│       ├── Repositories/
+	│       │   └── UserRepository.swift         # Implements UserRepositoryPort; coordinates SwiftData and API fallback
+	│       │
+	│       ├── Database/SwiftData/
+	│       │   ├── UserSDModel.swift            # @Model class representing the exact SQLite schema
+	│       │   └── UserSDMapper.swift           # Translates between UserSDModel (DB) and User (Domain Entity)
+	│       │
+	│       └── Network/
+	│           ├── PrimaryBackend/              
+	│           │   ├── PrimaryUserAPIClient.swift # Handles raw HTTP calls to your main server for user data
+	│           │   ├── UserDTO.swift            # Codable struct mirroring the exact JSON response shape
+	│           │   └── UserDTOMapper.swift      # Translates between UserDTO (JSON) and User (Domain Entity)
+	│           │
+	│           └── StripeService/
+	│               ├── StripeAPIClient.swift    # Implements PaymentGatewayPort; interacts with Stripe's APIs
+	│               ├── StripePaymentDTO.swift   # Codable struct representing Stripe's expected JSON format
+	│               └── StripePaymentMapper.swift # Translates Stripe's response models into Domain payment models
+	│
+	├── DependencyInjection/
+	│   └── AppContainer.swift                   # @Observable root composition class; instantiates and wires everything
+	│
+	├── Networking/                              
+	│   ├── HTTPClient.swift                     # Reusable URLSession wrapper for network requests; used by API clients
+	│   └── APIEndpoint.swift                    # URL builder and route definitions for backend requests
+	│
+	├── Persistence/                             
+	│   ├── SwiftDataContainer.swift             # Initializes the ModelContainer and configures disk storage paths
+	│   └── Migrations/                          # Logic for upgrading the database schema between versions
+	│
+	├── Configuration/                           
+	│   └── Environment.swift                    # Reads build settings (Dev/Prod URLs, API Keys) from .xcconfig files
+	│
+	└── Logging/                                 
+		└── AppLogger.swift                      # Centralized OSLog wrapper used by adapters to log non-business events
 
 ```                   
 
@@ -173,25 +173,25 @@ Uses the Observation framework. The container is an `@Observable` class instanti
 ```swift
 @Observable
 final class AppContainer {
-    // 1. Shared Infrastructure
-    private var httpClient = StandardHTTPClient()
+	// 1. Shared Infrastructure
+	private var httpClient = StandardHTTPClient()
     
-    // 2. Outbound Adapter injected with Infrastructure
-    //    Returns the PORT (Protocol), hiding the concrete implementation
-    private var userRepository: UserRepositoryPort {
-        UserRepository(httpClient: httpClient)
-    }
+	// 2. Outbound Adapter injected with Infrastructure
+	//    Returns the PORT (Protocol), hiding the concrete implementation
+	private var userRepository: UserRepositoryPort {
+		UserRepository(httpClient: httpClient)
+	}
     
-    // 3. Use Case injected with Outbound Adapter (Repository Port)
-    //    Returns the PORT (Protocol)
-    private var fetchUserProfileUseCase: FetchUserProfileUseCasePort {
-        FetchUserProfileUseCase(repository: userRepository)
-    }
+	// 3. Use Case injected with Outbound Adapter (Repository Port)
+	//    Returns the PORT (Protocol)
+	private var fetchUserProfileUseCase: FetchUserProfileUseCasePort {
+		FetchUserProfileUseCase(repository: userRepository)
+	}
     
-    // 4. Factory for the Inbound Adapter (UI ViewModel)
-    func makeUserProfileViewModel() -> UserProfileViewModel {
-        UserProfileViewModel(useCase: fetchUserProfileUseCase)
-    }
+	// 4. Factory for the Inbound Adapter (UI ViewModel)
+	func makeUserProfileViewModel() -> UserProfileViewModel {
+		UserProfileViewModel(useCase: fetchUserProfileUseCase)
+	}
 }
 
 ```

@@ -27,7 +27,7 @@ Agent tool:
 ```
 DeviceInteractionStartWorkspaceSession (workspace-backed; do this early, runs in the background)
   → DeviceInteractionInstallAndRun (after each code change; includes building)
-    → DeviceEventSynthesize (interact + observe, repeatable)
+	→ DeviceEventSynthesize (interact + observe, repeatable)
   → DeviceInteractionEndSession (when done — keeping sessions open is resource-heavy)
 ```
 

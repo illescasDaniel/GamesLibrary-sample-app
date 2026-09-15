@@ -1,5 +1,5 @@
 import Foundation
 
 protocol URLQueryEncodable {
-    var queryItems: [URLQueryItem] { get }
+	var queryItems: [URLQueryItem] { get }
 }
