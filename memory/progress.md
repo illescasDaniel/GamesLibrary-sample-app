@@ -19,6 +19,9 @@ _Last updated: 2026-09-16_
 - [x] Fix `GamesLibraryCore` `-Wincompatible-sysroot` (declare `.macOS("14.0")` alongside iOS for SourceKit / `swift test`)
 - [x] Commit Package.swift platform fix + memory update
 - [x] Confirm Package.swift editor warning cleared after platform declaration
+- [x] Screen-owned ViewModels (`@State` in list/details views; container constructs at call site)
+- [x] Games list initial load via `.task` (removed `onAppear` workaround)
+- [x] Remove empty `GamesLibraryUITestsLaunchTests` (launch smoke covered by `GamesLibraryUITests`)
 
 ### Open
 

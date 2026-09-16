@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-16 — Screen-owned ViewModels with @State
+
+- **Context:** List VM lived on `RootView` (`@State`); both screens used `@Bindable`. List used `onAppear` + flag after a UI-test workaround replaced `.task`.
+- **Decision:** Screens own injected ViewModels via `@State private var viewModel` + explicit `init`. `AppContainer` / `AppCoordinator` still **construct** at the call site; `@Bindable` reserved for coordinator path bindings only. List initial load uses `.task`. Removed empty `GamesLibraryUITestsLaunchTests` (launch smoke in `GamesLibraryUITests`).
+- **Rationale:** Matches Apple Observation ownership (screen = owner, child = `@Bindable` only when needing `$`). Makes screens movable as a large-app template; visit-scoped VM lifetime. Constructor injection from hexagonal DI unchanged.
+
 ## 2026-09-16 — GamesLibraryCore declares macOS + iOS platforms
 
 - **Context:** `Package.swift` showed `-Wincompatible-sysroot` (macOS 27.0 SDK + `arm64-apple-ios18.0.0-simulator`) when SourceKit-LSP indexed the iOS-only package on the Mac host.
