@@ -59,6 +59,8 @@ Project workflows (this repo):
 - `.cursor/skills/sdd-feature/` — SDD workflow for new/changed flows
 - `.cursor/skills/hexagonal-ios/` — file placement and port naming
 - `.cursor/skills/playbooks/` — when to read full playbooks vs project adaptations
+- `.cursor/skills/apply-worktree/` — merge an isolated agent worktree into the main checkout (`/apply-worktree`)
+- `.cursor/skills/delete-worktree/` — remove a finished agent worktree (`/delete-worktree`)
 
 Apple Xcode 27 agent skills (exported into `.cursor/skills/`):
 
