@@ -18,6 +18,7 @@ _Last updated: 2026-09-16_
 - [x] Re-indent project source with tabs (per `AGENTS.md`)
 - [x] Fix `GamesLibraryCore` `-Wincompatible-sysroot` (declare `.macOS("14.0")` alongside iOS for SourceKit / `swift test`)
 - [x] Commit Package.swift platform fix + memory update
+- [x] Confirm Package.swift editor warning cleared after platform declaration
 
 ### Open
 

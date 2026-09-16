@@ -8,15 +8,13 @@ _Last updated: 2026-09-16_
 
 ## Current focus
 
-Package.swift `-Wincompatible-sysroot` fix committed on `develop`.
+`-Wincompatible-sysroot` on `GamesLibraryCore/Package.swift` confirmed cleared in the editor.
 
 ## Just changed
 
-- `GamesLibraryCore/Package.swift`: `platforms: [.iOS("18.0"), .macOS("14.0")]`
-- Memory: decision + progress for the platform fix
+- Verified Package.swift warning is gone after declaring `.macOS("14.0")` alongside iOS
 
 ## Next steps
 
-1. Confirm the Package.swift squiggle is gone in the editor (reload window if SourceKit cached the old triple).
-2. Continue hexagonal/SDD work on `develop`.
-3. Keep `memory/` updated at session milestones per `.cursor/rules/agent-memory.mdc`.
+1. Continue hexagonal/SDD work on `develop`.
+2. Keep `memory/` updated at session milestones per `.cursor/rules/agent-memory.mdc`.
