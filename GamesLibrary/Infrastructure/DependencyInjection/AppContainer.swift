@@ -75,13 +75,7 @@ final class AppContainer {
 	}
 
 	func makeGamesListViewModel() -> GamesListViewModel {
-		let viewModel = GamesListViewModel(searchGames: makeSearchGamesUseCase(), logger: logger)
-		#if DEBUG
-		if UITestSupport.shouldForceEmptyResults {
-			viewModel.searchText = UITestSupport.noResultsSearchQuery
-		}
-		#endif
-		return viewModel
+		GamesListViewModel(searchGames: makeSearchGamesUseCase(), logger: logger)
 	}
 
 	func makeGameDetailsViewModel() -> GameDetailsViewModel {

@@ -1,11 +1,12 @@
 import Foundation
 
 enum UITestSupport {
+	/// Launch environment key: when `"1"`, `StubGamesRepository.forUITests()` returns no games
+	/// so the list empty state is reachable without typing into SwiftUI `.searchable`.
 	static let forceEmptyResultsEnvironmentKey = "UITEST_FORCE_EMPTY_RESULTS"
-	static let noResultsSearchQuery = "zzzznonexistentgamequery12345"
 
 	nonisolated static var shouldForceEmptyResults: Bool {
-		ProcessInfo.processInfo.environment["UITEST_FORCE_EMPTY_RESULTS"] == "1"
+		ProcessInfo.processInfo.environment[forceEmptyResultsEnvironmentKey] == "1"
 	}
 }
 

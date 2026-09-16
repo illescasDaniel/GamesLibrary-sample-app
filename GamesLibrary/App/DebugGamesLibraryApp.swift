@@ -9,7 +9,7 @@ struct DebugGamesLibraryApp: App {
 	init() {
 		let container: AppContainer
 		if Self.isRunningUITests {
-			container = AppContainer(gamesRepository: StubGamesRepository())
+			container = AppContainer(gamesRepository: StubGamesRepository.forUITests())
 		} else {
 			container = AppContainer()
 			container.configureSharedURLCache()

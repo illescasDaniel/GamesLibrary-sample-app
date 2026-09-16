@@ -49,7 +49,7 @@ Instead:
 
 Launch argument `-UITesting` wires `StubGamesRepository` at the composition root so flows stay deterministic without network.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, seed state via `UITestSupport` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1`) rather than typing into the search field.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestSupport` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). Do not seed `ViewModel.searchText` from `AppContainer`.
 
 ## SDD source of truth
 
