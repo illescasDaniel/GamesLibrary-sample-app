@@ -4,8 +4,13 @@ import GamesLibraryCore
 import BetterLogger
 
 struct GameDetailsView: View {
-	@Bindable var viewModel: GameDetailsViewModel
+	@State private var viewModel: GameDetailsViewModel
 	let summary: GameSummary
+
+	init(viewModel: GameDetailsViewModel, summary: GameSummary) {
+		_viewModel = State(initialValue: viewModel)
+		self.summary = summary
+	}
 
 	var body: some View {
 		contentState

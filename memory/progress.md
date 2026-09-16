@@ -19,6 +19,7 @@ _Last updated: 2026-09-16_
 - [x] Fix `GamesLibraryCore` `-Wincompatible-sysroot` (declare `.macOS("14.0")` alongside iOS for SourceKit / `swift test`)
 - [x] Commit Package.swift platform fix + memory update
 - [x] Confirm Package.swift editor warning cleared after platform declaration
+- [x] Agent worktree skills: `apply-worktree`, `delete-worktree` (adapted from srxy for iOS quality gate)
 
 ### Open
 

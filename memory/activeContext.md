@@ -4,17 +4,19 @@ _Last updated: 2026-09-16_
 
 ## Branch
 
-- `develop` — current (hexagonal + SDD refactor committed)
+- `develop` — current
 
 ## Current focus
 
-`-Wincompatible-sysroot` on `GamesLibraryCore/Package.swift` confirmed cleared in the editor.
+Agent worktree lifecycle skills added for isolated Cursor checkouts.
 
 ## Just changed
 
-- Verified Package.swift warning is gone after declaring `.macOS("14.0")` alongside iOS
+- `.cursor/skills/apply-worktree/` — commit → merge → iOS quality gate (`swift test` + xcode-tools `RunAllTests`)
+- `.cursor/skills/delete-worktree/` — unregister worktree + optional `cursor/…` branch cleanup
+- `AGENTS.md` — lists both skills under project workflows
 
 ## Next steps
 
 1. Continue hexagonal/SDD work on `develop`.
-2. Keep `memory/` updated at session milestones per `.cursor/rules/agent-memory.mdc`.
+2. Commit when Daniel asks (includes new skills + memory update).

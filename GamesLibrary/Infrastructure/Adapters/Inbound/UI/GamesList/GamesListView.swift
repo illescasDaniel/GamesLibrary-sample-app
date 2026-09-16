@@ -4,9 +4,12 @@ import GamesLibraryCore
 import BetterLogger
 
 struct GameListView: View {
-	@Bindable var viewModel: GamesListViewModel
+	@State private var viewModel: GamesListViewModel
 	@Environment(AppCoordinator.self) private var coordinator
-	@State private var didPerformInitialLoad = false
+
+	init(viewModel: GamesListViewModel) {
+		_viewModel = State(initialValue: viewModel)
+	}
 
 	var body: some View {
 		ScrollViewReader { proxy in
@@ -23,10 +26,8 @@ struct GameListView: View {
 				}
 		}
 		.searchable(text: $viewModel.searchText)
-		.onAppear {
-			guard !didPerformInitialLoad else { return }
-			didPerformInitialLoad = true
-			Task { await viewModel.searchGame() }
+		.task {
+			await viewModel.searchGame()
 		}
 	}
 
