@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
 	name: "GamesLibraryCore",
-	platforms: [.iOS("18.0")],
+	platforms: [.iOS("18.0"), .macOS("14.0")],
 	products: [
 		.library(name: "GamesLibraryCore", targets: ["GamesLibraryCore"]),
 	],

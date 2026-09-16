@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-16 — GamesLibraryCore declares macOS + iOS platforms
+
+- **Context:** `Package.swift` showed `-Wincompatible-sysroot` (macOS 27.0 SDK + `arm64-apple-ios18.0.0-simulator`) when SourceKit-LSP indexed the iOS-only package on the Mac host.
+- **Decision:** Keep `.iOS("18.0")` and add `.macOS("14.0")` so the host platform is supported. Core remains Foundation-only; app still builds for iOS.
+- **Rationale:** SourceKit-LSP prefers the host triple when the package supports it, which pairs macOS SDK with a macOS target. Matches `swift test` from `GamesLibraryCore/`.
+
 ## 2026-09-15 — Vendor Xcode 27 agent skills into `.cursor/skills/`
 
 - **Context:** Xcode 27 ships official Agent Skills (`swiftui-specialist`, `swiftui-whats-new-27`, `modernize-tests`, App Intents, …). Cursor discovers project skills from `.cursor/skills/<name>/SKILL.md`.

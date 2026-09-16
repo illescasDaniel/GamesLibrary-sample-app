@@ -1,10 +1,8 @@
 # Progress
 
-_Last updated: 2026-09-14_
+_Last updated: 2026-09-16_
 
-## Hexagonal + SDD refactor (in progress on `develop`)
-
-Working tree on `develop` — not yet committed.
+## Hexagonal + SDD refactor (on `develop`)
 
 ### Done
 
@@ -17,8 +15,10 @@ Working tree on `develop` — not yet committed.
 - [x] Agent playbooks, Cursor rules/skills, `AGENTS.md`
 - [x] Agent memory bank (replicated from srxy): `memory/` + always-on `.cursor/rules/agent-memory.mdc`
 - [x] Xcode 27 Apple agent skills exported into `.cursor/skills/` (SwiftUI, tests, App Intents, …)
+- [x] Re-indent project source with tabs (per `AGENTS.md`)
+- [x] Fix `GamesLibraryCore` `-Wincompatible-sysroot` (declare `.macOS("14.0")` alongside iOS for SourceKit / `swift test`)
+- [x] Commit Package.swift platform fix + memory update
 
 ### Open
 
-- [x] Commit hexagonal + SDD + memory-bank work when Daniel asks
-- [x] Re-indent project source with tabs (per `AGENTS.md`)
+- [ ] Continue hexagonal/SDD feature work on `develop`
