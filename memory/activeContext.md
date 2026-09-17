@@ -4,7 +4,7 @@ _Last updated: 2026-09-17_
 
 ## Branch
 
-- `develop` (AppContaining + DebugAppContainer)
+- `develop` (use-case-only Debug Overrides)
 
 ## Current focus
 
@@ -12,7 +12,9 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Release scheme clean: `#Preview` using `DebugAppContainer` wrapped in `#if DEBUG`; `unsafe String(cString:)` for API key under strict memory safety
+- Committed `AppContaining` + `DebugAppContainer` (`3d0142a`)
+- Overrides: use cases + urlCache + logger only; response logging on `AppContainer` DEBUG
+- `DebugAppContainer` always builds VMs via `override ?? production` (no `needsCustomViewModels`)
 
 ## Next steps
 

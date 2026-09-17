@@ -16,7 +16,7 @@ enum UITestSupport {
 		ProcessInfo.processInfo.environment[UITestEnvironment.forceDetailsFailureKey] == "1"
 	}
 
-	/// Maps launch args/env to composition-root overrides for deterministic UI tests.
+	/// Maps launch args/env to composition-root use-case overrides for deterministic UI tests.
 	static func makeOverrides() -> DebugAppContainer.Overrides? {
 		guard isRunningUITests else { return nil }
 		let stub = StubGamesRepository(
@@ -24,7 +24,8 @@ enum UITestSupport {
 			detailsFailuresRemaining: shouldForceDetailsFailure ? 1 : 0
 		)
 		return DebugAppContainer.Overrides(
-			gamesRepository: stub,
+			searchGamesUseCase: SearchGamesUseCase(repository: stub),
+			getGameDetailsUseCase: GetGameDetailsUseCase(repository: stub),
 			urlCache: URLCache(memoryCapacity: 0, diskCapacity: 0)
 		)
 	}

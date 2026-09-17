@@ -22,10 +22,18 @@ final class AppContainer: AppContaining {
 		APIKeyRequestInterceptor(apiKey: environment.apiKey, logger: logger),
 	]
 
+	private lazy var responseInterceptors: [any HTTPResponseInterceptor] = {
+		#if DEBUG
+		[HTTPResponseLoggerInterceptor(logger: logger)]
+		#else
+		[]
+		#endif
+	}()
+
 	private lazy var httpClient: any HTTPClient = HTTPClientImpl(
 		httpDataRequestHandler: URLSession.shared,
 		requestInterceptors: requestInterceptors,
-		responseInterceptors: []
+		responseInterceptors: responseInterceptors
 	)
 
 	private lazy var productionGamesRepository: any GamesRepositoryPort = {

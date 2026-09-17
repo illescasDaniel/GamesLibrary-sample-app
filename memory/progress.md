@@ -35,6 +35,7 @@ _Last updated: 2026-09-17_
 - [x] Async throwing page-object accessors (`try await page.screen`); UI tests `async throws`
 - [x] Game Details UI coverage: content chips/description/website + error/Retry via `UITEST_FORCE_DETAILS_FAILURE`
 - [x] `AppContaining` + production `AppContainer` + DEBUG `DebugAppContainer` (wrap + Overrides)
+- [x] Debug `Overrides` use-case-only (no repository field); UITestSupport wraps stub repo in use cases
 
 ### Open
 

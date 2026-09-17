@@ -2,6 +2,18 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — Response logging stays on AppContainer; Overrides drop interceptors
+
+- **Context:** `responseInterceptors` on `DebugAppContainer.Overrides` forced a parallel HTTP→repository stack (`ownsCustomNetworking`) just to attach a log interceptor.
+- **Decision:** Remove interceptor overrides and that subgraph. `AppContainer` installs `HTTPResponseLoggerInterceptor` under `#if DEBUG`. Debug Overrides remain use cases + `urlCache` + `logger` only.
+- **Rationale:** Logging is not a test seam; duplicating networking for it was accidental complexity.
+
+## 2026-09-17 — Debug Overrides are use-case-only (no repository)
+
+- **Context:** Overrides allowed both repository and use-case replacement, which duplicated seams and complicated `DebugAppContainer` resolution.
+- **Decision:** `DebugAppContainer.Overrides` only replaces inbound ports (`searchGamesUseCase`, `getGameDetailsUseCase`) plus infra (`urlCache`, `logger`). UI tests wrap `StubGamesRepository` in real use cases inside `UITestSupport.makeOverrides()`.
+- **Rationale:** One override layer matching what ViewModels depend on; simpler forwarding; stub repo remains an implementation detail of the test bootstrap.
+
 ## 2026-09-17 — AppContaining + DebugAppContainer (wrap production)
 
 - **Context:** `#if DEBUG` Overrides inside `AppContainer` were noisy; GamesList `#Preview` double-mocked a use case and an incompatible repository override for the coordinator.

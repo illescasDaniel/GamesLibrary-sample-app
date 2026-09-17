@@ -15,13 +15,13 @@ We combine both playbooks:
 
 - **`AppContaining`** — ViewModel factory surface only (`makeGamesListViewModel` / `makeGameDetailsViewModel`); `AppCoordinator` / `RootView` depend on `any AppContaining`. Use cases and `configureSharedURLCache` stay on concrete containers.
 - **`AppContainer`** — production implementation; wires HTTP, cache, repository, use cases, ViewModel factories. No Overrides, no `#if DEBUG`
-- **`DebugAppContainer`** — DEBUG-only; wraps `AppContainer` and applies `Overrides` when set (use cases, repository, `urlCache`, `logger`, `responseInterceptors`). Forwards to production when nothing relevant is overridden. Prefer use-case overrides for `#Preview`; repository stubs for UI tests. No DIC / service locator.
+- **`DebugAppContainer`** — DEBUG-only; wraps `AppContainer` and applies `Overrides` when set (**use cases**, `urlCache`, `logger`). No repository or response-interceptor overrides — HTTP response logging lives on `AppContainer` under `#if DEBUG`. Forwards to production when nothing relevant is overridden. No DIC / service locator.
 - **`AppCoordinator`** — owns `NavigationPath` and route → view building
 - **Constructor injection** — ViewModels receive inbound ports in `init`; views receive ViewModels from the coordinator/container
 
 The Hexagonal playbook shows `.environment(AppContainer)`; here we inject ViewModels directly and pass the coordinator via `.environment` for navigation only.
 
-DEBUG entry (`DebugGamesLibraryApp`): UI tests → `UITestSupport.makeOverrides()`; otherwise `DebugAppContainer(overrides: .debugDefaults())` then `configureSharedURLCache()` on the concrete type. Release `@main` uses `AppContainer()` only.
+DEBUG entry (`DebugGamesLibraryApp`): UI tests → `UITestSupport.makeOverrides()`; otherwise `DebugAppContainer()` then `configureSharedURLCache()` on the concrete type. Release `@main` uses `AppContainer()` only.
 
 ### Preview seams
 
@@ -75,9 +75,9 @@ _ = try await list.gameRows
 
 Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…` / `requireAbsence`. Navigate actions return the next page (e.g. `try await list.tapGameRow(at:) -> GameDetailsPage`). Prefer `AppLauncher.launchGameDetails(index:)` when a test starts on details rather than composing list launch + tap. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty (list empty state / details error) and query the Retry **button** via that same id. Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states (error, details failure) = new launch env keys + stub config via `UITestSupport.makeOverrides()` — never seed `ViewModel` state from the container.
 
-Launch argument `-UITesting` wires `StubGamesRepository` at the composition root so flows stay deterministic without network.
+Launch argument `-UITesting` wires stub use cases (backed by `StubGamesRepository`) at the composition root so flows stay deterministic without network.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestEnvironment.forceEmptyResultsKey` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). Use `UITestEnvironment.forceDetailsFailureKey` (`UITEST_FORCE_DETAILS_FAILURE=1`) so the stub fails the first details request and succeeds on Retry. DEBUG-only `UITestSupport` reads those env keys. Do not seed `ViewModel.searchText` from the container.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure empty results via `UITestEnvironment.forceEmptyResultsKey` (`UITEST_FORCE_EMPTY_RESULTS=1` → stub search use case returns `[]`). Use `UITestEnvironment.forceDetailsFailureKey` (`UITEST_FORCE_DETAILS_FAILURE=1`) so the stub details use case fails once and succeeds on Retry. DEBUG-only `UITestSupport` maps those env keys to use-case overrides. Do not seed `ViewModel.searchText` from the container.
 
 ## SDD source of truth
 

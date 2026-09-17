@@ -11,7 +11,7 @@ struct DebugGamesLibraryApp: App {
 		if let overrides = UITestSupport.makeOverrides() {
 			container = DebugAppContainer(overrides: overrides)
 		} else {
-			let debugContainer = DebugAppContainer(overrides: .debugDefaults())
+			let debugContainer = DebugAppContainer()
 			debugContainer.configureSharedURLCache()
 			container = debugContainer
 		}
