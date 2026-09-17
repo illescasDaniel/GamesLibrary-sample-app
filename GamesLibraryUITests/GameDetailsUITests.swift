@@ -7,12 +7,12 @@ final class GameDetailsUITests: XCTestCase {
 	}
 
 	@MainActor
-	func testGivenGamesListWhenGameRowTappedThenOpensDetails() {
+	func testGivenGamesListWhenGameRowTappedThenOpensDetails() async throws {
 		let list = AppLauncher.launchGamesList()
-		XCTAssertTrue(list.waitForGameRows())
+		_ = try await list.gameRows
 
-		let details = list.tapFirstGameRow()
+		let details = try await list.tapFirstGameRow()
 
-		XCTAssertTrue(details.waitForScreen())
+		_ = try await details.screen
 	}
 }

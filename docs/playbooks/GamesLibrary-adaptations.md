@@ -56,11 +56,18 @@ Instead:
 | Layer | Location | Rule |
 |-------|----------|------|
 | Shared IDs | `GamesLibraryAccessibilityIdentifiers` | Compile-time constants only |
-| Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; elements + waits + actions |
+| Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; **async throwing** element accessors |
 | Launch | `GamesLibraryUITests/Support/AppLauncher` | Shared `-UITesting` / env scenario API |
-| Tests | One `XCTestCase` per screen/feature | Assert flows; no raw identifiers |
+| Tests | One `XCTestCase` per screen/feature | `async throws` tests; no raw identifiers |
 
-Actions that navigate return the next page (e.g. `tapFirstGameRow() -> GameDetailsPage`). Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states (error, details failure) = new launch env keys + stub config via `UITestSupport.makeOverrides()` — never seed `ViewModel` state from `AppContainer`.
+Do **not** expose unloaded `XCUIElement` properties. Page accessors wait then return or throw:
+
+```swift
+let screen = try await details.screen
+_ = try await list.gameRows
+```
+
+Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…` / `requireAbsence`. Navigate actions return the next page (e.g. `try await list.tapFirstGameRow() -> GameDetailsPage`). Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states (error, details failure) = new launch env keys + stub config via `UITestSupport.makeOverrides()` — never seed `ViewModel` state from `AppContainer`.
 
 Launch argument `-UITesting` wires `StubGamesRepository` at the composition root so flows stay deterministic without network.
 

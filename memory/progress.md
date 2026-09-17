@@ -32,6 +32,7 @@ _Last updated: 2026-09-17_
 - [x] Commit cleanup batch on `develop` (flatten, a11y SPM, POM pages, Config.xcconfig sample, shared httpClient)
 - [x] `AppContainer.Overrides` + thin UITest bootstrap (`UITestSupport.makeOverrides()`)
 - [x] POM scaffolding: `AppLauncher`, fluent page nav, split UITest files, adaptations doc
+- [x] Async throwing page-object accessors (`try await page.screen`); UI tests `async throws`
 
 ### Open
 

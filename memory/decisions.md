@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — Async throwing page-object element accessors
+
+- **Context:** Page objects exposed raw `XCUIElement` vars that were unloaded until a separate `waitFor*` call; easy to tap/assert too early.
+- **Decision:** Element accessors are `var …: XCUIElement { get async throws }` (or query) that wait then return or throw `UITestElementError`. UI tests are `async throws` and use `try await list.screen` / `try await details.screen`. Absence uses `requireNo…` / `requireAbsence`. Shared helpers in `XCUIElement+Require`.
+- **Rationale:** Unloaded elements stay private; failure is a throw (natural XCTest `async throws` failure) instead of `XCTAssertTrue(wait…)`.
+
 ## 2026-09-17 — AppContainer.Overrides + POM UI-test layout
 
 - **Context:** Dual `AppContainer` inits and ad-hoc override optionals would not scale; UI tests lived in one class as screens grow.

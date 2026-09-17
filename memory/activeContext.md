@@ -4,7 +4,7 @@ _Last updated: 2026-09-17_
 
 ## Branch
 
-- `develop` (POM + `AppContainer.Overrides` landed)
+- `develop` (async throwing POM accessors)
 
 ## Current focus
 
@@ -12,11 +12,11 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- `AppContainer.Overrides` single-init seam; `UITestSupport.makeOverrides()` for DEBUG UI tests
-- POM: `AppLauncher`, fluent `tapFirstGameRow() -> GameDetailsPage`, split `GamesListUITests` / `GameDetailsUITests`
-- Documented in `docs/playbooks/GamesLibrary-adaptations.md`
+- Page objects: `try await list.screen` / `gameRows` / `emptyState` / `details.screen` (throw on timeout)
+- UI tests are `async throws`; absence via `requireNoGameRows`
+- Documented in adaptations + decisions
 
 ## Next steps
 
-1. Continue hexagonal/SDD feature work (new screens: add IDs → page → feature UITest file)
-2. New UI-test scenarios: add launch env keys + stub fields via `UITestSupport.makeOverrides()`
+1. Continue hexagonal/SDD feature work (new screens: IDs → async page accessors → feature UITest file)
+2. New UI-test scenarios: launch env keys + stub fields via `UITestSupport.makeOverrides()`
