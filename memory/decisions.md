@@ -2,6 +2,14 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — AppContainer.Overrides + POM UI-test layout
+
+- **Context:** Dual `AppContainer` inits and ad-hoc override optionals would not scale; UI tests lived in one class as screens grow.
+- **Decision:**
+  - Single `AppContainer(environment:overrides:)` with nested `Overrides` (`gamesRepository`, `urlCache`, `logger`; `.none` for production). DEBUG `UITestSupport.makeOverrides()` maps launch args/env → overrides; `@main` stays thin.
+  - POM: `AppLauncher` for launch; one page object per screen with navigate actions returning the next page; split `GamesListUITests` / `GameDetailsUITests`. Documented in `GamesLibrary-adaptations.md`.
+- **Rationale:** Explicit composition root without a DIC; override surface grows by fields not inits; UI tests scale by screen without raw identifiers or ViewModel seeding.
+
 ## 2026-09-17 — Local config lives in gitignored Config.xcconfig
 
 - **Context:** API key lived in a separate gitignored `Secrets.xcconfig` included by tracked `Config.xcconfig`; signing had no checked-in `DEVELOPMENT_TEAM`.

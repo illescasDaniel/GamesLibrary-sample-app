@@ -4,11 +4,18 @@ import HTTIES
 import BetterLogger
 
 final class AppContainer {
+	struct Overrides {
+		var gamesRepository: (any GamesRepositoryPort)?
+		var urlCache: URLCache?
+		var logger: BetterLogger?
+
+		static let none = Overrides()
+	}
+
 	private let environment: AppEnvironment
 	private let logger: BetterLogger
 	private let jsonDecoder: JSONDecoder
-	private let gamesRepositoryOverride: (any GamesRepositoryPort)?
-	private let urlCacheOverride: URLCache?
+	private let overrides: Overrides
 
 	private lazy var productionURLCache: URLCache = {
 		let memoryCapacity = 50 * 1024 * 1024
@@ -51,32 +58,21 @@ final class AppContainer {
 	}()
 
 	private var urlCache: URLCache {
-		urlCacheOverride ?? productionURLCache
+		overrides.urlCache ?? productionURLCache
 	}
 
 	private var gamesRepository: any GamesRepositoryPort {
-		gamesRepositoryOverride ?? productionGamesRepository
+		overrides.gamesRepository ?? productionGamesRepository
 	}
 
-	init(environment: AppEnvironment = .production) {
-		self.environment = environment
-		self.logger = BetterLogger(name: "App")
-		self.jsonDecoder = JSONDecoder()
-		self.gamesRepositoryOverride = nil
-		self.urlCacheOverride = nil
-	}
-
-	/// Preview and test seam: inject ports directly without network.
 	init(
-		gamesRepository: any GamesRepositoryPort,
-		logger: BetterLogger = BetterLogger(name: "Preview"),
-		urlCache: URLCache = URLCache(memoryCapacity: 0, diskCapacity: 0)
+		environment: AppEnvironment = .production,
+		overrides: Overrides = .none
 	) {
-		self.environment = .production
-		self.logger = logger
+		self.environment = environment
+		self.logger = overrides.logger ?? BetterLogger(name: "App")
 		self.jsonDecoder = JSONDecoder()
-		self.gamesRepositoryOverride = gamesRepository
-		self.urlCacheOverride = urlCache
+		self.overrides = overrides
 	}
 
 	func configureSharedURLCache() {

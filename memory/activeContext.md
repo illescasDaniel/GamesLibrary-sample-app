@@ -4,18 +4,19 @@ _Last updated: 2026-09-17_
 
 ## Branch
 
-- `develop` (cleanup batch committed; next: POM conventions + `AppContainer.Overrides`)
+- `develop` (POM + `AppContainer.Overrides` landed)
 
 ## Current focus
 
-POM scaling conventions for UI tests and a single `AppContainer.Overrides` bag for DEBUG/UITest seams.
+Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Committed cleanup: Infrastructure flatten, AccessibilityIdentifiers SPM, UI POM pages, Config.xcconfig sample, shared `httpClient` lazy vars, C API key
+- `AppContainer.Overrides` single-init seam; `UITestSupport.makeOverrides()` for DEBUG UI tests
+- POM: `AppLauncher`, fluent `tapFirstGameRow() -> GameDetailsPage`, split `GamesListUITests` / `GameDetailsUITests`
+- Documented in `docs/playbooks/GamesLibrary-adaptations.md`
 
 ## Next steps
 
-1. Introduce `AppContainer.Overrides` + single init; thin Debug bootstrap via `UITestSupport`
-2. Extract `AppLauncher`, fluent page navigation, split UITest files; document in adaptations
-3. Append decisions + finalize memory after DI/POM work
+1. Continue hexagonal/SDD feature work (new screens: add IDs → page → feature UITest file)
+2. New UI-test scenarios: add launch env keys + stub fields via `UITestSupport.makeOverrides()`

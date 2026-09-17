@@ -30,9 +30,9 @@ _Last updated: 2026-09-17_
 - [x] Shared `httpClient` + interceptors as lazy vars on `AppContainer` (reuse for future repositories)
 
 - [x] Commit cleanup batch on `develop` (flatten, a11y SPM, POM pages, Config.xcconfig sample, shared httpClient)
+- [x] `AppContainer.Overrides` + thin UITest bootstrap (`UITestSupport.makeOverrides()`)
+- [x] POM scaffolding: `AppLauncher`, fluent page nav, split UITest files, adaptations doc
 
 ### Open
 
-- [ ] `AppContainer.Overrides` + thin UITest bootstrap
-- [ ] POM scaffolding: `AppLauncher`, fluent page nav, split UITest files, adaptations doc
 - [ ] Continue hexagonal/SDD feature work on `develop`

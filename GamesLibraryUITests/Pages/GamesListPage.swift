@@ -32,8 +32,10 @@ struct GamesListPage {
 		gameRows.firstMatch.waitForExistence(timeout: timeout)
 	}
 
-	func tapFirstGameRow() {
+	@discardableResult
+	func tapFirstGameRow() -> GameDetailsPage {
 		gameRows.firstMatch.tap()
+		return GameDetailsPage(app: app)
 	}
 
 	func hasGameRows(timeout: TimeInterval = 2) -> Bool {

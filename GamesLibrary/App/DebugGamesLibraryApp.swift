@@ -8,11 +8,8 @@ struct DebugGamesLibraryApp: App {
 
 	init() {
 		let container: AppContainer
-		if Self.isRunningUITests {
-			let stub = UITestSupport.shouldForceEmptyResults
-				? StubGamesRepository(games: [])
-				: StubGamesRepository()
-			container = AppContainer(gamesRepository: stub)
+		if let overrides = UITestSupport.makeOverrides() {
+			container = AppContainer(overrides: overrides)
 		} else {
 			container = AppContainer()
 			container.configureSharedURLCache()
@@ -33,10 +30,6 @@ struct DebugGamesLibraryApp: App {
 
 	private static var isRunningUnitTests: Bool {
 		ProcessInfo.processInfo.environment["IS_TESTING"] == "1"
-	}
-
-	private static var isRunningUITests: Bool {
-		ProcessInfo.processInfo.arguments.contains("-UITesting")
 	}
 }
 #endif

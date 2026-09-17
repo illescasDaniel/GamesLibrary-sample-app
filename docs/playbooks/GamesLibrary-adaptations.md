@@ -14,10 +14,13 @@ This project follows the senior iOS playbooks with these **intentional deviation
 We combine both playbooks:
 
 - **`AppContainer`** — composition root; wires HTTP, cache, repository, use cases, ViewModel factories
+- **`AppContainer.Overrides`** — single optional bag (`gamesRepository`, `urlCache`, `logger`) for previews and UI tests. Prefer `AppContainer(overrides:)` over extra initializers; add new replaceable deps as fields on `Overrides`, not new inits. No DIC / service locator.
 - **`AppCoordinator`** — owns `NavigationPath` and route → view building
 - **Constructor injection** — ViewModels receive inbound ports in `init`; views receive ViewModels from the coordinator/container
 
 The Hexagonal playbook shows `.environment(AppContainer)`; here we inject ViewModels directly and pass the coordinator via `.environment` for navigation only.
+
+DEBUG entry (`DebugGamesLibraryApp`) stays thin: `UITestSupport.makeOverrides()` maps `-UITesting` / launch env → `AppContainer.Overrides`; production path uses `Overrides.none`.
 
 ## Security (client API key)
 
@@ -43,14 +46,25 @@ UI tests must **not** query user-visible copy (navigation titles, button labels,
 
 Instead:
 
-1. Define identifiers in the local **`AccessibilityIdentifiers`** package (`GamesLibraryAccessibilityIdentifiers`). Link it from the app and `GamesLibraryUITests` targets (UI test bundles cannot link the app module).
+1. Define identifiers in the local **`AccessibilityIdentifiers`** package (`GamesLibraryAccessibilityIdentifiers`). Link it from the app and `GamesLibraryUITests` targets (UI test bundles cannot link the app module). One nested enum per screen; add IDs for loading / empty / error / content as states appear.
 2. Apply them to screens and key states in SwiftUI views (`.accessibilityIdentifier(...)`).
-3. In UI tests, reference `AccessibilityIdentifier` constants — never duplicate raw strings or query user-visible copy. Prefer page objects under `GamesLibraryUITests/Pages/`.
+3. In UI tests, reference `AccessibilityIdentifier` constants — never duplicate raw strings or query user-visible copy.
 4. Prefer `app.element(matching:)` (descendants matching `.any`) over typed queries like `navigationBars["…"]` or `staticTexts["…"]`.
+
+### Page Object Model (POM)
+
+| Layer | Location | Rule |
+|-------|----------|------|
+| Shared IDs | `GamesLibraryAccessibilityIdentifiers` | Compile-time constants only |
+| Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; elements + waits + actions |
+| Launch | `GamesLibraryUITests/Support/AppLauncher` | Shared `-UITesting` / env scenario API |
+| Tests | One `XCTestCase` per screen/feature | Assert flows; no raw identifiers |
+
+Actions that navigate return the next page (e.g. `tapFirstGameRow() -> GameDetailsPage`). Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states (error, details failure) = new launch env keys + stub config via `UITestSupport.makeOverrides()` — never seed `ViewModel` state from `AppContainer`.
 
 Launch argument `-UITesting` wires `StubGamesRepository` at the composition root so flows stay deterministic without network.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestEnvironment.forceEmptyResultsKey` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). DEBUG-only `UITestSupport` reads that env in the app entry. Do not seed `ViewModel.searchText` from `AppContainer`.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestEnvironment.forceEmptyResultsKey` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). DEBUG-only `UITestSupport` reads that env. Do not seed `ViewModel.searchText` from `AppContainer`.
 
 ## SDD source of truth
 

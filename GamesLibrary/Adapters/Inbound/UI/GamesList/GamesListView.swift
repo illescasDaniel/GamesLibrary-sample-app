@@ -181,7 +181,7 @@ struct GameListView: View {
 			logger: BetterLogger(name: "Preview")
 		)
 	)
-	.environment(AppCoordinator(container: AppContainer(gamesRepository: PreviewMockGamesRepository())))
+	.environment(AppCoordinator(container: AppContainer(overrides: .init(gamesRepository: PreviewMockGamesRepository()))))
 }
 
 private struct PreviewMockSearchGamesUseCase: SearchGamesUseCasePort {
