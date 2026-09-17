@@ -2,6 +2,30 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — AppContainer init injects HTTP handler, cache, request interceptors
+
+- **Context:** Only `responseInterceptors` were init-injected; `URLSession.shared`, production `URLCache`, and API-key request interceptors were hard-wired lazy locals, so Debug/tests could not replace the HTTP stack at construction.
+- **Decision:** `AppContainer` takes `urlCache` (`nil` → default image cache), `httpDataRequestHandler` (default `URLSession.shared`), `requestInterceptors` (`nil` → API-key interceptor), plus existing `responseInterceptors`. `DebugAppContainer` passes `logger` and `overrides.urlCache` into production and always forwards `configureSharedURLCache()`.
+- **Rationale:** Same construction-time injection pattern as response logging; keeps the graph private while allowing full HTTP/cache substitution without a parallel subgraph.
+
+## 2026-09-17 — HTTP response logging via DebugAppContainer → AppContainer init
+
+- **Context:** `HTTPResponseLoggerInterceptor` lived on `AppContainer` behind `#if DEBUG`, mixing debug wiring into the production composition root. Stripping `private` so Debug can mutate the graph would not help: lazy `httpClient` / repository are wired once at first use.
+- **Decision:** `AppContainer` takes `responseInterceptors` in `init` (default `[]`, no `#if DEBUG`). `DebugAppContainer` always passes `[HTTPResponseLoggerInterceptor]`. Keep intentional internal seams (`makeSearchGamesUseCase` / `makeGetGameDetailsUseCase`); do not open the whole graph.
+- **Rationale:** Debug owns debug behavior; Release stays empty interceptors without compile flags; injection at construction avoids the old parallel networking subgraph.
+
+## 2026-09-17 — UI tests stub inbound use cases (not repository)
+
+- **Context:** UI tests wrapped `StubGamesRepository` in real use cases; Overrides already only replace inbound ports, so the outbound stub was an extra seam.
+- **Decision:** DEBUG `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` (+ `UITestFixtures`) map from `UITestConfiguration`; delete `StubGamesRepository`. Slim `gameDetails` config to `failuresRemaining` only.
+- **Rationale:** UI tests exercise ViewModels against inbound ports; repository stubs belong in adapter/unit tests. Matches use-case-only Overrides.
+
+## 2026-09-17 — UI-test scenarios via single UITEST_CONFIG JSON
+
+- **Context:** Empty-list and details-failure UI tests each needed a dedicated `UITEST_*` env key; more stub scenarios would proliferate keys and `AppLauncher` parameters.
+- **Decision:** Share `UITestConfiguration: Codable` in AccessibilityIdentifiers with **per-screen nested configs** (`gamesList`, `gameDetails`, …). `AppLauncher` encodes it to `UITEST_CONFIG`; DEBUG `UITestSupport` treats presence of that env key as the UI-test gate, decodes, and maps to stub use-case Overrides. Malformed JSON `preconditionFailure`s in DEBUG.
+- **Rationale:** One env blob grows by screen without new keys; typed encode/decode stays shared between app and UITests; Core entities stay out of the identifiers package. No separate `-UITesting` launch argument.
+
 ## 2026-09-17 — Response logging stays on AppContainer; Overrides drop interceptors
 
 - **Context:** `responseInterceptors` on `DebugAppContainer.Overrides` forced a parallel HTTP→repository stack (`ownsCustomNetworking`) just to attach a log interceptor.
@@ -11,8 +35,8 @@ _Log of significant technical, structural, or dependency choices. Newest first._
 ## 2026-09-17 — Debug Overrides are use-case-only (no repository)
 
 - **Context:** Overrides allowed both repository and use-case replacement, which duplicated seams and complicated `DebugAppContainer` resolution.
-- **Decision:** `DebugAppContainer.Overrides` only replaces inbound ports (`searchGamesUseCase`, `getGameDetailsUseCase`) plus infra (`urlCache`, `logger`). UI tests wrap `StubGamesRepository` in real use cases inside `UITestSupport.makeOverrides()`.
-- **Rationale:** One override layer matching what ViewModels depend on; simpler forwarding; stub repo remains an implementation detail of the test bootstrap.
+- **Decision:** `DebugAppContainer.Overrides` only replaces inbound ports (`searchGamesUseCase`, `getGameDetailsUseCase`) plus infra (`urlCache`, `logger`). UI tests inject stub use cases from `UITestSupport.makeOverrides()`.
+- **Rationale:** One override layer matching what ViewModels depend on; simpler forwarding; fixtures stay an implementation detail of the test bootstrap.
 
 ## 2026-09-17 — AppContaining + DebugAppContainer (wrap production)
 

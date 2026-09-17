@@ -62,7 +62,7 @@ Commit any pending work on this worktree branch first, then merge that branch in
           -testPlan GamesLibrary \
           -destination 'platform=iOS Simulator,name=iPhone 16'
         ```
-   - UI tests use `-UITesting` and `StubGamesRepository` — no live API key required.
+   - UI tests use `UITEST_CONFIG` and stub use cases — no live API key required.
    - If the gate fails, fix issues in the **main checkout** and re-run until clean. Do not finish with a red gate.
 
 6. **Commit on the parent branch (if needed)**

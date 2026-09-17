@@ -11,7 +11,7 @@ _Last updated: 2026-09-17_
 - [x] Inbound adapters (SwiftUI views, `@Observable` ViewModels, formatters)
 - [x] Outbound adapters (DTOs, mappers, repository, TTL cache, network)
 - [x] Composition root: `AppContainer` + `AppCoordinator`
-- [x] Unit tests migrated onto ports/DTOs; UI tests use `-UITesting` + `StubGamesRepository`
+- [x] Unit tests migrated onto ports/DTOs; UI tests use `UITEST_CONFIG` + stub use cases
 - [x] Agent playbooks, Cursor rules/skills, `AGENTS.md`
 - [x] Agent memory bank (replicated from srxy): `memory/` + always-on `.cursor/rules/agent-memory.mdc`
 - [x] Xcode 27 Apple agent skills exported into `.cursor/skills/` (SwiftUI, tests, App Intents, …)
@@ -23,8 +23,8 @@ _Last updated: 2026-09-17_
 - [x] Games list initial load via `.task` (removed `onAppear` workaround)
 - [x] Remove empty `GamesLibraryUITestsLaunchTests` (launch smoke covered by `GamesLibraryUITests`)
 - [x] Agent worktree skills: `apply-worktree`, `delete-worktree` (adapted from srxy for iOS quality gate)
-- [x] Empty UI-test results via configurable `StubGamesRepository` (no ViewModel `searchText` seeding)
-- [x] Fix MainActor isolation compile error: `@MainActor` on `StubGamesRepository.forUITests()`
+- [x] Empty UI-test results via configurable stub search use case (no ViewModel `searchText` seeding)
+- [x] Fix MainActor isolation compile error for UI-test stub factory (historical: `StubGamesRepository.forUITests()`)
 - [x] Cleanup batch: backtick GWT test names, AccessibilityIdentifiers SPM, UI POM, C API key (not Info.plist), flatten Infrastructure, lazy AppContainer, inline UI-test stub, OptimizedAsyncImage keep + README note
 - [x] Fold API key + `DEVELOPMENT_TEAM` into gitignored `Config.xcconfig`; track `Config.xcconfig.sample`; remove `Secrets.xcconfig`
 - [x] Shared `httpClient` + interceptors as lazy vars on `AppContainer` (reuse for future repositories)
@@ -35,7 +35,9 @@ _Last updated: 2026-09-17_
 - [x] Async throwing page-object accessors (`try await page.screen`); UI tests `async throws`
 - [x] Game Details UI coverage: content chips/description/website + error/Retry via `UITEST_FORCE_DETAILS_FAILURE`
 - [x] `AppContaining` + production `AppContainer` + DEBUG `DebugAppContainer` (wrap + Overrides)
-- [x] Debug `Overrides` use-case-only (no repository field); UITestSupport wraps stub repo in use cases
+- [x] Debug `Overrides` use-case-only (no repository field); UITestSupport injects stub use cases
+- [x] UI-test scenarios via single `UITEST_CONFIG` JSON with per-screen nested `UITestConfiguration` (`gamesList` / `gameDetails`)
+- [x] UI-test stubs at inbound use-case layer (`StubSearchGamesUseCase` / `StubGetGameDetailsUseCase`); removed `StubGamesRepository`
 
 ### Open
 

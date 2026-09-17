@@ -1,4 +1,5 @@
 import XCTest
+import AccessibilityIdentifiers
 
 final class GameDetailsUITests: XCTestCase {
 
@@ -34,7 +35,9 @@ final class GameDetailsUITests: XCTestCase {
 
 	@MainActor
 	func testGivenDetailsFailureWhenOpenedThenShowsErrorWithRetry() async throws {
-		let details = try await AppLauncher.launchGameDetails(forceDetailsFailure: true)
+		let details = try await AppLauncher.launchGameDetails(
+			configuration: .init(gameDetails: .init(failuresRemaining: 1))
+		)
 
 		_ = try await details.error
 		_ = try await details.retryButton
@@ -42,7 +45,9 @@ final class GameDetailsUITests: XCTestCase {
 
 	@MainActor
 	func testGivenDetailsFailureWhenRetryTappedThenShowsContent() async throws {
-		let details = try await AppLauncher.launchGameDetails(forceDetailsFailure: true)
+		let details = try await AppLauncher.launchGameDetails(
+			configuration: .init(gameDetails: .init(failuresRemaining: 1))
+		)
 
 		_ = try await details.error
 		_ = try await details.tapRetry()

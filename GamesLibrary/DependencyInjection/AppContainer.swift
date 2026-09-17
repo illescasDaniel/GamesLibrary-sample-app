@@ -7,31 +7,13 @@ final class AppContainer: AppContaining {
 	private let environment: AppEnvironment
 	private let logger: BetterLogger
 	private let jsonDecoder: JSONDecoder
-
-	private lazy var productionURLCache: URLCache = {
-		let memoryCapacity = 50 * 1024 * 1024
-		let diskCapacity = 200 * 1024 * 1024
-		return URLCache(
-			memoryCapacity: memoryCapacity,
-			diskCapacity: diskCapacity,
-			diskPath: "myImageCache"
-		)
-	}()
-
-	private lazy var requestInterceptors: [any HTTPRequestInterceptor] = [
-		APIKeyRequestInterceptor(apiKey: environment.apiKey, logger: logger),
-	]
-
-	private lazy var responseInterceptors: [any HTTPResponseInterceptor] = {
-		#if DEBUG
-		[HTTPResponseLoggerInterceptor(logger: logger)]
-		#else
-		[]
-		#endif
-	}()
+	private let urlCache: URLCache
+	private let httpDataRequestHandler: any HTTPDataRequestHandler
+	private let requestInterceptors: [any HTTPRequestInterceptor]
+	private let responseInterceptors: [any HTTPResponseInterceptor]
 
 	private lazy var httpClient: any HTTPClient = HTTPClientImpl(
-		httpDataRequestHandler: URLSession.shared,
+		httpDataRequestHandler: httpDataRequestHandler,
 		requestInterceptors: requestInterceptors,
 		responseInterceptors: responseInterceptors
 	)
@@ -48,14 +30,31 @@ final class AppContainer: AppContaining {
 		)
 	}()
 
-	init(environment: AppEnvironment = .production) {
+	/// - Parameter requestInterceptors: `nil` installs the production API-key interceptor; pass an explicit array (including `[]`) to replace it.
+	/// - Parameter urlCache: `nil` installs the production image `URLCache`; pass a concrete cache to replace it.
+	/// - Parameter responseInterceptors: DEBUG composition may pass logging interceptors; Release uses the default empty list.
+	init(
+		environment: AppEnvironment = .production,
+		logger: BetterLogger = BetterLogger(name: "App"),
+		urlCache: URLCache? = nil,
+		httpDataRequestHandler: any HTTPDataRequestHandler = URLSession.shared,
+		requestInterceptors: [any HTTPRequestInterceptor]? = nil,
+		responseInterceptors: [any HTTPResponseInterceptor] = [],
+		jsonDecoder: JSONDecoder = JSONDecoder()
+	) {
 		self.environment = environment
-		self.logger = BetterLogger(name: "App")
-		self.jsonDecoder = JSONDecoder()
+		self.logger = logger
+		self.jsonDecoder = jsonDecoder
+		self.urlCache = urlCache ?? Self.makeDefaultURLCache()
+		self.httpDataRequestHandler = httpDataRequestHandler
+		self.requestInterceptors = requestInterceptors ?? [
+			APIKeyRequestInterceptor(apiKey: environment.apiKey, logger: logger),
+		]
+		self.responseInterceptors = responseInterceptors
 	}
 
 	func configureSharedURLCache() {
-		URLCache.shared = productionURLCache
+		URLCache.shared = urlCache
 	}
 
 	func makeGamesListViewModel() -> GamesListViewModel {
@@ -74,5 +73,15 @@ final class AppContainer: AppContaining {
 	/// Internal seam for `DebugAppContainer` forwarding — not part of `AppContaining`.
 	func makeGetGameDetailsUseCase() -> any GetGameDetailsUseCasePort {
 		GetGameDetailsUseCase(repository: productionGamesRepository)
+	}
+
+	private static func makeDefaultURLCache() -> URLCache {
+		let memoryCapacity = 50 * 1024 * 1024
+		let diskCapacity = 200 * 1024 * 1024
+		return URLCache(
+			memoryCapacity: memoryCapacity,
+			diskCapacity: diskCapacity,
+			diskPath: "myImageCache"
+		)
 	}
 }

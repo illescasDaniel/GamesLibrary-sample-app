@@ -94,6 +94,6 @@ cd GamesLibraryCore && swift test
 
 ### UI tests
 
-UI tests launch with `-UITesting`, which wires a `StubGamesRepository` at the composition root. No network, no API key, no dependency on RAWG uptime.
+UI tests launch with `UITEST_CONFIG`, which wires stub inbound use cases at the composition root. No network, no API key, no dependency on RAWG uptime.
 
 Agent memory bank (per-branch project state): [memory/README.md](memory/README.md).

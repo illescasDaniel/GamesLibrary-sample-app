@@ -16,25 +16,25 @@ final class DebugAppContainer: AppContaining {
 
 	private let production: AppContainer
 	private let overrides: Overrides
-
-	private var resolvedLogger: BetterLogger {
-		overrides.logger ?? BetterLogger(name: "App")
-	}
+	private let resolvedLogger: BetterLogger
 
 	init(
 		environment: AppEnvironment = .production,
 		overrides: Overrides = .none
 	) {
-		self.production = AppContainer(environment: environment)
+		let logger = overrides.logger ?? BetterLogger(name: "App")
+		self.resolvedLogger = logger
+		self.production = AppContainer(
+			environment: environment,
+			logger: logger,
+			urlCache: overrides.urlCache,
+			responseInterceptors: [HTTPResponseLoggerInterceptor(logger: logger)]
+		)
 		self.overrides = overrides
 	}
 
 	func configureSharedURLCache() {
-		if let urlCache = overrides.urlCache {
-			URLCache.shared = urlCache
-		} else {
-			production.configureSharedURLCache()
-		}
+		production.configureSharedURLCache()
 	}
 
 	func makeGamesListViewModel() -> GamesListViewModel {

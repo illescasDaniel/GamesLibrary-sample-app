@@ -26,13 +26,3 @@ public enum AccessibilityIdentifier {
 		"\(GamesList.gameRowPrefix)\(id)"
 	}
 }
-
-/// Launch-environment keys shared between UI tests and the DEBUG app entry.
-public enum UITestEnvironment {
-	/// When `"1"`, DEBUG composition root wires an empty `StubGamesRepository`
-	/// so the list empty state is reachable without typing into SwiftUI `.searchable`.
-	public static let forceEmptyResultsKey = "UITEST_FORCE_EMPTY_RESULTS"
-
-	/// When `"1"`, the stub fails the first details request then succeeds on Retry.
-	public static let forceDetailsFailureKey = "UITEST_FORCE_DETAILS_FAILURE"
-}

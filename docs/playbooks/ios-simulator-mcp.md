@@ -31,7 +31,7 @@ First run compiles native helper binaries (`simtouch`, `simtree`); allow a minut
 | Setting | Value |
 |---------|-------|
 | Bundle ID | `com.illescasdaniel.GamesLibrary` |
-| UI-test launch arg | `-UITesting` (uses `StubGamesRepository`, no live API) |
+| UI-test launch env | `UITEST_CONFIG` (stub use cases, no live API) |
 
 Example agent flow for a new UI test:
 

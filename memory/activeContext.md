@@ -4,7 +4,7 @@ _Last updated: 2026-09-17_
 
 ## Branch
 
-- `develop` (use-case-only Debug Overrides)
+- `develop` (stub use cases for UI tests)
 
 ## Current focus
 
@@ -12,11 +12,11 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Committed `AppContaining` + `DebugAppContainer` (`3d0142a`)
-- Overrides: use cases + urlCache + logger only; response logging on `AppContainer` DEBUG
-- `DebugAppContainer` always builds VMs via `override ?? production` (no `needsCustomViewModels`)
+- `AppContainer` init now takes `urlCache`, `httpDataRequestHandler`, `requestInterceptors`, and `responseInterceptors` (nil request/cache → production defaults)
+- `DebugAppContainer` passes `logger` + `overrides.urlCache` into `AppContainer`; `configureSharedURLCache` always forwards to production
 
 ## Next steps
 
 1. Continue hexagonal/SDD feature work (new screens: IDs → async page accessors → feature UITest file)
-2. Optional: dedicated slow-details env if a loading-overlay UI assertion is needed
+2. Extend per-screen nested configs on `UITestConfiguration` when new stub scenarios appear (avoid new env keys)
+3. Optional: dedicated slow-details field if a loading-overlay UI assertion is needed

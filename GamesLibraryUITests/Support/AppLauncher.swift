@@ -4,16 +4,13 @@ import AccessibilityIdentifiers
 enum AppLauncher {
 	@MainActor
 	static func launchGamesList(
-		forceEmptyResults: Bool = false,
-		forceDetailsFailure: Bool = false
+		configuration: UITestConfiguration = .default
 	) -> GamesListPage {
 		let app = XCUIApplication()
 		app.terminate()
-		app.launchArguments = ["-UITesting"]
-		app.launchEnvironment = launchEnvironment(
-			forceEmptyResults: forceEmptyResults,
-			forceDetailsFailure: forceDetailsFailure
-		)
+		app.launchEnvironment = [
+			UITestEnvironment.configKey: configuration.encodeToLaunchEnvironmentValue(),
+		]
 		app.launch()
 		return GamesListPage(app: app)
 	}
@@ -22,23 +19,9 @@ enum AppLauncher {
 	@MainActor
 	static func launchGameDetails(
 		index: Int = 0,
-		forceDetailsFailure: Bool = false
+		configuration: UITestConfiguration = .default
 	) async throws -> GameDetailsPage {
-		let list = launchGamesList(forceDetailsFailure: forceDetailsFailure)
+		let list = launchGamesList(configuration: configuration)
 		return try await list.tapGameRow(at: index)
-	}
-
-	private static func launchEnvironment(
-		forceEmptyResults: Bool,
-		forceDetailsFailure: Bool
-	) -> [String: String] {
-		var environment: [String: String] = [:]
-		if forceEmptyResults {
-			environment[UITestEnvironment.forceEmptyResultsKey] = "1"
-		}
-		if forceDetailsFailure {
-			environment[UITestEnvironment.forceDetailsFailureKey] = "1"
-		}
-		return environment
 	}
 }

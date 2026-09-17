@@ -4,28 +4,25 @@ import AccessibilityIdentifiers
 import GamesLibraryCore
 
 enum UITestSupport {
+	private static var configurationJSON: String? {
+		ProcessInfo.processInfo.environment[UITestEnvironment.configKey]
+	}
+
 	static var isRunningUITests: Bool {
-		ProcessInfo.processInfo.arguments.contains("-UITesting")
+		configurationJSON != nil
 	}
 
-	static var shouldForceEmptyResults: Bool {
-		ProcessInfo.processInfo.environment[UITestEnvironment.forceEmptyResultsKey] == "1"
-	}
-
-	static var shouldForceDetailsFailure: Bool {
-		ProcessInfo.processInfo.environment[UITestEnvironment.forceDetailsFailureKey] == "1"
-	}
-
-	/// Maps launch args/env to composition-root use-case overrides for deterministic UI tests.
+	/// Maps `UITEST_CONFIG` to composition-root use-case overrides for deterministic UI tests.
 	static func makeOverrides() -> DebugAppContainer.Overrides? {
-		guard isRunningUITests else { return nil }
-		let stub = StubGamesRepository(
-			games: shouldForceEmptyResults ? [] : StubGamesRepository.defaultGames,
-			detailsFailuresRemaining: shouldForceDetailsFailure ? 1 : 0
-		)
+		guard let raw = configurationJSON else { return nil }
+		let configuration = UITestConfiguration.decode(fromLaunchEnvironmentValue: raw)
+		let games = configuration.gamesList.emptyResults ? [] : UITestFixtures.defaultGames
 		return DebugAppContainer.Overrides(
-			searchGamesUseCase: SearchGamesUseCase(repository: stub),
-			getGameDetailsUseCase: GetGameDetailsUseCase(repository: stub),
+			searchGamesUseCase: StubSearchGamesUseCase(games: games),
+			getGameDetailsUseCase: StubGetGameDetailsUseCase(
+				games: games,
+				failuresRemaining: configuration.gameDetails.failuresRemaining
+			),
 			urlCache: URLCache(memoryCapacity: 0, diskCapacity: 0)
 		)
 	}

@@ -14,8 +14,8 @@ This project follows the senior iOS playbooks with these **intentional deviation
 We combine both playbooks:
 
 - **`AppContaining`** — ViewModel factory surface only (`makeGamesListViewModel` / `makeGameDetailsViewModel`); `AppCoordinator` / `RootView` depend on `any AppContaining`. Use cases and `configureSharedURLCache` stay on concrete containers.
-- **`AppContainer`** — production implementation; wires HTTP, cache, repository, use cases, ViewModel factories. No Overrides, no `#if DEBUG`
-- **`DebugAppContainer`** — DEBUG-only; wraps `AppContainer` and applies `Overrides` when set (**use cases**, `urlCache`, `logger`). No repository or response-interceptor overrides — HTTP response logging lives on `AppContainer` under `#if DEBUG`. Forwards to production when nothing relevant is overridden. No DIC / service locator.
+- **`AppContainer`** — production implementation; wires HTTP, cache, repository, use cases, ViewModel factories. Init injects `urlCache`, `httpDataRequestHandler`, `requestInterceptors`, and `responseInterceptors` (sensible production defaults; `nil` request/cache = production API-key interceptor / default image cache). No Overrides, no `#if DEBUG`
+- **`DebugAppContainer`** — DEBUG-only; wraps `AppContainer` and applies `Overrides` when set (**use cases**, `urlCache`, `logger`). Passes logger, optional `urlCache`, and `HTTPResponseLoggerInterceptor` into `AppContainer` at construction. No repository override bag. Forwards to production when nothing relevant is overridden. No DIC / service locator.
 - **`AppCoordinator`** — owns `NavigationPath` and route → view building
 - **Constructor injection** — ViewModels receive inbound ports in `init`; views receive ViewModels from the coordinator/container
 
@@ -43,7 +43,7 @@ Do not treat the C embedding as secure storage. Prefer a backend that holds secr
 | Playbook | GamesLibrary |
 |----------|--------------|
 | Unit tests from BDD (`Swift Testing`) | ViewModels + use cases in `GamesLibraryTests` and `GamesLibraryCoreTests` |
-| UI tests (`XCTest`) | `GamesLibraryUITests` — launch with `-UITesting` → `StubGamesRepository` (no live API); run serially (`parallelizable: false` in test plan) |
+| UI tests (`XCTest`) | `GamesLibraryUITests` — launch with `UITEST_CONFIG` → stub use cases (no live API); run serially (`parallelizable: false` in test plan) |
 | SDD exploratory UI (MCP) | `.cursor/mcp.json` → `ios-simulator` (`ios-mcp-server`); see [ios-simulator-mcp.md](ios-simulator-mcp.md) |
 
 ### UI test accessibility contract
@@ -63,7 +63,7 @@ Instead:
 |-------|----------|------|
 | Shared IDs | `GamesLibraryAccessibilityIdentifiers` | Compile-time constants only |
 | Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; **async throwing** element accessors |
-| Launch | `GamesLibraryUITests/Support/AppLauncher` | Shared `-UITesting` / env scenario API |
+| Launch | `GamesLibraryUITests/Support/AppLauncher` | Shared `UITEST_CONFIG` scenario API |
 | Tests | One `XCTestCase` per screen/feature | `async throws` tests; no raw identifiers |
 
 Do **not** expose unloaded `XCUIElement` properties. Page accessors wait then return or throw:
@@ -73,11 +73,11 @@ let screen = try await details.screen
 _ = try await list.gameRows
 ```
 
-Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…` / `requireAbsence`. Navigate actions return the next page (e.g. `try await list.tapGameRow(at:) -> GameDetailsPage`). Prefer `AppLauncher.launchGameDetails(index:)` when a test starts on details rather than composing list launch + tap. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty (list empty state / details error) and query the Retry **button** via that same id. Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states (error, details failure) = new launch env keys + stub config via `UITestSupport.makeOverrides()` — never seed `ViewModel` state from the container.
+Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…` / `requireAbsence`. Navigate actions return the next page (e.g. `try await list.tapGameRow(at:) -> GameDetailsPage`). Prefer `AppLauncher.launchGameDetails(index:)` when a test starts on details rather than composing list launch + tap. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty (list empty state / details error) and query the Retry **button** via that same id. Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states = new fields on the matching per-screen nested config inside `UITestConfiguration` (JSON via `UITEST_CONFIG`) + stub mapping in `UITestSupport.makeOverrides()` — never seed `ViewModel` state from the container.
 
-Launch argument `-UITesting` wires stub use cases (backed by `StubGamesRepository`) at the composition root so flows stay deterministic without network.
+`UITEST_CONFIG` (JSON `UITestConfiguration`) wires stub inbound use cases at the composition root so flows stay deterministic without network.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure empty results via `UITestEnvironment.forceEmptyResultsKey` (`UITEST_FORCE_EMPTY_RESULTS=1` → stub search use case returns `[]`). Use `UITestEnvironment.forceDetailsFailureKey` (`UITEST_FORCE_DETAILS_FAILURE=1`) so the stub details use case fails once and succeeds on Retry. DEBUG-only `UITestSupport` maps those env keys to use-case overrides. Do not seed `ViewModel.searchText` from the container.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .init(emptyResults: true))` through `AppLauncher` (`UITEST_CONFIG` JSON → stub search returns `[]`). Use `gameDetails: .init(failuresRemaining: 1)` so the stub details use case fails once and succeeds on Retry. DEBUG-only `UITestSupport` decodes that JSON into use-case overrides. Do not seed `ViewModel.searchText` from the container.
 
 ## SDD source of truth
 
