@@ -1,22 +1,23 @@
 # Active Context
 
-_Last updated: 2026-09-16_
+_Last updated: 2026-09-17_
 
 ## Branch
 
-- `develop` — current
+- `cursor/stub-games-repository-uitest-4f36`
 
 ## Current focus
 
-Hexagonal/SDD feature work on `develop`; worktree skills applied via `/apply-worktree`.
+Compilation fix for MainActor isolation under `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`.
 
 ## Just changed
 
-- Screen `@State` ViewModel ownership, list `.task` load, deleted empty `LaunchTests` (merged from worktree; already on develop)
-- `.cursor/skills/apply-worktree/` and `.cursor/skills/delete-worktree/` — iOS quality gate workflow
-- `AGENTS.md` — lists both worktree skills under project workflows
+- `UITestSupport.shouldForceEmptyResults` — removed incorrect `nonisolated` (key + accessor stay MainActor)
+- `StubGamesRepository.forUITests()` — marked `@MainActor` so it can read `UITestSupport`
+- Reverted accidental `project.pbxproj` SDKROOT move (project-level `SDKROOT = iphoneos` restored)
+- Xcode build-for-testing succeeds
 
 ## Next steps
 
-1. Continue hexagonal/SDD feature work on `develop`.
-2. Keep `memory/` updated at session milestones per `.cursor/rules/agent-memory.mdc`.
+1. Commit compilation fix (and prior stub work if not already) / push / open PR to `develop`
+2. Run unit + UI tests on simulator

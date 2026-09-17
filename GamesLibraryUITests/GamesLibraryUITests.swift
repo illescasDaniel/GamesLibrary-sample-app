@@ -36,11 +36,10 @@ final class GamesLibraryUITests: XCTestCase {
 
 	@MainActor
 	func testSearchShowsNoResults() throws {
-		// SwiftUI `.searchable` text entry is unreliable in XCUITest; seed the query via launch environment.
+		// SwiftUI `.searchable` text entry is unreliable in XCUITest; configure an empty
+		// StubGamesRepository via launch environment instead of seeding ViewModel.searchText.
 		let app = launchUITestApp(forceEmptyResults: true)
 
-		let searchField = app.searchFields.firstMatch
-		XCTAssertTrue(searchField.waitForExistence(timeout: 10))
 		let emptyState = app.element(matching: AccessibilityIdentifier.GamesList.emptyState)
 		XCTAssertTrue(emptyState.waitForExistence(timeout: 20))
 

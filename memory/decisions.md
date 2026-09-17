@@ -2,6 +2,18 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — @MainActor on StubGamesRepository.forUITests()
+
+- **Context:** With `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `UITestSupport` is MainActor-isolated. `StubGamesRepository` is `@unchecked Sendable`, so `forUITests()` was treated as nonisolated and could not read `shouldForceEmptyResults`. Marking the env key/`shouldForceEmptyResults` `nonisolated` failed because stored properties remain MainActor under default isolation.
+- **Decision:** Keep `UITestSupport` fully MainActor; mark `StubGamesRepository.forUITests()` `@MainActor` (only called from `DebugGamesLibraryApp.init`).
+- **Rationale:** Matches call-site isolation without string duplication or `nonisolated(unsafe)`.
+
+## 2026-09-16 — Empty UI-test results via configurable StubGamesRepository
+
+- **Context:** `AppContainer.makeGamesListViewModel()` seeded `searchText` under `#if DEBUG` when `UITEST_FORCE_EMPTY_RESULTS=1`, duplicating logic already expressible by the outbound stub.
+- **Decision:** Make `StubGamesRepository` a mutable class configured at the composition root (`StubGamesRepository.forUITests()`). Empty-results UI tests pass empty `games`; `AppContainer` ViewModel factories stay free of UI-test conditionals. Removed magic query string / `noResultsSearchQuery`.
+- **Rationale:** Hexagonal composition root owns test doubles; presentation factories should not know about XCUITest launch env. Mutable stub data allows future scenarios without ViewModel hacks.
+
 ## 2026-09-16 — Screen-owned ViewModels with @State
 
 - **Context:** List VM lived on `RootView` (`@State`); both screens used `@Bindable`. List used `onAppear` + flag after a UI-test workaround replaced `.task`.

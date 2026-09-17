@@ -1,6 +1,6 @@
 # Progress
 
-_Last updated: 2026-09-16_
+_Last updated: 2026-09-17_
 
 ## Hexagonal + SDD refactor (on `develop`)
 
@@ -23,6 +23,8 @@ _Last updated: 2026-09-16_
 - [x] Games list initial load via `.task` (removed `onAppear` workaround)
 - [x] Remove empty `GamesLibraryUITestsLaunchTests` (launch smoke covered by `GamesLibraryUITests`)
 - [x] Agent worktree skills: `apply-worktree`, `delete-worktree` (adapted from srxy for iOS quality gate)
+- [x] Empty UI-test results via configurable `StubGamesRepository` (no ViewModel `searchText` seeding)
+- [x] Fix MainActor isolation compile error: `@MainActor` on `StubGamesRepository.forUITests()`
 
 ### Open
 
