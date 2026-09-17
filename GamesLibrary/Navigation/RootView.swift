@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RootView: View {
 	@Bindable var coordinator: AppCoordinator
-	let container: AppContainer
+	let container: any AppContaining
 
 	var body: some View {
 		NavigationStack(path: $coordinator.path) {

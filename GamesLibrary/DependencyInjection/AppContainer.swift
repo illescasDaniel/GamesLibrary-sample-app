@@ -3,20 +3,7 @@ import GamesLibraryCore
 import HTTIES
 import BetterLogger
 
-final class AppContainer {
-	#if DEBUG
-	struct Overrides {
-		var gamesRepository: (any GamesRepositoryPort)?
-		var urlCache: URLCache?
-		var logger: BetterLogger?
-		var responseInterceptors: [any HTTPResponseInterceptor]?
-
-		static let none = Overrides()
-	}
-
-	private let overrides: Overrides
-	#endif
-
+final class AppContainer: AppContaining {
 	private let environment: AppEnvironment
 	private let logger: BetterLogger
 	private let jsonDecoder: JSONDecoder
@@ -35,21 +22,10 @@ final class AppContainer {
 		APIKeyRequestInterceptor(apiKey: environment.apiKey, logger: logger),
 	]
 
-	private lazy var responseInterceptors: [any HTTPResponseInterceptor] = {
-		#if DEBUG
-		if let overridden = overrides.responseInterceptors {
-			return overridden
-		}
-		return [HTTPResponseLoggerInterceptor(logger: logger)]
-		#else
-		[]
-		#endif
-	}()
-
 	private lazy var httpClient: any HTTPClient = HTTPClientImpl(
 		httpDataRequestHandler: URLSession.shared,
 		requestInterceptors: requestInterceptors,
-		responseInterceptors: responseInterceptors
+		responseInterceptors: []
 	)
 
 	private lazy var productionGamesRepository: any GamesRepositoryPort = {
@@ -64,50 +40,14 @@ final class AppContainer {
 		)
 	}()
 
-	private var urlCache: URLCache {
-		#if DEBUG
-		overrides.urlCache ?? productionURLCache
-		#else
-		productionURLCache
-		#endif
-	}
-
-	private var gamesRepository: any GamesRepositoryPort {
-		#if DEBUG
-		overrides.gamesRepository ?? productionGamesRepository
-		#else
-		productionGamesRepository
-		#endif
-	}
-
-	#if DEBUG
-	init(
-		environment: AppEnvironment = .production,
-		overrides: Overrides = .none
-	) {
-		self.environment = environment
-		self.logger = overrides.logger ?? BetterLogger(name: "App")
-		self.jsonDecoder = JSONDecoder()
-		self.overrides = overrides
-	}
-	#else
 	init(environment: AppEnvironment = .production) {
 		self.environment = environment
 		self.logger = BetterLogger(name: "App")
 		self.jsonDecoder = JSONDecoder()
 	}
-	#endif
 
 	func configureSharedURLCache() {
-		URLCache.shared = urlCache
-	}
-
-	func makeSearchGamesUseCase() -> any SearchGamesUseCasePort {
-		SearchGamesUseCase(repository: gamesRepository)
-	}
-
-	func makeGetGameDetailsUseCase() -> any GetGameDetailsUseCasePort {
-		GetGameDetailsUseCase(repository: gamesRepository)
+		URLCache.shared = productionURLCache
 	}
 
 	func makeGamesListViewModel() -> GamesListViewModel {
@@ -116,5 +56,15 @@ final class AppContainer {
 
 	func makeGameDetailsViewModel() -> GameDetailsViewModel {
 		GameDetailsViewModel(getGameDetails: makeGetGameDetailsUseCase(), logger: logger)
+	}
+
+	/// Internal seam for `DebugAppContainer` forwarding — not part of `AppContaining`.
+	func makeSearchGamesUseCase() -> any SearchGamesUseCasePort {
+		SearchGamesUseCase(repository: productionGamesRepository)
+	}
+
+	/// Internal seam for `DebugAppContainer` forwarding — not part of `AppContaining`.
+	func makeGetGameDetailsUseCase() -> any GetGameDetailsUseCasePort {
+		GetGameDetailsUseCase(repository: productionGamesRepository)
 	}
 }

@@ -4,9 +4,9 @@ import SwiftUI
 @Observable
 final class AppCoordinator {
 	var path = NavigationPath()
-	private let container: AppContainer
+	private let container: any AppContaining
 
-	init(container: AppContainer) {
+	init(container: any AppContaining) {
 		self.container = container
 	}
 

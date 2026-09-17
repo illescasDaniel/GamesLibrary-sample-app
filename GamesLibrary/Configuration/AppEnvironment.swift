@@ -12,7 +12,7 @@ enum AppEnvironment {
 	var apiKey: String {
 		switch self {
 		case .production:
-			String(cString: GamesLibraryAPIKey())
+			unsafe String(cString: GamesLibraryAPIKey())
 		}
 	}
 }

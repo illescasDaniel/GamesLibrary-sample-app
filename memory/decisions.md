@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — AppContaining + DebugAppContainer (wrap production)
+
+- **Context:** `#if DEBUG` Overrides inside `AppContainer` were noisy; GamesList `#Preview` double-mocked a use case and an incompatible repository override for the coordinator.
+- **Decision:** `AppContaining` exposes only ViewModel factories; production-clean `AppContainer`; DEBUG-only `DebugAppContainer` wraps production and applies `Overrides` (use cases, repository, cache, logger, response interceptors), forwarding when unset. `configureSharedURLCache` stays on concrete types. Live DEBUG uses `.debugDefaults()` for response logging. Previews: screen-only = mock inbound port; navigable = single `DebugAppContainer` seam. UI tests keep repository stubs via `UITestSupport`.
+- **Rationale:** UI/navigation only need ViewModels; use-case/HTTP seams stay private to DI so Debug can patch freely without widening the protocol.
+
 ## 2026-09-17 — Details error a11y via root id swap + fail-once stub
 
 - **Context:** `ContentUnavailableView` inherits the parent `accessibilityIdentifier` and drops child IDs, so a dedicated Retry id never appears in the hierarchy. Details failure UI tests also need a deterministic stub seam.

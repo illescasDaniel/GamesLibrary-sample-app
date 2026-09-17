@@ -3,16 +3,17 @@ import SwiftUI
 
 @main
 struct DebugGamesLibraryApp: App {
-	private let container: AppContainer
+	private let container: any AppContaining
 	@State private var coordinator: AppCoordinator
 
 	init() {
-		let container: AppContainer
+		let container: any AppContaining
 		if let overrides = UITestSupport.makeOverrides() {
-			container = AppContainer(overrides: overrides)
+			container = DebugAppContainer(overrides: overrides)
 		} else {
-			container = AppContainer()
-			container.configureSharedURLCache()
+			let debugContainer = DebugAppContainer(overrides: .debugDefaults())
+			debugContainer.configureSharedURLCache()
+			container = debugContainer
 		}
 		self.container = container
 		self._coordinator = State(initialValue: AppCoordinator(container: container))

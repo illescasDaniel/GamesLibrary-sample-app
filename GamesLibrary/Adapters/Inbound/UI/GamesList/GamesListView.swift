@@ -1,7 +1,6 @@
 import SwiftUI
 import OptimizedAsyncImage
 import GamesLibraryCore
-import BetterLogger
 import AccessibilityIdentifiers
 
 struct GameListView: View {
@@ -171,17 +170,15 @@ struct GameListView: View {
 
 }
 
+#if DEBUG
 #Preview("Success") {
-	let mock = PreviewMockSearchGamesUseCase(result: .success([
-		GameSummary(id: GameID(1), name: "Preview Game", rating: 4.5, released: "2024-01-01"),
-	]))
-	GameListView(
-		viewModel: GamesListViewModel(
-			searchGames: mock,
-			logger: BetterLogger(name: "Preview")
-		)
-	)
-	.environment(AppCoordinator(container: AppContainer(overrides: .init(gamesRepository: PreviewMockGamesRepository()))))
+	let container = DebugAppContainer(overrides: .init(
+		searchGamesUseCase: PreviewMockSearchGamesUseCase(result: .success([
+			GameSummary(id: GameID(1), name: "Preview Game", rating: 4.5, released: "2024-01-01"),
+		]))
+	))
+	GameListView(viewModel: container.makeGamesListViewModel())
+		.environment(AppCoordinator(container: container))
 }
 
 private struct PreviewMockSearchGamesUseCase: SearchGamesUseCasePort {
@@ -190,10 +187,4 @@ private struct PreviewMockSearchGamesUseCase: SearchGamesUseCasePort {
 		try result.get()
 	}
 }
-
-private struct PreviewMockGamesRepository: GamesRepositoryPort {
-	func searchGames(query: String, page: Int, pageSize: Int, ordering: String?) async throws -> [GameSummary] { [] }
-	func gameDetails(id: GameID) async throws -> GameDetails {
-		GameDetails(summary: GameSummary(id: id))
-	}
-}
+#endif
