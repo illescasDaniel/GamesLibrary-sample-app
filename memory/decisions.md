@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — Details preview seeds success; stubs stay MainActor
+
+- **Context:** After fixing port shadowing, details `#Preview` could still sit on loading: SwiftUI often cancels `.task` after `.loading` is set. List preview worked because its stub returns before cancel races. `xcuserdata` was tracked despite `.gitignore`.
+- **Decision:** Stubs match test mocks (`@MainActor`, no `nonisolated` port methods). ViewModel keeps existing `.success` while refreshing; Preview calls `previewSucceeding(_:)`. `git rm --cached` xcuserdata (private scheme order hints only; shared schemes live in `xcshareddata`).
+- **Rationale:** Same MainActor path as unit-test mocks; Preview first frame is stable; user-specific Xcode state stays untracked.
+
 ## 2026-09-17 — Silence stub StrictMemorySafety warnings
 
 - **Context:** `nonisolated(unsafe)` queue storage triggered `#StrictMemorySafety` warnings.

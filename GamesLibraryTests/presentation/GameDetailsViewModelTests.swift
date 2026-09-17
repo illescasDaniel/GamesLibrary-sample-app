@@ -78,4 +78,21 @@ struct GameDetailsViewModelTests {
 			Issue.record("Expected success state after retry")
 		}
 	}
+
+	@Test
+	func `Given Stub Use Case When Get Game Details Then State Is Success`() async {
+		let details = GameDetails.dummy(id: 7)
+		let viewModel = GameDetailsViewModel(
+			getGameDetailsUseCase: StubGetGameDetailsUseCase.constant(details),
+			logger: BetterLogger(name: "Test")
+		)
+
+		await viewModel.getGameDetails(id: GameID(7))
+
+		if case .success(let game) = viewModel.gamesState {
+			#expect(game.id == GameID(7))
+		} else {
+			Issue.record("Expected success from StubGetGameDetailsUseCase")
+		}
+	}
 }

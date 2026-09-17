@@ -6,32 +6,29 @@ import GamesLibraryCore
 
 /// Deterministic inbound stubs for UI tests and SwiftUI previews.
 /// Wired via `UITestSupport.makeOverrides()` or `DebugAppContainer.Overrides`.
-/// `nonisolated` so values can seed default parameters on Sendable stub inits
-/// (module uses `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`).
+/// Stay on MainActor (module default) like test mocks — `nonisolated` port methods
+/// that touch isolated state deadlock when awaited from a MainActor ViewModel.
 enum UITestFixtures {
-	nonisolated static let defaultGames: [GameSummary] = [
+	static let defaultGames: [GameSummary] = [
 		UITestConfiguration.GameSummaryFixture.stubGameOne.toDomain(),
 		UITestConfiguration.GameSummaryFixture.stubGameTwo.toDomain(),
 	]
 
-	nonisolated static let defaultDetailsByID: [GameID: GameDetails] = [
+	static let defaultDetailsByID: [GameID: GameDetails] = [
 		GameID(UITestConfiguration.GameSummaryFixture.stubGameOne.id):
 			UITestConfiguration.GameDetailsFixture.stubGameOne.toDomain(),
 	]
 }
 
-/// Dictionary key for canned search replies (`(page, searchText)` as a Hashable struct).
-/// `nonisolated` so dictionary lookup works under `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`.
-nonisolated struct SearchStubKey: Hashable, Sendable {
+/// Dictionary key for canned search replies (`page` + `searchText`).
+struct SearchStubKey: Hashable, Sendable {
 	var page: Int
 	var searchText: String
 }
 
 /// Canned `(page, searchText)` → games lookup. Missing keys return `[]`.
-///
-/// Port methods are `nonisolated` so `Sendable` use-case calls from a MainActor ViewModel
-/// do not deadlock on a MainActor-isolated stub (default actor isolation).
-final class StubSearchGamesUseCase: SearchGamesUseCasePort, @unchecked Sendable {
+@MainActor
+final class StubSearchGamesUseCase: SearchGamesUseCasePort {
 	private let responses: [SearchStubKey: [GameSummary]]
 
 	init(responses: [SearchStubKey: [GameSummary]]) {
@@ -43,7 +40,7 @@ final class StubSearchGamesUseCase: SearchGamesUseCasePort, @unchecked Sendable 
 		StubSearchGamesUseCase(responses: [SearchStubKey(page: 1, searchText: ""): games])
 	}
 
-	nonisolated func callAsFunction(page: Int, searchText: String) async throws -> [GameSummary] {
+	func callAsFunction(page: Int, searchText: String) async throws -> [GameSummary] {
 		responses[SearchStubKey(page: page, searchText: searchText)] ?? []
 	}
 }
@@ -56,16 +53,17 @@ enum DetailsStubOutcome: Sendable {
 
 /// Canned `GameID` → outcome queue. Each call consumes the next outcome for that id.
 /// `repeating` entries always succeed (previews / `.constant`) without consuming.
-final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort, @unchecked Sendable {
+@MainActor
+final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort {
 	private let repeating: [GameID: GameDetails]
-	private let queues: Mutex<[GameID: [DetailsStubOutcome]]>
+	private var responses: [GameID: [DetailsStubOutcome]]
 
 	init(
 		responses: [GameID: [DetailsStubOutcome]] = [:],
 		repeating: [GameID: GameDetails] = [:]
 	) {
+		self.responses = responses
 		self.repeating = repeating
-		self.queues = Mutex(responses)
 	}
 
 	/// Always returns `details` for `details.id` (typical details preview).
@@ -73,22 +71,20 @@ final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort, @unchecked Sen
 		StubGetGameDetailsUseCase(repeating: [details.id: details])
 	}
 
-	nonisolated func callAsFunction(id: GameID) async throws -> GameDetails {
+	func callAsFunction(id: GameID) async throws -> GameDetails {
 		if let details = repeating[id] {
 			return details
 		}
-		return try queues.withLock { responses in
-			guard var queue = responses[id], !queue.isEmpty else {
-				throw StubGetGameDetailsUseCaseError.noResponse(for: id)
-			}
-			let outcome = queue.removeFirst()
-			responses[id] = queue
-			switch outcome {
-			case .success(let details):
-				return details
-			case .failure(let error):
-				throw error
-			}
+		guard var queue = responses[id], !queue.isEmpty else {
+			throw StubGetGameDetailsUseCaseError.noResponse(for: id)
+		}
+		let outcome = queue.removeFirst()
+		responses[id] = queue
+		switch outcome {
+		case .success(let details):
+			return details
+		case .failure(let error):
+			throw error
 		}
 	}
 }
@@ -99,7 +95,7 @@ enum StubGetGameDetailsUseCaseError: Error {
 }
 
 extension UITestConfiguration.GameSummaryFixture {
-	nonisolated func toDomain() -> GameSummary {
+	func toDomain() -> GameSummary {
 		GameSummary(
 			id: GameID(id),
 			name: name,
@@ -117,7 +113,7 @@ extension UITestConfiguration.GameSummaryFixture {
 }
 
 extension UITestConfiguration.GameDetailsFixture {
-	nonisolated func toDomain() -> GameDetails {
+	func toDomain() -> GameDetails {
 		GameDetails(
 			summary: summary.toDomain(),
 			descriptionRaw: descriptionRaw,
@@ -128,7 +124,7 @@ extension UITestConfiguration.GameDetailsFixture {
 }
 
 extension UITestConfiguration.DetailsOutcome {
-	nonisolated func toDomain() -> DetailsStubOutcome {
+	func toDomain() -> DetailsStubOutcome {
 		switch self {
 		case .success(let fixture):
 			.success(fixture.toDomain())

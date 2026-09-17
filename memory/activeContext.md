@@ -12,7 +12,7 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Fixed `GameDetailsViewModel` port shadowing (`getGameDetailsUseCase`); preview no longer needs `initialState`
+- Details preview: `previewSucceeding` + keep success across cancelled `.task`; stubs `@MainActor` like mocks; untracked `xcuserdata`
 
 ## Next steps
 

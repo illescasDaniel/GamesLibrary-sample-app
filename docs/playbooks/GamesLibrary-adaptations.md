@@ -26,6 +26,7 @@ DEBUG entry (`DebugGamesLibraryApp`): UI tests → `UITestSupport.makeOverrides(
 ### Preview seams
 
 - Prefer one `DebugAppContainer(overrides:)` and take ViewModels from the container (list and details). Pass the same instance to `AppCoordinator` when navigation is needed. Do not also hand-build a ViewModel with a different mock.
+- Details `#Preview` may call `previewSucceeding(_:)` so the first frame is not a stuck loading overlay if SwiftUI cancels `.task`; the stub override still handles Retry.
 
 ## Security (client API key)
 

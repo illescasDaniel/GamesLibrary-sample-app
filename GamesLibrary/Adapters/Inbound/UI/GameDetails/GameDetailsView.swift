@@ -18,7 +18,7 @@ struct GameDetailsView: View {
 			.navigationTitle(summary.name ?? "Game Details")
 			.navigationBarTitleDisplayMode(.inline)
 			.accessibilityIdentifier(detailsAccessibilityIdentifier)
-			.task(id: summary.id) {
+			.task {
 				await viewModel.getGameDetails(id: summary.id)
 			}
 	}
@@ -178,7 +178,7 @@ struct GameDetailsView: View {
 		getGameDetailsUseCase: StubGetGameDetailsUseCase.constant(details)
 	))
 	GameDetailsView(
-		viewModel: container.makeGameDetailsViewModel(),
+		viewModel: container.makeGameDetailsViewModel().previewSucceeding(details),
 		summary: summary
 	)
 }

@@ -19,7 +19,13 @@ final class GameDetailsViewModel {
 	}
 
 	func getGameDetails(id: GameID) async {
-		gamesState = .loading
+		// Keep an existing `.success` visible while refreshing so a cancelled SwiftUI
+		// `.task` (common in Previews) cannot wipe content back to a stuck loading overlay.
+		if case .success = gamesState {
+			// refresh without clearing
+		} else {
+			gamesState = .loading
+		}
 		do {
 			let game = try await getGameDetailsUseCase(id: id)
 			gamesState = .success(game)
@@ -30,4 +36,13 @@ final class GameDetailsViewModel {
 			gamesState = .error(error)
 		}
 	}
+
+	#if DEBUG
+	/// First-frame Preview content. Stub remains wired for Retry / later `.task` loads.
+	@discardableResult
+	func previewSucceeding(_ details: GameDetails) -> GameDetailsViewModel {
+		gamesState = .success(details)
+		return self
+	}
+	#endif
 }
