@@ -43,6 +43,14 @@ Mock the inbound port, inject into the real ViewModel:
 
 When writing or reviewing SwiftUI, also apply `swiftui-specialist` (and `swiftui-whats-new-27` for SDK 27 APIs). This skill still wins on file placement, ports, and previews.
 
+## SwiftUI section / row factoring
+
+Follow `docs/playbooks/GamesLibrary-adaptations.md` → **SwiftUI view factoring** and Apple `swiftui-specialist/references/structure.md`:
+
+- Named sections and list rows → separate `struct …: View` with **narrow inputs** (not `private var …: some View` on the parent for organization).
+- Screen views own `@State` ViewModels; section views do **not** get their own ViewModels and should not take the full ViewModel.
+- Tiny constant fragments may stay as computed properties.
+
 ## Core import guard
 
 `import SwiftUI` in Core compiles but is forbidden. Verify with:

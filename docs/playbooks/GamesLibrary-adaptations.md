@@ -28,6 +28,24 @@ DEBUG entry (`DebugGamesLibraryApp`): UI tests → `UITestSupport.makeOverrides(
 - Prefer one `DebugAppContainer(overrides:)` and take ViewModels from the container (list and details). Pass the same instance to `AppCoordinator` when navigation is needed. Do not also hand-build a ViewModel with a different mock.
 - Details `#Preview` may call `previewSucceeding(_:)` so the first frame is not a stuck loading overlay if SwiftUI cancels `.task`; the stub override still handles Retry.
 
+### SwiftUI view factoring
+
+A `View` type is SwiftUI’s invalidation boundary. `private var …: some View` / `@ViewBuilder` helpers on the parent are inlined into that parent’s body — they do **not** create a separate update scope. Prefer Apple’s structure guidance (`.cursor/skills/swiftui-specialist/references/structure.md`).
+
+**Extract a `struct …: View` when any of these hold:**
+
+- Named UI **section** (header, chips, description, empty/error overlay)
+- **List / ForEach row** content
+- Subtree that should **skip updates** when sibling state changes
+- Helper that already takes explicit parameters — that is already halfway to a struct
+
+**Keep as `private var` / small `@ViewBuilder` when:**
+
+- Roughly 5–15 lines with no independent state story
+- Pure visual constant (e.g. a placeholder glyph)
+
+**Do not:** invent ViewModels per section; pass the screen ViewModel into leaves “for convenience”; extract every 3-line snippet into its own file. Section/row structs take **narrow value inputs** (and callbacks), not the full `@Observable` ViewModel. Screen views own `@State` ViewModels and compose sections.
+
 ## Security (client API key)
 
 Per the Senior playbook, production apps should use BFF, SSL pinning, and App Attest. **This demo app intentionally:**

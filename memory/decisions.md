@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — SwiftUI sections/rows are `View` structs, not computed `some View`
+
+- **Context:** List/details screens factored UI via `private var` / `@ViewBuilder` helpers; Apple’s SwiftUI guidance says those share the parent’s invalidation boundary.
+- **Decision:** Extract list rows, thumbnails, and details sections into dedicated `struct …: View` types with narrow value inputs (screen ViewModels stay on the parent). Document the extract-vs-computed rule of thumb in `GamesLibrary-adaptations.md` and `hexagonal-ios` skill.
+- **Rationale:** Separate `View` types are SwiftUI’s invalidation unit; computed helpers only organize code. Matches Apple `swiftui-specialist/references/structure.md` without inventing per-section ViewModels.
+
 ## 2026-09-17 — Details preview seeds success; stubs stay MainActor
 
 - **Context:** After fixing port shadowing, details `#Preview` could still sit on loading: SwiftUI often cancels `.task` after `.loading` is set. List preview worked because its stub returns before cancel races. `xcuserdata` was tracked despite `.gitignore`.

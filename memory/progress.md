@@ -40,6 +40,7 @@ _Last updated: 2026-09-17_
 - [x] UI-test stubs at inbound use-case layer (`StubSearchGamesUseCase` / `StubGetGameDetailsUseCase`); removed `StubGamesRepository`
 - [x] Canned `(page, searchText)` stub map + Codable `GameSummaryFixture` responses; shared stubs for `#Preview`
 - [x] Details stub per-id outcome queues; drop search `default` + `failuresRemaining`
+- [x] SwiftUI section/row factoring: extract `View` structs (narrow inputs); document rule in adaptations + hexagonal skill
 
 ### Open
 

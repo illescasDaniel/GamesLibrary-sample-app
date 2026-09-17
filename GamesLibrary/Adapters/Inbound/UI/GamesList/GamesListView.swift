@@ -1,5 +1,4 @@
 import SwiftUI
-import OptimizedAsyncImage
 import GamesLibraryCore
 import AccessibilityIdentifiers
 
@@ -13,17 +12,54 @@ struct GameListView: View {
 
 	var body: some View {
 		ScrollViewReader { proxy in
-			listContentState
-				.accessibilityIdentifier(gamesListAccessibilityIdentifier)
-				.navigationTitle("Games Library")
-				.onChange(of: viewModel.searchText) { _, _ in
-					if let firstGame = viewModel.games.first {
-						withAnimation {
-							proxy.scrollTo(firstGame.id, anchor: .top)
+			ZStack {
+				GamesListContentView(
+					games: viewModel.games,
+					onSelect: { game in
+						coordinator.push(.details(game))
+					},
+					onRefresh: {
+						await viewModel.searchGame()
+					},
+					onLoadNextPage: loadNextPage
+				)
+				switch viewModel.gamesState {
+				case .success(isEmpty: true):
+					Color(.systemGroupedBackground)
+						.overlay {
+							ContentUnavailableView {
+								Text("No results")
+							}
 						}
-					}
-					Task { await viewModel.searchGame() }
+						.frame(maxWidth: .infinity, maxHeight: .infinity)
+				case .error:
+					Color(.systemGroupedBackground).overlay(
+						ContentUnavailableView {
+							Text("An error ocurred. Try again")
+						} actions: {
+							Button("Retry") {
+								Task { await viewModel.searchGame() }
+							}
+							.buttonStyle(.glassProminent)
+						}
+					)
+				case .loading:
+					LoadingView()
+						.accessibilityIdentifier(AccessibilityIdentifier.GamesList.loading)
+				case .success(isEmpty: false):
+					EmptyView()
 				}
+			}
+			.accessibilityIdentifier(gameListAccessibilityIdentifier)
+			.navigationTitle("Games Library")
+			.onChange(of: viewModel.searchText) { _, _ in
+				if let firstGame = viewModel.games.first {
+					withAnimation {
+						proxy.scrollTo(firstGame.id, anchor: .top)
+					}
+				}
+				Task { await viewModel.searchGame() }
+			}
 		}
 		.searchable(text: $viewModel.searchText)
 		.task {
@@ -31,60 +67,44 @@ struct GameListView: View {
 		}
 	}
 
-	private var gamesListAccessibilityIdentifier: String {
+	private var gameListAccessibilityIdentifier: String {
 		if case .success(isEmpty: true) = viewModel.gamesState {
 			return AccessibilityIdentifier.GamesList.emptyState
 		}
 		return AccessibilityIdentifier.GamesList.screen
 	}
 
-	@ViewBuilder
-	private var listContentState: some View {
-		ZStack {
-			listContent(viewModel.games)
-			switch viewModel.gamesState {
-			case .success(isEmpty: true):
-				Color(.systemGroupedBackground)
-					.overlay {
-						ContentUnavailableView {
-							Text("No results")
-						}
-					}
-					.frame(maxWidth: .infinity, maxHeight: .infinity)
-			case .error:
-				Color(.systemGroupedBackground).overlay(
-					ContentUnavailableView {
-						Text("An error ocurred. Try again")
-					} actions: {
-						Button("Retry") {
-							Task { await viewModel.searchGame() }
-						}
-						.buttonStyle(.glassProminent)
-					}
-				)
-			case .loading:
-				LoadingView()
-					.accessibilityIdentifier(AccessibilityIdentifier.GamesList.loading)
-			case .success(isEmpty: false):
-				EmptyView()
-			}
-		}
+	private func loadNextPage() {
+		guard case .success(isEmpty: false) = viewModel.gamesState else { return }
+		Task { await viewModel.searchGame(loadNextPage: true) }
 	}
+}
 
-	@ViewBuilder
-	private func listContent(_ games: [GameSummary]) -> some View {
+/// List + pagination shell. Owns no ViewModel; receives games and callbacks.
+private struct GamesListContentView: View {
+	let games: [GameSummary]
+	let onSelect: (GameSummary) -> Void
+	let onRefresh: () async -> Void
+	let onLoadNextPage: () -> Void
+
+	var body: some View {
 		List(games) { game in
 			Button {
-				coordinator.push(.details(game))
+				onSelect(game)
 			} label: {
-				gameRowView(for: game)
+				GameRowView(
+					name: game.name,
+					rating: game.rating,
+					releasedYear: game.released.map { String($0.prefix(4)) },
+					backgroundImageURL: game.backgroundImageURL
+				)
 			}
 			.buttonStyle(.plain)
 			.accessibilityIdentifier(AccessibilityIdentifier.gameRow(id: game.id.rawValue))
 		}
-		.animation(.default, value: viewModel.games)
+		.animation(.default, value: games)
 		.refreshable {
-			await viewModel.searchGame()
+			await onRefresh()
 		}
 		.onScrollGeometryChange(for: Bool.self) { geometry in
 			guard geometry.contentSize != .zero else { return false }
@@ -92,82 +112,10 @@ struct GameListView: View {
 			return distanceFromBottom < 100
 		} action: { oldValue, isNearBottom in
 			if isNearBottom && !oldValue {
-				loadNextPage()
+				onLoadNextPage()
 			}
 		}
 	}
-
-	private func loadNextPage() {
-		guard case .success(isEmpty: false) = viewModel.gamesState else { return }
-		Task { await viewModel.searchGame(loadNextPage: true) }
-	}
-
-	@ViewBuilder
-	private func gameRowView(for game: GameSummary) -> some View {
-		HStack(spacing: 16) {
-			asyncImage(for: game)
-			VStack(alignment: .leading) {
-				Text(game.name ?? "-")
-				HStack {
-					Group {
-						if let rating = game.rating, rating > 0 {
-							Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
-						}
-						if let releaseDate = game.released?.prefix(4) {
-							Text(verbatim: String(releaseDate))
-						}
-					}
-					.font(.footnote)
-					.fontWeight(.medium)
-					.padding(.horizontal, 10)
-					.padding(.vertical, 4)
-					.background(
-						Capsule()
-							.fill(Color(.systemGray6))
-					)
-				}
-			}
-		}
-	}
-
-	@ViewBuilder
-	private func asyncImage(for game: GameSummary) -> some View {
-		if let url = game.backgroundImageURL.flatMap(URL.init) {
-			OptimizedAsyncImage(url: url, targetSize: CGSize(width: 48, height: 48)) { phase in
-				switch phase {
-				case .empty:
-					ZStack {
-						Color.gray.opacity(0.2)
-						ProgressView()
-					}
-					.frame(width: 48, height: 48)
-					.cornerRadius(8)
-				case .success(let image):
-					image
-						.resizable()
-						.aspectRatio(contentMode: .fill)
-						.frame(width: 48, height: 48)
-						.clipped()
-						.cornerRadius(8)
-				case .failure:
-					emptyImage
-				@unknown default:
-					EmptyView()
-				}
-			}
-		} else {
-			emptyImage
-		}
-	}
-
-	private var emptyImage: some View {
-		Image(systemName: "photo")
-			.foregroundColor(.gray)
-			.frame(width: 48, height: 48)
-			.background(Color.gray.opacity(0.1))
-			.cornerRadius(8)
-	}
-
 }
 
 #if DEBUG
