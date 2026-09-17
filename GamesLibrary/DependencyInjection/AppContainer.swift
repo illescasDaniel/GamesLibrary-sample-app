@@ -4,42 +4,42 @@ import HTTIES
 import BetterLogger
 
 final class AppContainer {
+	private let environment: AppEnvironment
 	private let logger: BetterLogger
-	private let gamesRepository: any GamesRepositoryPort
-	private let urlCache: URLCache
 	private let jsonDecoder: JSONDecoder
+	private let gamesRepositoryOverride: (any GamesRepositoryPort)?
+	private let urlCacheOverride: URLCache?
 
-	init(environment: AppEnvironment = .production) {
-		let logger = BetterLogger(name: "App")
-		let jsonDecoder = JSONDecoder()
-		self.logger = logger
-		self.jsonDecoder = jsonDecoder
-
+	private lazy var productionURLCache: URLCache = {
 		let memoryCapacity = 50 * 1024 * 1024
 		let diskCapacity = 200 * 1024 * 1024
-		self.urlCache = URLCache(
+		return URLCache(
 			memoryCapacity: memoryCapacity,
 			diskCapacity: diskCapacity,
 			diskPath: "myImageCache"
 		)
+	}()
 
+	private lazy var requestInterceptors: [any HTTPRequestInterceptor] = [
+		APIKeyRequestInterceptor(apiKey: environment.apiKey, logger: logger),
+	]
+
+	private lazy var responseInterceptors: [any HTTPResponseInterceptor] = {
 		#if DEBUG
-		let responseInterceptors: [any HTTPResponseInterceptor] = [
-			HTTPResponseLoggerInterceptor(logger: logger),
-		]
+		[HTTPResponseLoggerInterceptor(logger: logger)]
 		#else
-		let responseInterceptors: [any HTTPResponseInterceptor] = []
+		[]
 		#endif
+	}()
 
-		let httpClient = HTTPClientImpl(
-			httpDataRequestHandler: URLSession.shared,
-			requestInterceptors: [
-				APIKeyRequestInterceptor(apiKey: environment.apiKey, logger: logger),
-			],
-			responseInterceptors: responseInterceptors
-		)
+	private lazy var httpClient: any HTTPClient = HTTPClientImpl(
+		httpDataRequestHandler: URLSession.shared,
+		requestInterceptors: requestInterceptors,
+		responseInterceptors: responseInterceptors
+	)
 
-		self.gamesRepository = GamesRepository(
+	private lazy var productionGamesRepository: any GamesRepositoryPort = {
+		GamesRepository(
 			cacheDataSource: GamesCacheDataSourceImpl(timeToLive: .seconds(60 * 5)),
 			networkDataSource: GamesNetworkDataSourceImpl(
 				httpClient: httpClient,
@@ -48,6 +48,22 @@ final class AppContainer {
 			),
 			logger: logger
 		)
+	}()
+
+	private var urlCache: URLCache {
+		urlCacheOverride ?? productionURLCache
+	}
+
+	private var gamesRepository: any GamesRepositoryPort {
+		gamesRepositoryOverride ?? productionGamesRepository
+	}
+
+	init(environment: AppEnvironment = .production) {
+		self.environment = environment
+		self.logger = BetterLogger(name: "App")
+		self.jsonDecoder = JSONDecoder()
+		self.gamesRepositoryOverride = nil
+		self.urlCacheOverride = nil
 	}
 
 	/// Preview and test seam: inject ports directly without network.
@@ -56,10 +72,11 @@ final class AppContainer {
 		logger: BetterLogger = BetterLogger(name: "Preview"),
 		urlCache: URLCache = URLCache(memoryCapacity: 0, diskCapacity: 0)
 	) {
+		self.environment = .production
 		self.logger = logger
-		self.gamesRepository = gamesRepository
-		self.urlCache = urlCache
 		self.jsonDecoder = JSONDecoder()
+		self.gamesRepositoryOverride = gamesRepository
+		self.urlCacheOverride = urlCache
 	}
 
 	func configureSharedURLCache() {

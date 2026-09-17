@@ -9,7 +9,7 @@ import BetterLogger
 struct GameDetailsViewModelTests {
 
 	@Test
-	func givenViewModelWhenInitializedThenStateIsLoading() {
+	func `Given View Model When Initialized Then State Is Loading`() {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
 			getGameDetails: mockGetGameDetails,
@@ -23,7 +23,7 @@ struct GameDetailsViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenGetGameDetailsSucceedsThenStateIsSuccess() async {
+	func `Given View Model When Get Game Details Succeeds Then State Is Success`() async {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
 			getGameDetails: mockGetGameDetails,
@@ -41,7 +41,7 @@ struct GameDetailsViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenGetGameDetailsFailsThenStateIsError() async {
+	func `Given View Model When Get Game Details Fails Then State Is Error`() async {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
 			getGameDetails: mockGetGameDetails,
@@ -59,7 +59,7 @@ struct GameDetailsViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenRetryAfterFailureThenUseCaseCalledAgain() async {
+	func `Given View Model When Retry After Failure Then Use Case Called Again`() async {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
 			getGameDetails: mockGetGameDetails,

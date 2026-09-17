@@ -44,11 +44,12 @@ If the test mutates an instance variable with value semantics, you may need to m
 
 ### Test Methods
 
-Replace the `test` name prefix with the `@Test` attribute. If the resulting test name includes multiple camelCase words,
-use a raw identifier with the test name in sentence case.
+Replace the `test` name prefix with the `@Test` attribute. Prefer a raw identifier with **Given / When / Then** wording (this project’s BDD style):
 
-- `func testEngineDoesNotStall() { ... }` -> `@Test func `Engine does not stall`() { ... }`
-- `func testIgnition() { ... }` -> `@Test func ignition() { ... }`
+- `func testGivenViewModelWhenSearchSucceedsThenStateIsSuccess() { ... }` -> `@Test func `Given View Model When Search Succeeds Then State Is Success`() { ... }`
+- Short single-word names can stay without backticks: `@Test func ignition() { ... }`
+
+XCUITests stay on XCTest. Use camelCase Given/When/Then with a leading `test` (no spaced backticks): Obj-C bridging rejects spaces in method names. Example: `func testGivenGamesListWhenLaunchedThenShowsTitle()`.
 
 Test functions can be `async`, `throws`, or `async throws`, and can be isolated to a global actor with `@MainActor`.
 

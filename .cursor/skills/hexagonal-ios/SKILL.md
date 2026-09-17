@@ -13,13 +13,13 @@ description: Hexagonal architecture file placement and port naming for GamesLibr
 | Inbound port | `GamesLibraryCore/.../Application/Ports/Inbound/` |
 | Outbound port | `GamesLibraryCore/.../Application/Ports/Outbound/` |
 | Use case | `GamesLibraryCore/.../Application/UseCases/` |
-| ViewModel | `GamesLibrary/Infrastructure/Adapters/Inbound/UI/` |
-| View | `GamesLibrary/Infrastructure/Adapters/Inbound/UI/` |
-| DTO (`Decodable`) | `GamesLibrary/Infrastructure/Adapters/Outbound/DTOs/` |
-| Mapper | `GamesLibrary/Infrastructure/Adapters/Outbound/Mappers/` |
-| Repository impl | `GamesLibrary/Infrastructure/Adapters/Outbound/` |
-| AppContainer | `GamesLibrary/Infrastructure/DependencyInjection/` |
-| AppCoordinator | `GamesLibrary/Infrastructure/Navigation/` |
+| ViewModel | `GamesLibrary/Adapters/Inbound/UI/` |
+| View | `GamesLibrary/Adapters/Inbound/UI/` |
+| DTO (`Decodable`) | `GamesLibrary/Adapters/Outbound/DTOs/` |
+| Mapper | `GamesLibrary/Adapters/Outbound/Mappers/` |
+| Repository impl | `GamesLibrary/Adapters/Outbound/` |
+| AppContainer | `GamesLibrary/DependencyInjection/` |
+| AppCoordinator | `GamesLibrary/Navigation/` |
 
 ## Port naming
 

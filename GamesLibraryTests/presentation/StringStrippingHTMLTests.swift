@@ -5,14 +5,14 @@ import Testing
 struct StringStrippingHTMLTests {
 
 	@Test
-	func givenHTMLStringWhenStrippedThenPlainTextIsExtracted() {
+	func `Given HTML String When Stripped Then Plain Text Is Extracted`() {
 		let result = "<p>Hello</p>".strippingHTML()
 
 		#expect(result.contains("Hello"))
 	}
 
 	@Test
-	func givenPlainTextWhenStrippedThenTextIsUnchanged() {
+	func `Given Plain Text When Stripped Then Text Is Unchanged`() {
 		let input = "Plain text without tags"
 
 		#expect(input.strippingHTML() == input)

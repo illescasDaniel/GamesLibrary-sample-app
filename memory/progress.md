@@ -25,7 +25,14 @@ _Last updated: 2026-09-17_
 - [x] Agent worktree skills: `apply-worktree`, `delete-worktree` (adapted from srxy for iOS quality gate)
 - [x] Empty UI-test results via configurable `StubGamesRepository` (no ViewModel `searchText` seeding)
 - [x] Fix MainActor isolation compile error: `@MainActor` on `StubGamesRepository.forUITests()`
+- [x] Cleanup batch: backtick GWT test names, AccessibilityIdentifiers SPM, UI POM, C API key (not Info.plist), flatten Infrastructure, lazy AppContainer, inline UI-test stub, OptimizedAsyncImage keep + README note
+- [x] Fold API key + `DEVELOPMENT_TEAM` into gitignored `Config.xcconfig`; track `Config.xcconfig.sample`; remove `Secrets.xcconfig`
+- [x] Shared `httpClient` + interceptors as lazy vars on `AppContainer` (reuse for future repositories)
+
+- [x] Commit cleanup batch on `develop` (flatten, a11y SPM, POM pages, Config.xcconfig sample, shared httpClient)
 
 ### Open
 
+- [ ] `AppContainer.Overrides` + thin UITest bootstrap
+- [ ] POM scaffolding: `AppLauncher`, fluent page nav, split UITest files, adaptations doc
 - [ ] Continue hexagonal/SDD feature work on `develop`

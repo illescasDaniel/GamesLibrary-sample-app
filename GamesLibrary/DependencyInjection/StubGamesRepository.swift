@@ -23,16 +23,6 @@ final class StubGamesRepository: GamesRepositoryPort, @unchecked Sendable {
 		GameSummary(id: GameID(2), name: "Stub Game Two", rating: 4.0, released: "2023-06-15"),
 	]
 
-	/// Builds a stub from UI-test launch environment (`UITestSupport`).
-	@MainActor
-	static func forUITests() -> StubGamesRepository {
-		if UITestSupport.shouldForceEmptyResults {
-			StubGamesRepository(games: [])
-		} else {
-			StubGamesRepository()
-		}
-	}
-
 	func searchGames(query: String, page: Int, pageSize: Int, ordering: String?) async throws -> [GameSummary] {
 		if page > 1 {
 			return []

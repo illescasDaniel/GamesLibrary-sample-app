@@ -2,11 +2,28 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — Local config lives in gitignored Config.xcconfig
+
+- **Context:** API key lived in a separate gitignored `Secrets.xcconfig` included by tracked `Config.xcconfig`; signing had no checked-in `DEVELOPMENT_TEAM`.
+- **Decision:** Fold `API_KEY` and `DEVELOPMENT_TEAM` into `Config.xcconfig` (gitignored). Track `Config.xcconfig.sample` as the template. Remove `Secrets.xcconfig` / `Secrets.xcconfig.sample`. Keep C/`OTHER_CFLAGS` injection of the API key.
+- **Rationale:** One local config file for machine-specific values; sample documents required keys without shipping secrets or a dummy xcconfig in the app bundle.
+
+## 2026-09-17 — Cleanup: a11y package, C API key, flatten folders, keep OptimizedAsyncImage
+
+- **Context:** Batch cleanup — share accessibility IDs with UI tests without dual-compile; stop shipping API key in Info.plist; drop redundant `Infrastructure/` wrapper; reconsider OptimizedAsyncImage vs SwiftUI `AsyncImage` caching.
+- **Decision:**
+  - Local SPM `GamesLibraryAccessibilityIdentifiers` (product `AccessibilityIdentifiers`) linked by app + UITests; DEBUG-only `UITestSupport` in `App/`; launch env key in package as `UITestEnvironment`.
+  - API key via C + `OTHER_CFLAGS` from `Secrets.xcconfig` (not Info.plist). Document that the literal remains easily recoverable; prefer BFF for real products.
+  - Promote former `Infrastructure/` children to app root; keep thin `App/`.
+  - Keep OptimizedAsyncImage primarily for ImageIO `targetSize` downsampling (not for lack of AsyncImage caching on iOS 27+).
+  - Lazy production wiring in `AppContainer`; inline UI-test stub setup (removed `forUITests()`).
+- **Rationale:** Cleaner test contracts, less accidental secret exposure in plists, flatter app tree, honest security caveats, keep memory wins from downsampling.
+
 ## 2026-09-17 — @MainActor on StubGamesRepository.forUITests()
 
 - **Context:** With `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `UITestSupport` is MainActor-isolated. `StubGamesRepository` is `@unchecked Sendable`, so `forUITests()` was treated as nonisolated and could not read `shouldForceEmptyResults`. Marking the env key/`shouldForceEmptyResults` `nonisolated` failed because stored properties remain MainActor under default isolation.
 - **Decision:** Keep `UITestSupport` fully MainActor; mark `StubGamesRepository.forUITests()` `@MainActor` (only called from `DebugGamesLibraryApp.init`).
-- **Rationale:** Matches call-site isolation without string duplication or `nonisolated(unsafe)`.
+- **Rationale:** Matches call-site isolation without string duplication or `nonisolated(unsafe)`. *(Superseded later same day: `forUITests()` removed; empty-results check inlined in `DebugGamesLibraryApp`.)*
 
 ## 2026-09-16 — Empty UI-test results via configurable StubGamesRepository
 

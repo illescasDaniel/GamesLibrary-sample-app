@@ -2,6 +2,7 @@ import SwiftUI
 import OptimizedAsyncImage
 import GamesLibraryCore
 import BetterLogger
+import AccessibilityIdentifiers
 
 struct GameDetailsView: View {
 	@State private var viewModel: GameDetailsViewModel

@@ -4,20 +4,18 @@ _Last updated: 2026-09-17_
 
 ## Branch
 
-- `cursor/stub-games-repository-uitest-4f36`
+- `develop` (cleanup batch committed; next: POM conventions + `AppContainer.Overrides`)
 
 ## Current focus
 
-Compilation fix for MainActor isolation under `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`.
+POM scaling conventions for UI tests and a single `AppContainer.Overrides` bag for DEBUG/UITest seams.
 
 ## Just changed
 
-- `UITestSupport.shouldForceEmptyResults` — removed incorrect `nonisolated` (key + accessor stay MainActor)
-- `StubGamesRepository.forUITests()` — marked `@MainActor` so it can read `UITestSupport`
-- Reverted accidental `project.pbxproj` SDKROOT move (project-level `SDKROOT = iphoneos` restored)
-- Xcode build-for-testing succeeds
+- Committed cleanup: Infrastructure flatten, AccessibilityIdentifiers SPM, UI POM pages, Config.xcconfig sample, shared `httpClient` lazy vars, C API key
 
 ## Next steps
 
-1. Commit compilation fix (and prior stub work if not already) / push / open PR to `develop`
-2. Run unit + UI tests on simulator
+1. Introduce `AppContainer.Overrides` + single init; thin Debug bootstrap via `UITestSupport`
+2. Extract `AppLauncher`, fluent page navigation, split UITest files; document in adaptations
+3. Append decisions + finalize memory after DI/POM work

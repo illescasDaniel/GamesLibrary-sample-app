@@ -8,7 +8,7 @@ import HTTIES
 struct GamesNetworkDataSourceTests {
 
 	@Test
-	func givenNetworkDataSourceWhen404ThenReturnsEmptyResults() async throws {
+	func `Given Network Data Source When 404 Then Returns Empty Results`() async throws {
 		let mockHTTPClient = MockHTTPClient()
 		mockHTTPClient.error = AppNetworkResponseError.unexpected(statusCode: 404)
 

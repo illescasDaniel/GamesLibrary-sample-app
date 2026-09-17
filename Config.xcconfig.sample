@@ -8,8 +8,11 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-
 // THIS IS A SAMPLE FILE!
-// Duplicate this file, remove ".sample" and replace with your api key
+// Duplicate this file, remove ".sample", and replace the placeholders.
 
 API_KEY = your api key here without quotes
+DEVELOPMENT_TEAM = YOUR_TEAM_ID
+
+// Inject API key into C as a string literal (not into Info.plist). Still recoverable from the binary.
+OTHER_CFLAGS = $(inherited) -DGAMESLIBRARY_API_KEY=\"$(API_KEY)\"

@@ -1,4 +1,5 @@
 import XCTest
+import AccessibilityIdentifiers
 
 final class GamesLibraryUITests: XCTestCase {
 
@@ -7,55 +8,49 @@ final class GamesLibraryUITests: XCTestCase {
 	}
 
 	@MainActor
-	func testGamesListLaunchesAndShowsTitle() throws {
-		let app = launchUITestApp()
+	func testGivenGamesListWhenLaunchedThenShowsTitle() {
+		let list = launchGamesList()
 
-		XCTAssertTrue(app.element(matching: AccessibilityIdentifier.GamesList.screen).waitForExistence(timeout: 10))
+		XCTAssertTrue(list.waitForScreen())
 	}
 
 	@MainActor
-	func testGamesListShowsRowsAfterLoad() throws {
-		let app = launchUITestApp()
+	func testGivenGamesListWhenLoadedThenShowsRows() {
+		let list = launchGamesList()
 
-		let gameRow = app.elements(matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix).firstMatch
-
-		XCTAssertTrue(gameRow.waitForExistence(timeout: 15))
+		XCTAssertTrue(list.waitForGameRows())
 	}
 
 	@MainActor
-	func testTapGameRowOpensDetails() throws {
-		let app = launchUITestApp()
+	func testGivenGamesListWhenGameRowTappedThenOpensDetails() {
+		let list = launchGamesList()
+		XCTAssertTrue(list.waitForGameRows())
 
-		let gameRow = app.elements(matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix).firstMatch
-		XCTAssertTrue(gameRow.waitForExistence(timeout: 15))
+		list.tapFirstGameRow()
 
-		gameRow.tap()
-
-		XCTAssertTrue(app.element(matching: AccessibilityIdentifier.GameDetails.screen).waitForExistence(timeout: 10))
+		let details = GameDetailsPage(app: list.app)
+		XCTAssertTrue(details.waitForScreen())
 	}
 
 	@MainActor
-	func testSearchShowsNoResults() throws {
+	func testGivenGamesListWhenEmptyResultsForcedThenShowsNoResults() {
 		// SwiftUI `.searchable` text entry is unreliable in XCUITest; configure an empty
 		// StubGamesRepository via launch environment instead of seeding ViewModel.searchText.
-		let app = launchUITestApp(forceEmptyResults: true)
+		let list = launchGamesList(forceEmptyResults: true)
 
-		let emptyState = app.element(matching: AccessibilityIdentifier.GamesList.emptyState)
-		XCTAssertTrue(emptyState.waitForExistence(timeout: 20))
-
-		let gameRow = app.elements(matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix).firstMatch
-		XCTAssertFalse(gameRow.waitForExistence(timeout: 2))
+		XCTAssertTrue(list.waitForEmptyState())
+		XCTAssertFalse(list.hasGameRows())
 	}
 
 	@MainActor
-	private func launchUITestApp(forceEmptyResults: Bool = false) -> XCUIApplication {
+	private func launchGamesList(forceEmptyResults: Bool = false) -> GamesListPage {
 		let app = XCUIApplication()
 		app.terminate()
 		app.launchArguments = ["-UITesting"]
 		app.launchEnvironment = forceEmptyResults
-			? [UITestSupport.forceEmptyResultsEnvironmentKey: "1"]
+			? [UITestEnvironment.forceEmptyResultsKey: "1"]
 			: [:]
 		app.launch()
-		return app
+		return GamesListPage(app: app)
 	}
 }

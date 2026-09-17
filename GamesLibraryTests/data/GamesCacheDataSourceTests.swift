@@ -7,7 +7,7 @@ import Foundation
 struct GamesCacheDataSourceTests {
 
 	@Test
-	func givenDataSourceWhenSavingAndLoadingGamesThenResultIsCorrect() async {
+	func `Given Data Source When Saving And Loading Games Then Result Is Correct`() async {
 		let dataSource = GamesCacheDataSourceImpl(timeToLive: .seconds(60))
 		let input = GamesInputDTO.dummy(page: 1, pageSize: 20)
 		let output = GamesOutputDTO.dummy(results: [GameSearchItemDTO.dummy(id: 1)])
@@ -19,7 +19,7 @@ struct GamesCacheDataSourceTests {
 	}
 
 	@Test
-	func givenDataSourceWhenSavingAndLoadingGameDetailsThenResultIsCorrect() async {
+	func `Given Data Source When Saving And Loading Game Details Then Result Is Correct`() async {
 		let dataSource = GamesCacheDataSourceImpl(timeToLive: .seconds(60))
 		let game = GameDTO.dummy(id: 123)
 
@@ -30,7 +30,7 @@ struct GamesCacheDataSourceTests {
 	}
 
 	@Test
-	func givenDataSourceWithExpiredTTLWhenLoadingThenReturnsNil() async throws {
+	func `Given Data Source With Expired TTL When Loading Then Returns Nil`() async throws {
 		let dataSource = GamesCacheDataSourceImpl(timeToLive: .milliseconds(1))
 		let game = GameDTO.dummy(id: 123)
 

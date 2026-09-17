@@ -8,7 +8,7 @@ import GamesLibraryCore
 struct GameDTOMapperTests {
 
 	@Test
-	func givenDTOWhenMappedThenDomainEntityIsCorrect() throws {
+	func `Given DTO When Mapped Then Domain Entity Is Correct`() throws {
 		let json = """
 		{
 			"id": 42,
@@ -34,7 +34,7 @@ struct GameDTOMapperTests {
 	}
 
 	@Test
-	func givenDTOWithoutIdWhenMappedThenReturnsNil() throws {
+	func `Given DTO Without Id When Mapped Then Returns Nil`() throws {
 		let json = #"{"name": "No ID"}"#
 		let dto = try JSONDecoder().decode(GameDTO.self, from: Data(json.utf8))
 

@@ -24,6 +24,6 @@ alwaysApply: true
 ## Rules
 
 - ViewModels depend on inbound ports, never repositories or HTTP clients
-- DTO-to-entity mappers live next to DTOs in `Infrastructure/Adapters/Outbound/`
+- DTO-to-entity mappers live next to DTOs in `Adapters/Outbound/`
 - `#Preview` mocks the port, not the ViewModel
 - Formatting (dates, ratings, HTML stripping) is a UI adapter concern

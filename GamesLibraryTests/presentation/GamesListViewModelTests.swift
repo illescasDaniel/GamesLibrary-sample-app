@@ -9,7 +9,7 @@ import BetterLogger
 struct GamesListViewModelTests {
 
 	@Test
-	func givenViewModelWhenInitializedThenStateIsLoading() {
+	func `Given View Model When Initialized Then State Is Loading`() {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,
@@ -19,7 +19,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenSearchSucceedsThenStateIsSuccess() async {
+	func `Given View Model When Search Succeeds Then State Is Success`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,
@@ -36,7 +36,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenSearchFailsThenStateIsError() async {
+	func `Given View Model When Search Fails Then State Is Error`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,
@@ -51,7 +51,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenSearchIsThrottledThenReturnsSuccess() async {
+	func `Given View Model When Search Is Throttled Then Returns Success`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		mockSearchGames.result = .success([])
 		let viewModel = GamesListViewModel(
@@ -70,7 +70,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenLoadingNextPageThenGamesAreAppended() async {
+	func `Given View Model When Loading Next Page Then Games Are Appended`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,
@@ -88,7 +88,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenSearchReturnsEmptyThenStateIsSuccessEmpty() async {
+	func `Given View Model When Search Returns Empty Then State Is Success Empty`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,
@@ -104,7 +104,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenNextPageReturnsEmptyThenStateRemainsSuccess() async {
+	func `Given View Model When Next Page Returns Empty Then State Remains Success`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,
@@ -122,7 +122,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenSearchWithoutLoadNextPageThenPageIsOne() async {
+	func `Given View Model When Search Without Load Next Page Then Page Is One`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,
@@ -137,7 +137,7 @@ struct GamesListViewModelTests {
 	}
 
 	@Test
-	func givenViewModelWhenURLSessionCancelledThenStateRemainsSuccess() async {
+	func `Given View Model When URL Session Cancelled Then State Remains Success`() async {
 		let mockSearchGames = MockSearchGamesUseCase()
 		let viewModel = GamesListViewModel(
 			searchGames: mockSearchGames,

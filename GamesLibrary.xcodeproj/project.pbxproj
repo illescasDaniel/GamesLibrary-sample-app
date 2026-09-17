@@ -11,7 +11,8 @@
 		65194F632FAB53AA0098077E /* HTTIES in Frameworks */ = {isa = PBXBuildFile; productRef = 65194F622FAB53AA0098077E /* HTTIES */; };
 		653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = 653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */; };
 		659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 659DE4512FACA0D600CE3824 /* BetterLogger */; };
-		659DE45C2FACCE3100CE3824 /* Secrets.xcconfig.sample in Resources */ = {isa = PBXBuildFile; fileRef = 659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */; };
+		65A11Y003EE0000000000003 /* AccessibilityIdentifiers in Frameworks */ = {isa = PBXBuildFile; productRef = 65A11Y002EE0000000000002 /* AccessibilityIdentifiers */; };
+		65A11Y004EE0000000000004 /* AccessibilityIdentifiers in Frameworks */ = {isa = PBXBuildFile; productRef = 65A11Y002EE0000000000002 /* AccessibilityIdentifiers */; };
 		65CORE003EE0000000000003 /* GamesLibraryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 65CORE002EE0000000000002 /* GamesLibraryCore */; };
 		65CORE004EE0000000000004 /* GamesLibraryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 65CORE002EE0000000000002 /* GamesLibraryCore */; };
 /* End PBXBuildFile section */
@@ -37,8 +38,7 @@
 		65194F082FAB46AA0098077E /* GamesLibrary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamesLibrary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65194F152FAB46AB0098077E /* GamesLibraryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GamesLibraryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		65194F1F2FAB46AB0098077E /* GamesLibraryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GamesLibraryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		659DE4572FACC53B00CE3824 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
-		659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.xcconfig.sample; sourceTree = "<group>"; };
+		659DE45B2FACCE3100CE3824 /* Config.xcconfig.sample */ = {isa = PBXFileReference; lastKnownFileType = text; path = Config.xcconfig.sample; sourceTree = "<group>"; };
 		659DE45D2FACD08300CE3824 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		65FAED493058196500E503EB /* GamesLibrary.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = GamesLibrary.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -51,29 +51,6 @@
 			);
 			target = 65194F072FAB46AA0098077E /* GamesLibrary */;
 		};
-		65BUILD001EE0000000000001 /* Exceptions for "GamesLibraryTests" folder in "GamesLibraryTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				.build,
-				build,
-			);
-			target = 65194F142FAB46AB0098077E /* GamesLibraryTests */;
-		};
-		65BUILD002EE0000000000002 /* Exceptions for "GamesLibraryUITests" folder in "GamesLibraryUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				.build,
-				build,
-			);
-			target = 65194F1E2FAB46AB0098077E /* GamesLibraryUITests */;
-		};
-		65UITEST001EE0000000000001 /* Exceptions for "GamesLibrary" folder in "GamesLibraryUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Infrastructure/Adapters/Inbound/UI/Utils/AccessibilityIdentifier.swift,
-			);
-			target = 65194F1E2FAB46AB0098077E /* GamesLibraryUITests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -81,24 +58,17 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				659DE45A2FACCD9700CE3824 /* Exceptions for "GamesLibrary" folder in "GamesLibrary" target */,
-				65UITEST001EE0000000000001 /* Exceptions for "GamesLibrary" folder in "GamesLibraryUITests" target */,
 			);
 			path = GamesLibrary;
 			sourceTree = "<group>";
 		};
 		65194F182FAB46AB0098077E /* GamesLibraryTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				65BUILD001EE0000000000001 /* Exceptions for "GamesLibraryTests" folder in "GamesLibraryTests" target */,
-			);
 			path = GamesLibraryTests;
 			sourceTree = "<group>";
 		};
 		65194F222FAB46AB0098077E /* GamesLibraryUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				65BUILD002EE0000000000002 /* Exceptions for "GamesLibraryUITests" folder in "GamesLibraryUITests" target */,
-			);
 			path = GamesLibraryUITests;
 			sourceTree = "<group>";
 		};
@@ -114,6 +84,7 @@
 				653DC3FE2FAE29F50063F18B /* OptimizedAsyncImage in Frameworks */,
 				659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */,
 				65CORE003EE0000000000003 /* GamesLibraryCore in Frameworks */,
+				65A11Y003EE0000000000003 /* AccessibilityIdentifiers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65A11Y004EE0000000000004 /* AccessibilityIdentifiers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,8 +112,7 @@
 			children = (
 				65FAED493058196500E503EB /* GamesLibrary.xctestplan */,
 				659DE45D2FACD08300CE3824 /* Config.xcconfig */,
-				659DE45B2FACCE3100CE3824 /* Secrets.xcconfig.sample */,
-				659DE4572FACC53B00CE3824 /* Secrets.xcconfig */,
+				659DE45B2FACCE3100CE3824 /* Config.xcconfig.sample */,
 				65194F0A2FAB46AA0098077E /* GamesLibrary */,
 				65194F182FAB46AB0098077E /* GamesLibraryTests */,
 				65194F222FAB46AB0098077E /* GamesLibraryUITests */,
@@ -184,6 +155,7 @@
 				653DC3FD2FAE29F50063F18B /* OptimizedAsyncImage */,
 				650717322FB34B04009FA940 /* TTLCache */,
 				65CORE002EE0000000000002 /* GamesLibraryCore */,
+				65A11Y002EE0000000000002 /* AccessibilityIdentifiers */,
 			);
 			productName = GamesLibrary;
 			productReference = 65194F082FAB46AA0098077E /* GamesLibrary.app */;
@@ -231,6 +203,7 @@
 			);
 			name = GamesLibraryUITests;
 			packageProductDependencies = (
+				65A11Y002EE0000000000002 /* AccessibilityIdentifiers */,
 			);
 			productName = GamesLibraryUITests;
 			productReference = 65194F1F2FAB46AB0098077E /* GamesLibraryUITests.xctest */;
@@ -274,6 +247,7 @@
 				653DC3FC2FAE29F50063F18B /* XCRemoteSwiftPackageReference "OptimizedAsyncImage" */,
 				650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */,
 				65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */,
+				65A11Y001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryAccessibilityIdentifiers" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65194F092FAB46AA0098077E /* Products */;
@@ -292,7 +266,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				659DE45C2FACCE3100CE3824 /* Secrets.xcconfig.sample in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,6 +487,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "GamesLibrary/Configuration/GamesLibrary-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -521,6 +495,7 @@
 		};
 		65194F2B2FAB46AB0098077E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 659DE45D2FACD08300CE3824 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -545,6 +520,7 @@
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "GamesLibrary/Configuration/GamesLibrary-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -636,7 +612,7 @@
 				65194F282FAB46AB0098077E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		65194F292FAB46AB0098077E /* Build configuration list for PBXNativeTarget "GamesLibrary" */ = {
 			isa = XCConfigurationList;
@@ -645,7 +621,7 @@
 				65194F2B2FAB46AB0098077E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		65194F2C2FAB46AB0098077E /* Build configuration list for PBXNativeTarget "GamesLibraryTests" */ = {
 			isa = XCConfigurationList;
@@ -654,7 +630,7 @@
 				65194F2E2FAB46AB0098077E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		65194F2F2FAB46AB0098077E /* Build configuration list for PBXNativeTarget "GamesLibraryUITests" */ = {
 			isa = XCConfigurationList;
@@ -663,11 +639,15 @@
 				65194F312FAB46AB0098077E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		65A11Y001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryAccessibilityIdentifiers" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = GamesLibraryAccessibilityIdentifiers;
+		};
 		65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = GamesLibraryCore;
@@ -729,6 +709,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 659DE4502FACA0D600CE3824 /* XCRemoteSwiftPackageReference "BetterLogger" */;
 			productName = BetterLogger;
+		};
+		65A11Y002EE0000000000002 /* AccessibilityIdentifiers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65A11Y001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryAccessibilityIdentifiers" */;
+			productName = AccessibilityIdentifiers;
 		};
 		65CORE002EE0000000000002 /* GamesLibraryCore */ = {
 			isa = XCSwiftPackageProductDependency;

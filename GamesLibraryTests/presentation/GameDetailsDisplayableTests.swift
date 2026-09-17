@@ -7,7 +7,7 @@ import GamesLibraryCore
 struct GameDetailsDisplayableTests {
 
 	@Test
-	func givenGameDetailsWhenDescriptionRawExistsThenValidDescriptionPrefersRaw() {
+	func `Given Game Details When Description Raw Exists Then Valid Description Prefers Raw`() {
 		let summary = GameSummary(id: GameID(1), name: "Game")
 		let details = GameDetails(
 			summary: summary,
@@ -19,7 +19,7 @@ struct GameDetailsDisplayableTests {
 	}
 
 	@Test
-	func givenGameDetailsWhenDescriptionRawIsWhitespaceThenFallsBackToHTML() {
+	func `Given Game Details When Description Raw Is Whitespace Then Falls Back To HTML`() {
 		let summary = GameSummary(id: GameID(1), name: "Game")
 		let details = GameDetails(
 			summary: summary,
@@ -31,7 +31,7 @@ struct GameDetailsDisplayableTests {
 	}
 
 	@Test
-	func givenGameSummaryThenValidDescriptionIsNil() {
+	func `Given Game Summary Then Valid Description Is Nil`() {
 		let summary = GameSummary(id: GameID(1), name: "Game")
 
 		#expect(summary.validDescription == nil)

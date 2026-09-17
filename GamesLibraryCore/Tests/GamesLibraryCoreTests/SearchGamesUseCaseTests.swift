@@ -5,7 +5,7 @@ import Testing
 struct SearchGamesUseCaseTests {
 
 	@Test
-	func givenUseCaseWhenExecutedSucceedsThenResultIsCorrect() async throws {
+	func `Given Use Case When Executed Succeeds Then Result Is Correct`() async throws {
 		let mockRepository = MockGamesRepositoryPort()
 		let useCase = SearchGamesUseCase(repository: mockRepository)
 
@@ -20,7 +20,7 @@ struct SearchGamesUseCaseTests {
 	}
 
 	@Test
-	func givenUseCaseWhenSearchTextEmptyThenOrderingIsNil() async throws {
+	func `Given Use Case When Search Text Empty Then Ordering Is Nil`() async throws {
 		let mockRepository = MockGamesRepositoryPort()
 		let useCase = SearchGamesUseCase(repository: mockRepository)
 		mockRepository.searchResult = .success([])
@@ -31,7 +31,7 @@ struct SearchGamesUseCaseTests {
 	}
 
 	@Test
-	func givenUseCaseWhenExecutedFailsThenThrowsError() async throws {
+	func `Given Use Case When Executed Fails Then Throws Error`() async throws {
 		let mockRepository = MockGamesRepositoryPort()
 		let useCase = SearchGamesUseCase(repository: mockRepository)
 		mockRepository.searchResult = .failure(MockCoreError.notConfigured)
@@ -42,7 +42,7 @@ struct SearchGamesUseCaseTests {
 	}
 
 	@Test
-	func givenUseCaseWhenExecutedThenPassesPageSizeToRepository() async throws {
+	func `Given Use Case When Executed Then Passes Page Size To Repository`() async throws {
 		let mockRepository = MockGamesRepositoryPort()
 		let useCase = SearchGamesUseCase(repository: mockRepository, pageSize: 10)
 		mockRepository.searchResult = .success([])

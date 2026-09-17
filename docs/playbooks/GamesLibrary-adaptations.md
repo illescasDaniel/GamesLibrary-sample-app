@@ -7,7 +7,7 @@ This project follows the senior iOS playbooks with these **intentional deviation
 | Playbook default | GamesLibrary |
 |------------------|--------------|
 | `Core/` folder in app target | **`GamesLibraryCore`** local Swift package — compile-time isolation; Core cannot import HTTIES, SwiftUI, or app types |
-| Generic `MyApp/` tree | App adapters live under `GamesLibrary/Infrastructure/` |
+| Generic `MyApp/` tree | App adapters live under `GamesLibrary/Adapters/` (no `Infrastructure/` wrapper; thin `App/` for `@main` + DEBUG UI-test support) |
 
 ## Dependency injection & navigation
 
@@ -19,14 +19,15 @@ We combine both playbooks:
 
 The Hexagonal playbook shows `.environment(AppContainer)`; here we inject ViewModels directly and pass the coordinator via `.environment` for navigation only.
 
-## Security (out of scope for now)
+## Security (client API key)
 
 Per the Senior playbook, production apps should use BFF, SSL pinning, and App Attest. **This demo app intentionally:**
 
 - Calls RAWG directly with a client API key (acceptable for learning/demo; not production)
+- Embeds that key via C/`OTHER_CFLAGS` from gitignored `Config.xcconfig` (avoids Info.plist leakage; **still trivially extractable from the binary**)
 - Does not implement SSL pinning or App Attest
 
-Do not add these unless a spec explicitly requests them.
+Do not treat the C embedding as secure storage. Prefer a backend that holds secrets and authenticates the client for any real product.
 
 ## Testing
 
@@ -42,14 +43,14 @@ UI tests must **not** query user-visible copy (navigation titles, button labels,
 
 Instead:
 
-1. Define identifiers in `AccessibilityIdentifier` (app target, under `Infrastructure/Adapters/Inbound/UI/Utils/`). Add the same file to the `GamesLibraryUITests` target (shared compile unit — UI test bundles cannot link the app module).
+1. Define identifiers in the local **`AccessibilityIdentifiers`** package (`GamesLibraryAccessibilityIdentifiers`). Link it from the app and `GamesLibraryUITests` targets (UI test bundles cannot link the app module).
 2. Apply them to screens and key states in SwiftUI views (`.accessibilityIdentifier(...)`).
-3. In UI tests, reference `AccessibilityIdentifier` constants — never duplicate raw strings or query user-visible copy.
+3. In UI tests, reference `AccessibilityIdentifier` constants — never duplicate raw strings or query user-visible copy. Prefer page objects under `GamesLibraryUITests/Pages/`.
 4. Prefer `app.element(matching:)` (descendants matching `.any`) over typed queries like `navigationBars["…"]` or `staticTexts["…"]`.
 
 Launch argument `-UITesting` wires `StubGamesRepository` at the composition root so flows stay deterministic without network.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestSupport` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). Do not seed `ViewModel.searchText` from `AppContainer`.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestEnvironment.forceEmptyResultsKey` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). DEBUG-only `UITestSupport` reads that env in the app entry. Do not seed `ViewModel.searchText` from `AppContainer`.
 
 ## SDD source of truth
 

@@ -28,13 +28,17 @@ Business logic lives in a local Swift package, **`GamesLibraryCore`**, with comp
 | Layer | Location | Responsibility |
 |-------|----------|----------------|
 | **Core** | `GamesLibraryCore/` | Domain entities, inbound/outbound ports, use cases |
-| **Inbound adapters** | `GamesLibrary/Infrastructure/Adapters/Inbound/` | SwiftUI views, `@Observable` ViewModels, formatters |
-| **Outbound adapters** | `GamesLibrary/Infrastructure/Adapters/Outbound/` | DTOs, mappers, repository, cache, network |
+| **Inbound adapters** | `GamesLibrary/Adapters/Inbound/` | SwiftUI views, `@Observable` ViewModels, formatters |
+| **Outbound adapters** | `GamesLibrary/Adapters/Outbound/` | DTOs, mappers, repository, cache, network |
 | **Composition root** | `AppContainer`, `AppCoordinator` | Wires dependencies; ViewModels receive inbound ports only |
 
 Dependency flow: **Views → ViewModels → Use Cases → Repository Port → Network/Cache**
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/playbooks/](docs/playbooks/README.md) for the full playbook reference.
+
+### Dependencies
+
+- **OptimizedAsyncImage** — used instead of SwiftUI `AsyncImage` primarily for **ImageIO downsampling via `targetSize`** (list/detail thumbnails). Native `AsyncImage` gained HTTP caching on iOS 27+, but it does not downsample; revisit only if the deployment target is iOS 27+ *and* downsampling is reimplemented or dropped.
 
 ### Spec-Driven Development (SDD)
 
@@ -71,7 +75,9 @@ Enable both in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulato
 
 The project requires an API key from https://rawg.io/apidocs (free tier).
 
-Place it in `Secrets.xcconfig` (see `Secrets.xcconfig.sample`).
+Copy `Config.xcconfig.sample` to `Config.xcconfig` and set `API_KEY` plus your Apple `DEVELOPMENT_TEAM`. Build settings inject the key into a small C helper via `OTHER_CFLAGS` (not `Info.plist`), so it is not readable from the bundled plist. `Config.xcconfig` is gitignored.
+
+**Security:** That C string is still **easily recoverable** from the app binary (`strings`, disassembly). Do **not** ship real production API keys in client apps — prefer a backend (BFF) that holds secrets and authenticates the client. This demo’s client key is intentional learning debt, not a pattern to copy.
 
 ### Previews
 

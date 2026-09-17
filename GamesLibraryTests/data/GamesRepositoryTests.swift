@@ -9,7 +9,7 @@ import BetterLogger
 struct GamesRepositoryTests {
 
 	@Test
-	func givenRepositoryWhenFetchingGamesAndCacheExistsThenReturnsCachedGames() async throws {
+	func `Given Repository When Fetching Games And Cache Exists Then Returns Cached Games`() async throws {
 		let mockCache = MockGamesCacheDataSource()
 		let mockNetwork = MockGamesNetworkDataSource()
 		let repository = GamesRepository(
@@ -29,7 +29,7 @@ struct GamesRepositoryTests {
 	}
 
 	@Test
-	func givenRepositoryWhenFetchingGamesAndCacheIsEmptyThenFetchesFromNetworkAndSavesToCache() async throws {
+	func `Given Repository When Fetching Games And Cache Is Empty Then Fetches From Network And Saves To Cache`() async throws {
 		let mockCache = MockGamesCacheDataSource()
 		let mockNetwork = MockGamesNetworkDataSource()
 		let repository = GamesRepository(
@@ -57,7 +57,7 @@ struct GamesRepositoryTests {
 	}
 
 	@Test
-	func givenRepositoryWhenFetchingGamesFailsThenThrowsError() async throws {
+	func `Given Repository When Fetching Games Fails Then Throws Error`() async throws {
 		let mockCache = MockGamesCacheDataSource()
 		let mockNetwork = MockGamesNetworkDataSource()
 		let repository = GamesRepository(
@@ -73,7 +73,7 @@ struct GamesRepositoryTests {
 	}
 
 	@Test
-	func givenRepositoryWhenFetchingGameDetailAndCacheExistsThenReturnsCachedGame() async throws {
+	func `Given Repository When Fetching Game Detail And Cache Exists Then Returns Cached Game`() async throws {
 		let mockCache = MockGamesCacheDataSource()
 		let mockNetwork = MockGamesNetworkDataSource()
 		let repository = GamesRepository(
@@ -92,7 +92,7 @@ struct GamesRepositoryTests {
 	}
 
 	@Test
-	func givenRepositoryWhenFetchingGameDetailAndCacheIsEmptyThenFetchesFromNetwork() async throws {
+	func `Given Repository When Fetching Game Detail And Cache Is Empty Then Fetches From Network`() async throws {
 		let mockCache = MockGamesCacheDataSource()
 		let mockNetwork = MockGamesNetworkDataSource()
 		let repository = GamesRepository(
@@ -111,7 +111,7 @@ struct GamesRepositoryTests {
 	}
 
 	@Test
-	func givenRepositoryWhenGameDTOHasNoIdThenThrowsNotFound() async throws {
+	func `Given Repository When Game DTO Has No Id Then Throws Not Found`() async throws {
 		let mockCache = MockGamesCacheDataSource()
 		let mockNetwork = MockGamesNetworkDataSource()
 		let repository = GamesRepository(
@@ -130,7 +130,7 @@ struct GamesRepositoryTests {
 	}
 
 	@Test
-	func givenRepositoryWhenSearchResultsIncludeNilIdDTOsThenTheyAreFiltered() async throws {
+	func `Given Repository When Search Results Include Nil Id DTOs Then They Are Filtered`() async throws {
 		let mockCache = MockGamesCacheDataSource()
 		let mockNetwork = MockGamesNetworkDataSource()
 		let repository = GamesRepository(

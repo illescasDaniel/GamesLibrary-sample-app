@@ -5,7 +5,7 @@ import Testing
 struct GetGameDetailsUseCaseTests {
 
 	@Test
-	func givenUseCaseWhenExecutedSucceedsThenResultIsCorrect() async throws {
+	func `Given Use Case When Executed Succeeds Then Result Is Correct`() async throws {
 		let mockRepository = MockGamesRepositoryPort()
 		let useCase = GetGameDetailsUseCase(repository: mockRepository)
 
@@ -20,7 +20,7 @@ struct GetGameDetailsUseCaseTests {
 	}
 
 	@Test
-	func givenUseCaseWhenExecutedFailsThenThrowsError() async throws {
+	func `Given Use Case When Executed Fails Then Throws Error`() async throws {
 		let mockRepository = MockGamesRepositoryPort()
 		let useCase = GetGameDetailsUseCase(repository: mockRepository)
 		mockRepository.detailsResult = .failure(MockCoreError.notConfigured)
