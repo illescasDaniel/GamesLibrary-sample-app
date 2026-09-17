@@ -2,6 +2,30 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — Silence stub StrictMemorySafety warnings
+
+- **Context:** `nonisolated(unsafe)` queue storage triggered `#StrictMemorySafety` warnings.
+- **Decision:** `StubGetGameDetailsUseCase` stores outcome queues in `Mutex`. (Tried `type: .static` package products for sysroot noise; reverted — duplicates when app + tests both link the product.)
+- **Rationale:** Mutex is the safe concurrent store without unsafe access.
+
+## 2026-09-17 — GameDetailsViewModel must not shadow the use-case property
+
+- **Context:** Preview “worked” only with `initialState: .success` because `func getGameDetails(id:)` shadowed `let getGameDetails: any GetGameDetailsUseCasePort`, so `try await getGameDetails(id:)` recursed and never called the port (infinite loading / cancel).
+- **Decision:** Rename the stored port to `getGameDetailsUseCase` (same idea as list: `searchGames` vs `searchGame`). Drop preview `initialState` overload; restore normal `.loading` → fetch → success.
+- **Rationale:** Matches list naming discipline; exposes a real bug that seeded state was masking.
+
+## 2026-09-17 — Stub use cases are canned response maps only
+
+- **Context:** Search stub still had a `default` fallback; details stub synthesized summaries and used a global `failuresRemaining` counter.
+- **Decision:** `StubSearchGamesUseCase` is only `[SearchStubKey: [GameSummary]]` (miss → `[]`; `.constant` registers `(1, "")`). `StubGetGameDetailsUseCase` is `[GameID: [DetailsStubOutcome]]` queues (miss → error; `.constant` registers one success). Config mirrors this with `gamesList.responses` / `gameDetails.responses` (`DetailsOutcome`, `GameDetailsFixture`); Retry via `.failingThenSucceeding()`. Drop `failuresRemaining` and search `default`.
+- **Rationale:** Stubs look up programmed replies only; UI tests and previews share the same seams without fake domain logic.
+
+## 2026-09-17 — Stub search use case is a canned `(page, searchText)` map
+
+- **Context:** `StubSearchGamesUseCase` reimplemented trim/filter/pagination after moving UI stubs to the inbound port; UI tests only needed empty vs default, and SwiftUI previews each had a private `PreviewMock*UseCase`.
+- **Decision:** Stub takes `[SearchStubKey: [GameSummary]]` (`page` + `searchText`; tuple keys aren’t Hashable here) plus a `default` fallback (`.constant` ignores inputs). `UITestConfiguration.GamesList.responses` carries Codable `SearchResponse` / `GameSummaryFixture` (no Core types in AccessibilityIdentifiers); `nil` → `(1, "")` fixtures in `UITestSupport`. Drop `emptyResults` in favor of `.empty` / explicit responses. Previews use the same DEBUG stubs.
+- **Rationale:** Stubs look up canned replies instead of faking domain logic; JSON fixtures stay shared and Core-free; one stub type for UI tests and `#Preview`.
+
 ## 2026-09-17 — AppContainer init injects HTTP handler, cache, request interceptors
 
 - **Context:** Only `responseInterceptors` were init-injected; `URLSession.shared`, production `URLCache`, and API-key request interceptors were hard-wired lazy locals, so Debug/tests could not replace the HTTP stack at construction.

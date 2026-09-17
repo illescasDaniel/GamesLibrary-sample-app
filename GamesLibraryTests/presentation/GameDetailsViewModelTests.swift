@@ -12,7 +12,7 @@ struct GameDetailsViewModelTests {
 	func `Given View Model When Initialized Then State Is Loading`() {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
-			getGameDetails: mockGetGameDetails,
+			getGameDetailsUseCase: mockGetGameDetails,
 			logger: BetterLogger(name: "Test")
 		)
 		if case .loading = viewModel.gamesState {
@@ -26,7 +26,7 @@ struct GameDetailsViewModelTests {
 	func `Given View Model When Get Game Details Succeeds Then State Is Success`() async {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
-			getGameDetails: mockGetGameDetails,
+			getGameDetailsUseCase: mockGetGameDetails,
 			logger: BetterLogger(name: "Test")
 		)
 		mockGetGameDetails.result = .success(GameDetails.dummy(id: 42))
@@ -44,7 +44,7 @@ struct GameDetailsViewModelTests {
 	func `Given View Model When Get Game Details Fails Then State Is Error`() async {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
-			getGameDetails: mockGetGameDetails,
+			getGameDetailsUseCase: mockGetGameDetails,
 			logger: BetterLogger(name: "Test")
 		)
 		mockGetGameDetails.result = .failure(MockError.anyError)
@@ -62,7 +62,7 @@ struct GameDetailsViewModelTests {
 	func `Given View Model When Retry After Failure Then Use Case Called Again`() async {
 		let mockGetGameDetails = MockGetGameDetailsUseCase()
 		let viewModel = GameDetailsViewModel(
-			getGameDetails: mockGetGameDetails,
+			getGameDetailsUseCase: mockGetGameDetails,
 			logger: BetterLogger(name: "Test")
 		)
 		mockGetGameDetails.result = .failure(MockError.anyError)

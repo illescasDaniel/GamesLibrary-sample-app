@@ -62,7 +62,10 @@ final class AppContainer: AppContaining {
 	}
 
 	func makeGameDetailsViewModel() -> GameDetailsViewModel {
-		GameDetailsViewModel(getGameDetails: makeGetGameDetailsUseCase(), logger: logger)
+		GameDetailsViewModel(
+			getGameDetailsUseCase: makeGetGameDetailsUseCase(),
+			logger: logger
+		)
 	}
 
 	/// Internal seam for `DebugAppContainer` forwarding — not part of `AppContaining`.

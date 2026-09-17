@@ -24,9 +24,9 @@ final class GamesListUITests: XCTestCase {
 	@MainActor
 	func testGivenGamesListWhenEmptyResultsForcedThenShowsNoResults() async throws {
 		// SwiftUI `.searchable` text entry is unreliable in XCUITest; configure an empty
-		// stub via UITestConfiguration instead of seeding ViewModel.searchText.
+		// canned `(1, "")` response instead of seeding ViewModel.searchText.
 		let list = AppLauncher.launchGamesList(
-			configuration: .init(gamesList: .init(emptyResults: true))
+			configuration: .init(gamesList: .empty)
 		)
 
 		_ = try await list.emptyState

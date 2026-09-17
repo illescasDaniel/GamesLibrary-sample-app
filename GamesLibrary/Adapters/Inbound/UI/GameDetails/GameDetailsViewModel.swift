@@ -7,18 +7,21 @@ import GamesLibraryCore
 final class GameDetailsViewModel {
 	var gamesState: ViewState<GameDetails, any Error> = .loading
 
-	private let getGameDetails: any GetGameDetailsUseCasePort
+	private let getGameDetailsUseCase: any GetGameDetailsUseCasePort
 	private let logger: BetterLogger
 
-	init(getGameDetails: any GetGameDetailsUseCasePort, logger: BetterLogger) {
-		self.getGameDetails = getGameDetails
+	init(
+		getGameDetailsUseCase: any GetGameDetailsUseCasePort,
+		logger: BetterLogger
+	) {
+		self.getGameDetailsUseCase = getGameDetailsUseCase
 		self.logger = logger
 	}
 
 	func getGameDetails(id: GameID) async {
 		gamesState = .loading
 		do {
-			let game = try await getGameDetails(id: id)
+			let game = try await getGameDetailsUseCase(id: id)
 			gamesState = .success(game)
 		} catch is CancellationError {
 			return

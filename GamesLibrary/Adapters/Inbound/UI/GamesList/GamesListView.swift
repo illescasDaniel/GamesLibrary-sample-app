@@ -173,18 +173,11 @@ struct GameListView: View {
 #if DEBUG
 #Preview("Success") {
 	let container = DebugAppContainer(overrides: .init(
-		searchGamesUseCase: PreviewMockSearchGamesUseCase(result: .success([
+		searchGamesUseCase: StubSearchGamesUseCase.constant([
 			GameSummary(id: GameID(1), name: "Preview Game", rating: 4.5, released: "2024-01-01"),
-		]))
+		])
 	))
 	GameListView(viewModel: container.makeGamesListViewModel())
 		.environment(AppCoordinator(container: container))
-}
-
-private struct PreviewMockSearchGamesUseCase: SearchGamesUseCasePort {
-	let result: Result<[GameSummary], any Error>
-	func callAsFunction(page: Int, searchText: String) async throws -> [GameSummary] {
-		try result.get()
-	}
 }
 #endif

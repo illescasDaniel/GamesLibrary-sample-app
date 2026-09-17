@@ -170,23 +170,16 @@ struct GameDetailsView: View {
 	}
 }
 
+#if DEBUG
 #Preview {
 	let summary = GameSummary(id: GameID(1), name: "Preview Game", rating: 4.2, released: "2020-01-01")
-	let mock = PreviewMockGetGameDetailsUseCase(result: .success(
-		GameDetails(summary: summary, descriptionRaw: "A great game.")
+	let details = GameDetails(summary: summary, descriptionRaw: "A great game.")
+	let container = DebugAppContainer(overrides: .init(
+		getGameDetailsUseCase: StubGetGameDetailsUseCase.constant(details)
 	))
-	return GameDetailsView(
-		viewModel: GameDetailsViewModel(
-			getGameDetails: mock,
-			logger: BetterLogger(name: "Preview")
-		),
+	GameDetailsView(
+		viewModel: container.makeGameDetailsViewModel(),
 		summary: summary
 	)
 }
-
-private struct PreviewMockGetGameDetailsUseCase: GetGameDetailsUseCasePort {
-	let result: Result<GameDetails, any Error>
-	func callAsFunction(id: GameID) async throws -> GameDetails {
-		try result.get()
-	}
-}
+#endif

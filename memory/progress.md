@@ -38,6 +38,8 @@ _Last updated: 2026-09-17_
 - [x] Debug `Overrides` use-case-only (no repository field); UITestSupport injects stub use cases
 - [x] UI-test scenarios via single `UITEST_CONFIG` JSON with per-screen nested `UITestConfiguration` (`gamesList` / `gameDetails`)
 - [x] UI-test stubs at inbound use-case layer (`StubSearchGamesUseCase` / `StubGetGameDetailsUseCase`); removed `StubGamesRepository`
+- [x] Canned `(page, searchText)` stub map + Codable `GameSummaryFixture` responses; shared stubs for `#Preview`
+- [x] Details stub per-id outcome queues; drop search `default` + `failuresRemaining`
 
 ### Open
 

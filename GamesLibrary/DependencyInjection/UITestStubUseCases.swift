@@ -1,95 +1,125 @@
 #if DEBUG
 import Foundation
+import Synchronization
+import AccessibilityIdentifiers
 import GamesLibraryCore
 
-/// Deterministic inbound stubs for UI tests. Wired via `UITestSupport.makeOverrides()`.
+/// Deterministic inbound stubs for UI tests and SwiftUI previews.
+/// Wired via `UITestSupport.makeOverrides()` or `DebugAppContainer.Overrides`.
 /// `nonisolated` so values can seed default parameters on Sendable stub inits
 /// (module uses `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`).
 enum UITestFixtures {
 	nonisolated static let defaultGames: [GameSummary] = [
-		GameSummary(
-			id: GameID(1),
-			name: "Stub Game One",
-			rating: 4.5,
-			released: "2024-01-01",
-			esrbRating: ESRBRating(id: 1, slug: "teen", name: "Teen"),
-			platforms: [
-				PlatformInfo(id: 1, name: "PC"),
-				PlatformInfo(id: 2, name: "macOS"),
-			]
-		),
-		GameSummary(
-			id: GameID(2),
-			name: "Stub Game Two",
-			rating: 4.0,
-			released: "2023-06-15",
-			esrbRating: ESRBRating(id: 2, slug: "mature", name: "Mature"),
-			platforms: [
-				PlatformInfo(id: 3, name: "PlayStation 5"),
-			]
-		),
+		UITestConfiguration.GameSummaryFixture.stubGameOne.toDomain(),
+		UITestConfiguration.GameSummaryFixture.stubGameTwo.toDomain(),
 	]
 
-	nonisolated static let defaultDetailsDescription = "Stub description for UI testing."
-	nonisolated static let defaultDetailsWebsite: String? = "https://example.com/stub-game"
-	nonisolated static let defaultDetailsPlaytime: Int? = 12
+	nonisolated static let defaultDetailsByID: [GameID: GameDetails] = [
+		GameID(UITestConfiguration.GameSummaryFixture.stubGameOne.id):
+			UITestConfiguration.GameDetailsFixture.stubGameOne.toDomain(),
+	]
 }
 
+/// Dictionary key for canned search replies (`(page, searchText)` as a Hashable struct).
+/// `nonisolated` so dictionary lookup works under `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`.
+nonisolated struct SearchStubKey: Hashable, Sendable {
+	var page: Int
+	var searchText: String
+}
+
+/// Canned `(page, searchText)` → games lookup. Missing keys return `[]`.
+///
+/// Port methods are `nonisolated` so `Sendable` use-case calls from a MainActor ViewModel
+/// do not deadlock on a MainActor-isolated stub (default actor isolation).
 final class StubSearchGamesUseCase: SearchGamesUseCasePort, @unchecked Sendable {
-	private let games: [GameSummary]
+	private let responses: [SearchStubKey: [GameSummary]]
 
-	init(games: [GameSummary]) {
-		self.games = games
+	init(responses: [SearchStubKey: [GameSummary]]) {
+		self.responses = responses
 	}
 
-	func callAsFunction(page: Int, searchText: String) async throws -> [GameSummary] {
-		if page > 1 {
-			return []
-		}
-		let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-		guard !trimmed.isEmpty else {
-			return games
-		}
-		return games.filter { ($0.name ?? "").localizedCaseInsensitiveContains(trimmed) }
+	/// Registers a single `(1, "")` reply (typical list preview / happy-path load).
+	static func constant(_ games: [GameSummary]) -> StubSearchGamesUseCase {
+		StubSearchGamesUseCase(responses: [SearchStubKey(page: 1, searchText: ""): games])
+	}
+
+	nonisolated func callAsFunction(page: Int, searchText: String) async throws -> [GameSummary] {
+		responses[SearchStubKey(page: page, searchText: searchText)] ?? []
 	}
 }
 
+/// One canned details reply (success payload or failure).
+enum DetailsStubOutcome: Sendable {
+	case success(GameDetails)
+	case failure(any Error)
+}
+
+/// Canned `GameID` → outcome queue. Each call consumes the next outcome for that id.
+/// `repeating` entries always succeed (previews / `.constant`) without consuming.
 final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort, @unchecked Sendable {
-	private let games: [GameSummary]
-	private let descriptionRaw: String
-	private let website: String?
-	private let playtime: Int?
-	/// How many upcoming calls should throw before succeeding.
-	private var failuresRemaining: Int
+	private let repeating: [GameID: GameDetails]
+	private let queues: Mutex<[GameID: [DetailsStubOutcome]]>
 
 	init(
-		games: [GameSummary],
-		failuresRemaining: Int = 0,
-		descriptionRaw: String = UITestFixtures.defaultDetailsDescription,
-		website: String? = UITestFixtures.defaultDetailsWebsite,
-		playtime: Int? = UITestFixtures.defaultDetailsPlaytime
+		responses: [GameID: [DetailsStubOutcome]] = [:],
+		repeating: [GameID: GameDetails] = [:]
 	) {
-		self.games = games
-		self.failuresRemaining = failuresRemaining
-		self.descriptionRaw = descriptionRaw
-		self.website = website
-		self.playtime = playtime
+		self.repeating = repeating
+		self.queues = Mutex(responses)
 	}
 
-	func callAsFunction(id: GameID) async throws -> GameDetails {
-		if failuresRemaining > 0 {
-			failuresRemaining -= 1
-			throw StubGetGameDetailsUseCaseError.forcedFailure
+	/// Always returns `details` for `details.id` (typical details preview).
+	static func constant(_ details: GameDetails) -> StubGetGameDetailsUseCase {
+		StubGetGameDetailsUseCase(repeating: [details.id: details])
+	}
+
+	nonisolated func callAsFunction(id: GameID) async throws -> GameDetails {
+		if let details = repeating[id] {
+			return details
 		}
-		let summary = games.first { $0.id == id }
-			?? GameSummary(
-				id: id,
-				name: "Stub Game \(id.rawValue)",
-				rating: 4.5,
-				released: "2024-01-01"
-			)
-		return GameDetails(
-			summary: summary,
+		return try queues.withLock { responses in
+			guard var queue = responses[id], !queue.isEmpty else {
+				throw StubGetGameDetailsUseCaseError.noResponse(for: id)
+			}
+			let outcome = queue.removeFirst()
+			responses[id] = queue
+			switch outcome {
+			case .success(let details):
+				return details
+			case .failure(let error):
+				throw error
+			}
+		}
+	}
+}
+
+enum StubGetGameDetailsUseCaseError: Error {
+	case noResponse(for: GameID)
+	case forcedFailure
+}
+
+extension UITestConfiguration.GameSummaryFixture {
+	nonisolated func toDomain() -> GameSummary {
+		GameSummary(
+			id: GameID(id),
+			name: name,
+			rating: rating,
+			released: released,
+			backgroundImageURL: backgroundImageURL,
+			esrbRating: esrbRating.map {
+				ESRBRating(id: $0.id, slug: $0.slug, name: $0.name)
+			},
+			platforms: platforms?.map {
+				PlatformInfo(id: $0.id, name: $0.name)
+			}
+		)
+	}
+}
+
+extension UITestConfiguration.GameDetailsFixture {
+	nonisolated func toDomain() -> GameDetails {
+		GameDetails(
+			summary: summary.toDomain(),
 			descriptionRaw: descriptionRaw,
 			website: website,
 			playtime: playtime
@@ -97,7 +127,14 @@ final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort, @unchecked Sen
 	}
 }
 
-enum StubGetGameDetailsUseCaseError: Error {
-	case forcedFailure
+extension UITestConfiguration.DetailsOutcome {
+	nonisolated func toDomain() -> DetailsStubOutcome {
+		switch self {
+		case .success(let fixture):
+			.success(fixture.toDomain())
+		case .failure:
+			.failure(StubGetGameDetailsUseCaseError.forcedFailure)
+		}
+	}
 }
 #endif

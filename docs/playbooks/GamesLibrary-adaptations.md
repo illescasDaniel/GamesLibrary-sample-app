@@ -25,8 +25,7 @@ DEBUG entry (`DebugGamesLibraryApp`): UI tests → `UITestSupport.makeOverrides(
 
 ### Preview seams
 
-- **Screen-only** (no navigation): mock the inbound port, construct the ViewModel (e.g. Game Details). No container.
-- **Navigable / root**: one `DebugAppContainer(overrides:)`; take ViewModels from the container; pass the same instance to `AppCoordinator`. Do not also hand-build a ViewModel with a different mock.
+- Prefer one `DebugAppContainer(overrides:)` and take ViewModels from the container (list and details). Pass the same instance to `AppCoordinator` when navigation is needed. Do not also hand-build a ViewModel with a different mock.
 
 ## Security (client API key)
 
@@ -77,7 +76,7 @@ Missing elements throw `UITestElementError` (test fails via `async throws`). Abs
 
 `UITEST_CONFIG` (JSON `UITestConfiguration`) wires stub inbound use cases at the composition root so flows stay deterministic without network.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .init(emptyResults: true))` through `AppLauncher` (`UITEST_CONFIG` JSON → stub search returns `[]`). Use `gameDetails: .init(failuresRemaining: 1)` so the stub details use case fails once and succeeds on Retry. DEBUG-only `UITestSupport` decodes that JSON into use-case overrides. Do not seed `ViewModel.searchText` from the container.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .empty)` through `AppLauncher` (`UITEST_CONFIG` JSON → canned `(1, "")` → `[]`). For custom rows / search / pagination, set `gamesList.responses` to `[SearchResponse]` with `GameSummaryFixture` (mapped to Core in DEBUG `UITestSupport`). For details Retry, use `gameDetails: .failingThenSucceeding()` (per-id outcome queue: `.failure` then `.success`). `nil` details responses → one success per list stub game. Previews share `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` (`.constant(...)`) via Overrides — do not seed `ViewModel.searchText` from the container.
 
 ## SDD source of truth
 

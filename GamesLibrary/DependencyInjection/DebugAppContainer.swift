@@ -46,7 +46,7 @@ final class DebugAppContainer: AppContaining {
 
 	func makeGameDetailsViewModel() -> GameDetailsViewModel {
 		GameDetailsViewModel(
-			getGameDetails: overrides.getGameDetailsUseCase ?? production.makeGetGameDetailsUseCase(),
+			getGameDetailsUseCase: overrides.getGameDetailsUseCase ?? production.makeGetGameDetailsUseCase(),
 			logger: resolvedLogger
 		)
 	}

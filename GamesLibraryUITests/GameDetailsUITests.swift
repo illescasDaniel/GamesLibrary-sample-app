@@ -36,7 +36,7 @@ final class GameDetailsUITests: XCTestCase {
 	@MainActor
 	func testGivenDetailsFailureWhenOpenedThenShowsErrorWithRetry() async throws {
 		let details = try await AppLauncher.launchGameDetails(
-			configuration: .init(gameDetails: .init(failuresRemaining: 1))
+			configuration: .init(gameDetails: .failingThenSucceeding())
 		)
 
 		_ = try await details.error
@@ -46,7 +46,7 @@ final class GameDetailsUITests: XCTestCase {
 	@MainActor
 	func testGivenDetailsFailureWhenRetryTappedThenShowsContent() async throws {
 		let details = try await AppLauncher.launchGameDetails(
-			configuration: .init(gameDetails: .init(failuresRemaining: 1))
+			configuration: .init(gameDetails: .failingThenSucceeding())
 		)
 
 		_ = try await details.error
