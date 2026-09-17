@@ -11,6 +11,15 @@ public enum AccessibilityIdentifier {
 
 	public enum GameDetails {
 		public static let screen = "game-details-screen"
+		public static let loading = "game-details-loading"
+		public static let error = "game-details-error"
+		public static let description = "game-details-description"
+		public static let websiteLink = "game-details-website"
+		public static let rating = "game-details-rating"
+		public static let year = "game-details-year"
+		public static let playtime = "game-details-playtime"
+		public static let esrb = "game-details-esrb"
+		public static let platforms = "game-details-platforms"
 	}
 
 	public static func gameRow(id: Int) -> String {
@@ -23,4 +32,7 @@ public enum UITestEnvironment {
 	/// When `"1"`, DEBUG composition root wires an empty `StubGamesRepository`
 	/// so the list empty state is reachable without typing into SwiftUI `.searchable`.
 	public static let forceEmptyResultsKey = "UITEST_FORCE_EMPTY_RESULTS"
+
+	/// When `"1"`, the stub fails the first details request then succeeds on Retry.
+	public static let forceDetailsFailureKey = "UITEST_FORCE_DETAILS_FAILURE"
 }

@@ -33,6 +33,7 @@ _Last updated: 2026-09-17_
 - [x] `AppContainer.Overrides` + thin UITest bootstrap (`UITestSupport.makeOverrides()`)
 - [x] POM scaffolding: `AppLauncher`, fluent page nav, split UITest files, adaptations doc
 - [x] Async throwing page-object accessors (`try await page.screen`); UI tests `async throws`
+- [x] Game Details UI coverage: content chips/description/website + error/Retry via `UITEST_FORCE_DETAILS_FAILURE`
 
 ### Open
 

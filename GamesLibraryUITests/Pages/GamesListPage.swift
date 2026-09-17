@@ -8,44 +8,54 @@ struct GamesListPage {
 	/// Waits until the list screen exists; throws if it does not appear in time.
 	var screen: XCUIElement {
 		get async throws {
-			let identifier = AccessibilityIdentifier.GamesList.screen
-			return try app.element(matching: identifier)
-				.requireExistence(identifier: identifier, timeout: UITestTimeout.screen)
+			try app.waitForElement(
+				matching: AccessibilityIdentifier.GamesList.screen,
+				timeout: UITestTimeout.screen
+			)
 		}
 	}
 
 	/// Waits until the empty state exists; throws if it does not appear in time.
 	var emptyState: XCUIElement {
 		get async throws {
-			let identifier = AccessibilityIdentifier.GamesList.emptyState
-			return try app.element(matching: identifier)
-				.requireExistence(identifier: identifier, timeout: UITestTimeout.emptyState)
+			try app.waitForElement(
+				matching: AccessibilityIdentifier.GamesList.emptyState,
+				timeout: UITestTimeout.emptyState
+			)
 		}
 	}
 
 	/// Waits until at least one game row exists; throws if none appear in time.
 	var gameRows: XCUIElementQuery {
 		get async throws {
-			let prefix = AccessibilityIdentifier.GamesList.gameRowPrefix
-			let query = app.elements(matchingIdentifierPrefix: prefix)
-			_ = try query.firstMatch.requireExistence(
-				identifier: "\(prefix)*",
+			try app.waitForElements(
+				matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix,
 				timeout: UITestTimeout.content
 			)
-			return query
 		}
 	}
 
 	@discardableResult
-	func tapFirstGameRow() async throws -> GameDetailsPage {
+	func tapGameRow(at index: Int = 0) async throws -> GameDetailsPage {
 		let rows = try await gameRows
-		rows.firstMatch.tap()
+		let row = rows.element(boundBy: index)
+		_ = try row.requireExistence(
+			identifier: "\(AccessibilityIdentifier.GamesList.gameRowPrefix)[\(index)]",
+			timeout: UITestTimeout.content
+		)
+		row.tap()
 		return GameDetailsPage(app: app)
 	}
 
+	@discardableResult
+	func tapFirstGameRow() async throws -> GameDetailsPage {
+		try await tapGameRow(at: 0)
+	}
+
 	func requireNoGameRows(timeout: TimeInterval = UITestTimeout.absence) throws {
-		let prefix = AccessibilityIdentifier.GamesList.gameRowPrefix
-		try app.elements(matchingIdentifierPrefix: prefix).firstMatch
-			.requireAbsence(identifier: "\(prefix)*", timeout: timeout)
+		try app.requireNoElements(
+			matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix,
+			timeout: timeout
+		)
 	}
 }

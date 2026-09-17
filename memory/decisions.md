@@ -2,6 +2,18 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-17 — Details error a11y via root id swap + fail-once stub
+
+- **Context:** `ContentUnavailableView` inherits the parent `accessibilityIdentifier` and drops child IDs, so a dedicated Retry id never appears in the hierarchy. Details failure UI tests also need a deterministic stub seam.
+- **Decision:** Swap the details root identifier to `GameDetails.error` while in `.error` (same pattern as list empty state). Page object locates Retry as the **button** matching that error id. `UITEST_FORCE_DETAILS_FAILURE=1` sets `StubGamesRepository.detailsFailuresRemaining = 1` so the first details call fails and Retry succeeds. Ignore `CancellationError` in `GameDetailsViewModel` so cancelled `.task` restarts do not paint a false error.
+- **Rationale:** Matches proven list empty-state a11y; keeps UI tests free of visible copy; one launch env covers both error presence and Retry recovery without sticky forever-fail.
+
+## 2026-09-17 — DEBUG-only AppContainer.Overrides + responseInterceptors
+
+- **Context:** Overrides existed in Release (convention only that production never passed them); response interceptors were hard-wired separately from the override bag.
+- **Decision:** Wrap `Overrides` and the `overrides:` init/accessors in `#if DEBUG`. Release has only `AppContainer(environment:)`. Add `responseInterceptors: [any HTTPResponseInterceptor]?` to `Overrides` (`nil` = DEBUG default logger interceptor; non-`nil` including `[]` = explicit replacement).
+- **Rationale:** Compile-time guarantee that production cannot inject test/preview seams; grow the override surface by fields consistently with repository/cache/logger.
+
 ## 2026-09-17 — Async throwing page-object element accessors
 
 - **Context:** Page objects exposed raw `XCUIElement` vars that were unloaded until a separate `waitFor*` call; easy to tap/assert too early.

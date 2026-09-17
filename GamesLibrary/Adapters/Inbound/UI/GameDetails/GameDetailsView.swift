@@ -17,10 +17,19 @@ struct GameDetailsView: View {
 		contentState
 			.navigationTitle(summary.name ?? "Game Details")
 			.navigationBarTitleDisplayMode(.inline)
-			.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.screen)
-			.task {
+			.accessibilityIdentifier(detailsAccessibilityIdentifier)
+			.task(id: summary.id) {
 				await viewModel.getGameDetails(id: summary.id)
 			}
+	}
+
+	/// `ContentUnavailableView` inherits the parent identifier and drops child IDs,
+	/// so error uses a root-level id swap (same pattern as the list empty state).
+	private var detailsAccessibilityIdentifier: String {
+		if case .error = viewModel.gamesState {
+			return AccessibilityIdentifier.GameDetails.error
+		}
+		return AccessibilityIdentifier.GameDetails.screen
 	}
 
 	@ViewBuilder
@@ -41,6 +50,7 @@ struct GameDetailsView: View {
 			ZStack {
 				contentView(gameDetails: summary, loading: true)
 				LoadingView("Loading full details")
+					.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.loading)
 			}
 		}
 	}
@@ -57,12 +67,15 @@ struct GameDetailsView: View {
 							Group {
 								if let rating = gameDetails.rating, rating > 0 {
 									Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+										.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.rating)
 								}
 								if let releaseDate = gameDetails.released?.prefix(4) {
 									Text(verbatim: String(releaseDate))
+										.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.year)
 								}
 								if let playtime = gameDetails.playtime, playtime > 0 {
 									Text(verbatim: String("\(playtime)h"))
+										.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.playtime)
 								}
 							}
 							.capsuleChipStyle()
@@ -72,6 +85,7 @@ struct GameDetailsView: View {
 							Group {
 								if let esbrRating = gameDetails.esrbRating?.name {
 									Label(esbrRating, systemImage: "number.square")
+										.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.esrb)
 								}
 							}
 							.capsuleChipStyle()
@@ -90,6 +104,7 @@ struct GameDetailsView: View {
 							}
 						}
 						.environment(\.layoutDirection, .rightToLeft)
+						.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.platforms)
 					}
 					.padding(.vertical, 8)
 				}
@@ -103,17 +118,20 @@ struct GameDetailsView: View {
 				if let description = gameDetails.validDescription?.strippingHTML() {
 					Text(verbatim: description)
 						.font(.body)
+						.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.description)
 				} else if loading {
 					Text(verbatim: String(repeating: " ", count: 200))
 						.redacted(reason: .placeholder)
 				} else {
 					Text(verbatim: "(No available description)")
 						.font(.body)
+						.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.description)
 				}
 
 				if let website = gameDetails.website.flatMap({ URL(string: $0) }) {
 					Link("Visit Website", destination: website)
 						.buttonStyle(.borderedProminent)
+						.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.websiteLink)
 				}
 			}
 			.padding()

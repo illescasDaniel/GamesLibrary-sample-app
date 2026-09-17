@@ -14,13 +14,13 @@ This project follows the senior iOS playbooks with these **intentional deviation
 We combine both playbooks:
 
 - **`AppContainer`** — composition root; wires HTTP, cache, repository, use cases, ViewModel factories
-- **`AppContainer.Overrides`** — single optional bag (`gamesRepository`, `urlCache`, `logger`) for previews and UI tests. Prefer `AppContainer(overrides:)` over extra initializers; add new replaceable deps as fields on `Overrides`, not new inits. No DIC / service locator.
+- **`AppContainer.Overrides`** — **DEBUG-only** optional bag (`gamesRepository`, `urlCache`, `logger`, `responseInterceptors`) for previews and UI tests. Prefer `AppContainer(overrides:)` over extra initializers; add new replaceable deps as fields on `Overrides`, not new inits. Release builds have no `Overrides` type and only `AppContainer(environment:)`. No DIC / service locator.
 - **`AppCoordinator`** — owns `NavigationPath` and route → view building
 - **Constructor injection** — ViewModels receive inbound ports in `init`; views receive ViewModels from the coordinator/container
 
 The Hexagonal playbook shows `.environment(AppContainer)`; here we inject ViewModels directly and pass the coordinator via `.environment` for navigation only.
 
-DEBUG entry (`DebugGamesLibraryApp`) stays thin: `UITestSupport.makeOverrides()` maps `-UITesting` / launch env → `AppContainer.Overrides`; production path uses `Overrides.none`.
+DEBUG entry (`DebugGamesLibraryApp`) stays thin: `UITestSupport.makeOverrides()` maps `-UITesting` / launch env → `AppContainer.Overrides`; Release `@main` never sees the overrides API.
 
 ## Security (client API key)
 
@@ -67,11 +67,11 @@ let screen = try await details.screen
 _ = try await list.gameRows
 ```
 
-Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…` / `requireAbsence`. Navigate actions return the next page (e.g. `try await list.tapFirstGameRow() -> GameDetailsPage`). Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states (error, details failure) = new launch env keys + stub config via `UITestSupport.makeOverrides()` — never seed `ViewModel` state from `AppContainer`.
+Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…` / `requireAbsence`. Navigate actions return the next page (e.g. `try await list.tapGameRow(at:) -> GameDetailsPage`). Prefer `AppLauncher.launchGameDetails(index:)` when a test starts on details rather than composing list launch + tap. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty (list empty state / details error) and query the Retry **button** via that same id. Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states (error, details failure) = new launch env keys + stub config via `UITestSupport.makeOverrides()` — never seed `ViewModel` state from `AppContainer`.
 
 Launch argument `-UITesting` wires `StubGamesRepository` at the composition root so flows stay deterministic without network.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestEnvironment.forceEmptyResultsKey` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). DEBUG-only `UITestSupport` reads that env. Do not seed `ViewModel.searchText` from `AppContainer`.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, configure `StubGamesRepository` at the composition root via `UITestEnvironment.forceEmptyResultsKey` launch environment (`UITEST_FORCE_EMPTY_RESULTS=1` → empty stub games). Use `UITestEnvironment.forceDetailsFailureKey` (`UITEST_FORCE_DETAILS_FAILURE=1`) so the stub fails the first details request and succeeds on Retry. DEBUG-only `UITestSupport` reads those env keys. Do not seed `ViewModel.searchText` from `AppContainer`.
 
 ## SDD source of truth
 

@@ -20,6 +20,8 @@ final class GameDetailsViewModel {
 		do {
 			let game = try await getGameDetails(id: id)
 			gamesState = .success(game)
+		} catch is CancellationError {
+			return
 		} catch {
 			logger.error("Get game details failed", context: ["error": error])
 			gamesState = .error(error)
