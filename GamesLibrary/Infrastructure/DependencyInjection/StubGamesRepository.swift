@@ -24,6 +24,7 @@ final class StubGamesRepository: GamesRepositoryPort, @unchecked Sendable {
 	]
 
 	/// Builds a stub from UI-test launch environment (`UITestSupport`).
+	@MainActor
 	static func forUITests() -> StubGamesRepository {
 		if UITestSupport.shouldForceEmptyResults {
 			StubGamesRepository(games: [])

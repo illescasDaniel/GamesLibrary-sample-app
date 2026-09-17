@@ -5,7 +5,7 @@ enum UITestSupport {
 	/// so the list empty state is reachable without typing into SwiftUI `.searchable`.
 	static let forceEmptyResultsEnvironmentKey = "UITEST_FORCE_EMPTY_RESULTS"
 
-	nonisolated static var shouldForceEmptyResults: Bool {
+	static var shouldForceEmptyResults: Bool {
 		ProcessInfo.processInfo.environment[forceEmptyResultsEnvironmentKey] == "1"
 	}
 }
