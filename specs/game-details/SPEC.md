@@ -13,6 +13,7 @@
 
 ## Visual & UI rules
 
+- User-facing copy in this spec is the **English source**; localized strings live in `GamesLibrary/Resources/Localizable.xcstrings`.
 - Inline navigation title from game name (fallback: "Game Details")
 - Shows placeholder content from list item while loading full details
 - Full details: hero image (128×128), rating/year/playtime chips, ESRB chip, platform chips, description (HTML stripped), website link

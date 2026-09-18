@@ -1,10 +1,10 @@
 # Active Context
 
-_Last updated: 2026-09-17_
+_Last updated: 2026-09-18_
 
 ## Branch
 
-- `develop` (SwiftUI section/row View structs)
+- `develop` (Spanish localization)
 
 ## Current focus
 
@@ -12,9 +12,8 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Extracted list/details UI into narrow-input `View` structs (`GameRowView`, `GameThumbnailView`, `GameDetailsContentView` / `Header` / `Description`, private `GamesListContentView`)
-- Documented extract-vs-computed rule of thumb in `docs/playbooks/GamesLibrary-adaptations.md` + `.cursor/skills/hexagonal-ios/SKILL.md`
-- Unit + UI tests green after refactor
+- Committed Spanish localization on `develop`: Resources move, SwiftUI catalog-ready strings, `es` translations, specs/skill updates
+- Two commits: String Catalog scaffolding, then full localization implementation
 
 ## Next steps
 

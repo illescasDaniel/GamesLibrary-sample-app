@@ -13,6 +13,7 @@
 
 ## Visual & UI rules
 
+- User-facing copy in this spec is the **English source**; localized strings live in `GamesLibrary/Resources/Localizable.xcstrings`.
 - Navigation title: "Games Library"
 - Search bar filters results as the user types (150 ms debounce when search text is non-empty)
 - Pull-to-refresh reloads page 1

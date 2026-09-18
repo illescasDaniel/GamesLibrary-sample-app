@@ -1,6 +1,6 @@
 # Progress
 
-_Last updated: 2026-09-17_
+_Last updated: 2026-09-18_
 
 ## Hexagonal + SDD refactor (on `develop`)
 
@@ -41,6 +41,7 @@ _Last updated: 2026-09-17_
 - [x] Canned `(page, searchText)` stub map + Codable `GameSummaryFixture` responses; shared stubs for `#Preview`
 - [x] Details stub per-id outcome queues; drop search `default` + `failuresRemaining`
 - [x] SwiftUI section/row factoring: extract `View` structs (narrow inputs); document rule in adaptations + hexagonal skill
+- [x] Spanish localization (`es`): `GamesLibrary/Resources/` (`Assets.xcassets`, `Localizable.xcstrings`); SwiftUI literals + translator comments; UI tests stay on accessibility identifiers
 
 ### Open
 

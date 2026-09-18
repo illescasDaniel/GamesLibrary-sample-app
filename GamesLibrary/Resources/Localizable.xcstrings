@@ -1,0 +1,149 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ ⭐" : {
+      "comment" : "Game rating chip; the number is the user score out of 5.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ⭐"
+          }
+        }
+      }
+    },
+    "%lldh" : {
+      "comment" : "Estimated playtime chip; the number is hours of gameplay.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld h"
+          }
+        }
+      }
+    },
+    "(No available description)" : {
+      "comment" : "Placeholder when a game has no description text.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(No hay descripción disponible)"
+          }
+        }
+      }
+    },
+    "An error occurred. Try again" : {
+      "comment" : "Error message when loading game details fails.\nError message when loading the games list fails.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ha ocurrido un error. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Description" : {
+      "comment" : "Section heading for the game description on the details screen.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descripción"
+          }
+        }
+      }
+    },
+    "Game Details" : {
+      "comment" : "Navigation title when the game name is unavailable.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detalles del juego"
+          }
+        }
+      }
+    },
+    "Games Library" : {
+      "comment" : "Navigation title for the games list screen.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca de juegos"
+          }
+        }
+      }
+    },
+    "Loading full details" : {
+      "comment" : "Loading overlay shown while full game details are fetching.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando los detalles"
+          }
+        }
+      }
+    },
+    "Loading..." : {
+      "comment" : "Loading overlay shown while content is fetching.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cargando..."
+          }
+        }
+      }
+    },
+    "No results" : {
+      "comment" : "Empty state when a search returns no games.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin resultados"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "comment" : "Button that retries loading game details after an error.\nButton that retries loading the games list after an error.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reintentar"
+          }
+        }
+      }
+    },
+    "Search games" : {
+      "comment" : "Placeholder for the games search field.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar juegos"
+          }
+        }
+      }
+    },
+    "Visit Website" : {
+      "comment" : "Button that opens the game's website in the browser.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visitar sitio web"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.3"
+}

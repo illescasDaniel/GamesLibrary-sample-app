@@ -20,7 +20,7 @@ struct GameRowView: View {
 				HStack {
 					Group {
 						if let rating, rating > 0 {
-							Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+							Text("\(rating, format: .number.precision(.fractionLength(1))) ⭐", comment: "Game rating chip; the number is the user score out of 5.")
 						}
 						if let releasedYear {
 							Text(verbatim: releasedYear)

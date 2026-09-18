@@ -18,22 +18,27 @@ struct GameDetailsView: View {
 				GameDetailsContentView(gameDetails: game, loading: false)
 			case .error:
 				ContentUnavailableView {
-					Text("An error ocurred. Try again")
+					Text("An error occurred. Try again", comment: "Error message when loading game details fails.")
 				} actions: {
-					Button("Retry") {
+					Button {
 						Task { await viewModel.getGameDetails(id: summary.id) }
+					} label: {
+						Text("Retry", comment: "Button that retries loading game details after an error.")
 					}
 					.buttonStyle(.glassProminent)
 				}
 			case .loading:
 				ZStack {
 					GameDetailsContentView(gameDetails: summary, loading: true)
-					LoadingView("Loading full details")
+					LoadingView(LocalizedStringResource(
+						"Loading full details",
+						comment: "Loading overlay shown while full game details are fetching."
+					))
 						.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.loading)
 				}
 			}
 		}
-		.navigationTitle(summary.name ?? "Game Details")
+		.navigationTitle(detailsNavigationTitle)
 		.navigationBarTitleDisplayMode(.inline)
 		.accessibilityIdentifier(detailsAccessibilityIdentifier)
 		.task(id: summary.id) {
@@ -43,6 +48,14 @@ struct GameDetailsView: View {
 
 	/// `ContentUnavailableView` inherits the parent identifier and drops child IDs,
 	/// so error uses a root-level id swap (same pattern as the list empty state).
+	private var detailsNavigationTitle: Text {
+		if let name = summary.name {
+			Text(verbatim: name)
+		} else {
+			Text("Game Details", comment: "Navigation title when the game name is unavailable.")
+		}
+	}
+
 	private var detailsAccessibilityIdentifier: String {
 		if case .error = viewModel.gamesState {
 			return AccessibilityIdentifier.GameDetails.error
@@ -62,5 +75,6 @@ struct GameDetailsView: View {
 		viewModel: container.makeGameDetailsViewModel().previewSucceeding(details),
 		summary: summary
 	)
+	.environment(\.locale, Locale(identifier: "es"))
 }
 #endif

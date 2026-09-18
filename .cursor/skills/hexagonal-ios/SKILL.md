@@ -15,6 +15,7 @@ description: Hexagonal architecture file placement and port naming for GamesLibr
 | Use case | `GamesLibraryCore/.../Application/UseCases/` |
 | ViewModel | `GamesLibrary/Adapters/Inbound/UI/` |
 | View | `GamesLibrary/Adapters/Inbound/UI/` |
+| Assets / String Catalog | `GamesLibrary/Resources/` (`Assets.xcassets`, `Localizable.xcstrings`) |
 | DTO (`Decodable`) | `GamesLibrary/Adapters/Outbound/DTOs/` |
 | Mapper | `GamesLibrary/Adapters/Outbound/Mappers/` |
 | Repository impl | `GamesLibrary/Adapters/Outbound/` |

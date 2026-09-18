@@ -44,7 +44,9 @@ struct GameDetailsContentView: View {
 				)
 
 				if let websiteURL {
-					Link("Visit Website", destination: websiteURL)
+					Link(destination: websiteURL) {
+						Text("Visit Website", comment: "Button that opens the game's website in the browser.")
+					}
 						.buttonStyle(.borderedProminent)
 						.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.websiteLink)
 				}

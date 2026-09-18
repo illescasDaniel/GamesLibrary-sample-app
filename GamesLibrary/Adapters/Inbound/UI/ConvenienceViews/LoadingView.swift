@@ -1,14 +1,23 @@
 import SwiftUI
 
 struct LoadingView: View {
-	let titleKey: LocalizedStringKey
+	let title: LocalizedStringResource
 
-	init(_ titleKey: LocalizedStringKey = "Loading...") {
-		self.titleKey = titleKey
+	init(_ title: LocalizedStringResource) {
+		self.title = title
+	}
+
+	init() {
+		self.title = LocalizedStringResource(
+			"Loading...",
+			comment: "Loading overlay shown while content is fetching."
+		)
 	}
 
 	var body: some View {
-		ProgressView(titleKey)
+		ProgressView {
+			Text(title)
+		}
 			.controlSize(.regular)
 			.padding(24)
 			.background(.ultraThinMaterial)

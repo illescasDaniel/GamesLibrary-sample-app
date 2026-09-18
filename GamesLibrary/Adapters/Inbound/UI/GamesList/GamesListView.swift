@@ -28,17 +28,19 @@ struct GameListView: View {
 					Color(.systemGroupedBackground)
 						.overlay {
 							ContentUnavailableView {
-								Text("No results")
+								Text("No results", comment: "Empty state when a search returns no games.")
 							}
 						}
 						.frame(maxWidth: .infinity, maxHeight: .infinity)
 				case .error:
 					Color(.systemGroupedBackground).overlay(
 						ContentUnavailableView {
-							Text("An error ocurred. Try again")
+							Text("An error occurred. Try again", comment: "Error message when loading the games list fails.")
 						} actions: {
-							Button("Retry") {
+							Button {
 								Task { await viewModel.searchGame() }
+							} label: {
+								Text("Retry", comment: "Button that retries loading the games list after an error.")
 							}
 							.buttonStyle(.glassProminent)
 						}
@@ -51,7 +53,7 @@ struct GameListView: View {
 				}
 			}
 			.accessibilityIdentifier(gameListAccessibilityIdentifier)
-			.navigationTitle("Games Library")
+			.navigationTitle(Text("Games Library", comment: "Navigation title for the games list screen."))
 			.onChange(of: viewModel.searchText) { _, _ in
 				if let firstGame = viewModel.games.first {
 					withAnimation {
@@ -61,7 +63,10 @@ struct GameListView: View {
 				Task { await viewModel.searchGame() }
 			}
 		}
-		.searchable(text: $viewModel.searchText)
+		.searchable(
+			text: $viewModel.searchText,
+			prompt: Text("Search games", comment: "Placeholder for the games search field.")
+		)
 		.task {
 			await viewModel.searchGame()
 		}
@@ -127,5 +132,6 @@ private struct GamesListContentView: View {
 	))
 	GameListView(viewModel: container.makeGamesListViewModel())
 		.environment(AppCoordinator(container: container))
+		.environment(\.locale, Locale(identifier: "es"))
 }
 #endif

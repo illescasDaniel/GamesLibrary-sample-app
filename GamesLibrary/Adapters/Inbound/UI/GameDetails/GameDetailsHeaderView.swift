@@ -23,7 +23,7 @@ struct GameDetailsHeaderView: View {
 				HStack {
 					Group {
 						if let rating, rating > 0 {
-							Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))) + " ⭐")
+							Text("\(rating, format: .number.precision(.fractionLength(1))) ⭐", comment: "Game rating chip; the number is the user score out of 5.")
 								.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.rating)
 						}
 						if let releasedYear {
@@ -31,7 +31,7 @@ struct GameDetailsHeaderView: View {
 								.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.year)
 						}
 						if let playtimeHours, playtimeHours > 0 {
-							Text(verbatim: String("\(playtimeHours)h"))
+							Text("\(playtimeHours)h", comment: "Estimated playtime chip; the number is hours of gameplay.")
 								.accessibilityIdentifier(AccessibilityIdentifier.GameDetails.playtime)
 						}
 					}
