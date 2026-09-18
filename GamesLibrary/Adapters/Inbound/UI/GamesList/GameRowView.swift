@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIComponents
 
 /// List row for a game summary. Takes only the fields it renders so sibling
 /// list/search updates do not force unrelated work through this boundary.
@@ -26,14 +27,7 @@ struct GameRowView: View {
 							Text(verbatim: releasedYear)
 						}
 					}
-					.font(.footnote)
-					.fontWeight(.medium)
-					.padding(.horizontal, 10)
-					.padding(.vertical, 4)
-					.background(
-						Capsule()
-							.fill(Color(.systemGray6))
-					)
+					.capsuleChipStyle()
 				}
 			}
 		}

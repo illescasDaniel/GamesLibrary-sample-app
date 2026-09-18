@@ -109,6 +109,7 @@ When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestCon
 - `.cursor/skills/sdd-feature/` — SDD workflow for this repo
 - `.cursor/skills/hexagonal-ios/` — file placement and port naming
 - `.cursor/skills/playbooks/` — when to read full playbooks vs this file
+- `.cursor/skills/save-changes/` — update memory, commit, and push (`/save-changes`)
 - Apple Xcode 27 skills (SwiftUI, Swift Testing, App Intents, …) live in `.cursor/skills/` next to the project skills — see `AGENTS.md` for the table and refresh command
 - `.cursor/rules/sdd.mdc`, `hexagonal-ios.mdc`, `playbooks.mdc`, `agent-memory.mdc` — always-on constraints
 

@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-18 — Extract shared helpers into three local Swift packages
+
+- **Context:** GamesLibrary had reusable UI-state, HTML stripping, HTTP interceptors, SwiftUI chrome, and XCUITest POM helpers inlined in the app. Other similar iOS apps cannot import them until they live as packages.
+- **Decision:** Keep packages inside this repo (not GitHub yet). Split into `IOSConveniences` (products `ViewLoadState`, `HTMLText`, `HTTPConveniences`), growable `SwiftUIComponents` (`LoadingView`, `capsuleChipStyle()`, `onNearBottom`), and UI-test-only `XCUITestPOM`. Do not change HTTIES: interceptors live in `HTTPConveniences` (query-item interceptor + response logger with a `(String) -> Void`). HTML stripping is a Foundation-only scanner — no UIKit / `NSAttributedString`.
+- **Rationale:** XCTest must not enter the app link graph; SwiftUI chrome should grow without pulling ViewModels or HTTP; ViewModels import Foundation-only `ViewLoadState`. The HTML importer required UIKit and was not thread-safe; a scanner matches the “readable visible text” contract and `swift test` on the host.
+
 ## 2026-09-17 — SwiftUI sections/rows are `View` structs, not computed `some View`
 
 - **Context:** List/details screens factored UI via `private var` / `@ViewBuilder` helpers; Apple’s SwiftUI guidance says those share the parent’s invalidation boundary.

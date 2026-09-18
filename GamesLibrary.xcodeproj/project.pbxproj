@@ -15,6 +15,12 @@
 		65A11Y004EE0000000000004 /* AccessibilityIdentifiers in Frameworks */ = {isa = PBXBuildFile; productRef = 65A11Y002EE0000000000002 /* AccessibilityIdentifiers */; };
 		65CORE003EE0000000000003 /* GamesLibraryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 65CORE002EE0000000000002 /* GamesLibraryCore */; };
 		65CORE004EE0000000000004 /* GamesLibraryCore in Frameworks */ = {isa = PBXBuildFile; productRef = 65CORE002EE0000000000002 /* GamesLibraryCore */; };
+		65IOSC005EE0000000000005 /* ViewLoadState in Frameworks */ = {isa = PBXBuildFile; productRef = 65IOSC002EE0000000000002 /* ViewLoadState */; };
+		65IOSC006EE0000000000006 /* HTMLText in Frameworks */ = {isa = PBXBuildFile; productRef = 65IOSC003EE0000000000003 /* HTMLText */; };
+		65IOSC007EE0000000000007 /* HTTPConveniences in Frameworks */ = {isa = PBXBuildFile; productRef = 65IOSC004EE0000000000004 /* HTTPConveniences */; };
+		65IOSC008EE0000000000008 /* ViewLoadState in Frameworks */ = {isa = PBXBuildFile; productRef = 65IOSC002EE0000000000002 /* ViewLoadState */; };
+		65SUIC003EE0000000000003 /* SwiftUIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 65SUIC002EE0000000000002 /* SwiftUIComponents */; };
+		65XCUI003EE0000000000003 /* XCUITestPOM in Frameworks */ = {isa = PBXBuildFile; productRef = 65XCUI002EE0000000000002 /* XCUITestPOM */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +91,10 @@
 				659DE4522FACA0D600CE3824 /* BetterLogger in Frameworks */,
 				65CORE003EE0000000000003 /* GamesLibraryCore in Frameworks */,
 				65A11Y003EE0000000000003 /* AccessibilityIdentifiers in Frameworks */,
+				65IOSC005EE0000000000005 /* ViewLoadState in Frameworks */,
+				65IOSC006EE0000000000006 /* HTMLText in Frameworks */,
+				65IOSC007EE0000000000007 /* HTTPConveniences in Frameworks */,
+				65SUIC003EE0000000000003 /* SwiftUIComponents in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +103,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65CORE004EE0000000000004 /* GamesLibraryCore in Frameworks */,
+				65IOSC008EE0000000000008 /* ViewLoadState in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +112,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65A11Y004EE0000000000004 /* AccessibilityIdentifiers in Frameworks */,
+				65XCUI003EE0000000000003 /* XCUITestPOM in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,6 +168,10 @@
 				650717322FB34B04009FA940 /* TTLCache */,
 				65CORE002EE0000000000002 /* GamesLibraryCore */,
 				65A11Y002EE0000000000002 /* AccessibilityIdentifiers */,
+				65IOSC002EE0000000000002 /* ViewLoadState */,
+				65IOSC003EE0000000000003 /* HTMLText */,
+				65IOSC004EE0000000000004 /* HTTPConveniences */,
+				65SUIC002EE0000000000002 /* SwiftUIComponents */,
 			);
 			productName = GamesLibrary;
 			productReference = 65194F082FAB46AA0098077E /* GamesLibrary.app */;
@@ -180,6 +196,7 @@
 			name = GamesLibraryTests;
 			packageProductDependencies = (
 				65CORE002EE0000000000002 /* GamesLibraryCore */,
+				65IOSC002EE0000000000002 /* ViewLoadState */,
 			);
 			productName = GamesLibraryTests;
 			productReference = 65194F152FAB46AB0098077E /* GamesLibraryTests.xctest */;
@@ -204,6 +221,7 @@
 			name = GamesLibraryUITests;
 			packageProductDependencies = (
 				65A11Y002EE0000000000002 /* AccessibilityIdentifiers */,
+				65XCUI002EE0000000000002 /* XCUITestPOM */,
 			);
 			productName = GamesLibraryUITests;
 			productReference = 65194F1F2FAB46AB0098077E /* GamesLibraryUITests.xctest */;
@@ -217,7 +235,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2640;
-				LastUpgradeCheck = 2650;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					65194F072FAB46AA0098077E = {
 						CreatedOnToolsVersion = 26.4.1;
@@ -249,6 +267,9 @@
 				650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */,
 				65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */,
 				65A11Y001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryAccessibilityIdentifiers" */,
+				65IOSC001EE0000000000001 /* XCLocalSwiftPackageReference "IOSConveniences" */,
+				65SUIC001EE0000000000001 /* XCLocalSwiftPackageReference "SwiftUIComponents" */,
+				65XCUI001EE0000000000001 /* XCLocalSwiftPackageReference "XCUITestPOM" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65194F092FAB46AA0098077E /* Products */;
@@ -329,6 +350,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -402,6 +424,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -655,6 +678,18 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = GamesLibraryCore;
 		};
+		65IOSC001EE0000000000001 /* XCLocalSwiftPackageReference "IOSConveniences" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = IOSConveniences;
+		};
+		65SUIC001EE0000000000001 /* XCLocalSwiftPackageReference "SwiftUIComponents" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = SwiftUIComponents;
+		};
+		65XCUI001EE0000000000001 /* XCLocalSwiftPackageReference "XCUITestPOM" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = XCUITestPOM;
+		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -722,6 +757,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */;
 			productName = GamesLibraryCore;
+		};
+		65IOSC002EE0000000000002 /* ViewLoadState */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65IOSC001EE0000000000001 /* XCLocalSwiftPackageReference "IOSConveniences" */;
+			productName = ViewLoadState;
+		};
+		65IOSC003EE0000000000003 /* HTMLText */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65IOSC001EE0000000000001 /* XCLocalSwiftPackageReference "IOSConveniences" */;
+			productName = HTMLText;
+		};
+		65IOSC004EE0000000000004 /* HTTPConveniences */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65IOSC001EE0000000000001 /* XCLocalSwiftPackageReference "IOSConveniences" */;
+			productName = HTTPConveniences;
+		};
+		65SUIC002EE0000000000002 /* SwiftUIComponents */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65SUIC001EE0000000000001 /* XCLocalSwiftPackageReference "SwiftUIComponents" */;
+			productName = SwiftUIComponents;
+		};
+		65XCUI002EE0000000000002 /* XCUITestPOM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65XCUI001EE0000000000001 /* XCLocalSwiftPackageReference "XCUITestPOM" */;
+			productName = XCUITestPOM;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

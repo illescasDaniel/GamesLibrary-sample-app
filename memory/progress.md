@@ -42,6 +42,8 @@ _Last updated: 2026-09-18_
 - [x] Details stub per-id outcome queues; drop search `default` + `failuresRemaining`
 - [x] SwiftUI section/row factoring: extract `View` structs (narrow inputs); document rule in adaptations + hexagonal skill
 - [x] Spanish localization (`es`): `GamesLibrary/Resources/` (`Assets.xcassets`, `Localizable.xcstrings`); SwiftUI literals + translator comments; UI tests stay on accessibility identifiers
+- [x] Extract reusable helpers into local packages: `IOSConveniences` (`ViewLoadState`, `HTMLText` Foundation scanner, `HTTPConveniences`), `SwiftUIComponents`, `XCUITestPOM`
+- [x] Agent skill `save-changes` (`/save-changes`): update memory, commit, and push
 
 ### Open
 

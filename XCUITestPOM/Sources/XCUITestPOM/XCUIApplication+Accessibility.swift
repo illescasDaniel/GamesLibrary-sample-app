@@ -2,17 +2,17 @@ import XCTest
 
 @MainActor
 extension XCUIApplication {
-	func element(matching identifier: String) -> XCUIElement {
+	public func element(matching identifier: String) -> XCUIElement {
 		descendants(matching: .any).matching(identifier: identifier).firstMatch
 	}
 
-	func elements(matchingIdentifierPrefix prefix: String) -> XCUIElementQuery {
+	public func elements(matchingIdentifierPrefix prefix: String) -> XCUIElementQuery {
 		descendants(matching: .any)
 			.matching(NSPredicate(format: "identifier BEGINSWITH %@", prefix))
 	}
 
 	@discardableResult
-	func waitForElement(
+	public func waitForElement(
 		matching identifier: String,
 		timeout: TimeInterval = UITestTimeout.screen
 	) throws -> XCUIElement {
@@ -21,7 +21,7 @@ extension XCUIApplication {
 	}
 
 	@discardableResult
-	func waitForElements(
+	public func waitForElements(
 		matchingIdentifierPrefix prefix: String,
 		timeout: TimeInterval = UITestTimeout.content
 	) throws -> XCUIElementQuery {
@@ -33,7 +33,7 @@ extension XCUIApplication {
 		return query
 	}
 
-	func requireNoElements(
+	public func requireNoElements(
 		matchingIdentifierPrefix prefix: String,
 		timeout: TimeInterval = UITestTimeout.absence
 	) throws {

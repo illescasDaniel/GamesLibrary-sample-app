@@ -1,5 +1,6 @@
 import SwiftUI
 import AccessibilityIdentifiers
+import SwiftUIComponents
 
 /// Cover + meta chips for game details. Narrow inputs keep this section from
 /// re-evaluating when only description/loading copy changes.

@@ -1,6 +1,8 @@
 import SwiftUI
 import GamesLibraryCore
 import AccessibilityIdentifiers
+import SwiftUIComponents
+import ViewLoadState
 
 struct GameDetailsView: View {
 	@State private var viewModel: GameDetailsViewModel

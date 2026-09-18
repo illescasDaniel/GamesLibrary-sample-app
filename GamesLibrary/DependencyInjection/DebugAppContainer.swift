@@ -2,6 +2,7 @@
 import Foundation
 import GamesLibraryCore
 import BetterLogger
+import HTTPConveniences
 
 /// DEBUG composition root: wraps production `AppContainer` and applies use-case / infra overrides.
 final class DebugAppContainer: AppContaining {
@@ -28,7 +29,7 @@ final class DebugAppContainer: AppContaining {
 			environment: environment,
 			logger: logger,
 			urlCache: overrides.urlCache,
-			responseInterceptors: [HTTPResponseLoggerInterceptor(logger: logger)]
+			responseInterceptors: [HTTPResponseLoggerInterceptor { logger.info($0) }]
 		)
 		self.overrides = overrides
 	}

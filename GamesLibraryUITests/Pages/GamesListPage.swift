@@ -1,5 +1,6 @@
 import XCTest
 import AccessibilityIdentifiers
+import XCUITestPOM
 
 @MainActor
 struct GamesListPage {

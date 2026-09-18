@@ -1,6 +1,8 @@
 import SwiftUI
 import GamesLibraryCore
 import AccessibilityIdentifiers
+import SwiftUIComponents
+import ViewLoadState
 
 struct GameListView: View {
 	@State private var viewModel: GamesListViewModel
@@ -111,14 +113,8 @@ private struct GamesListContentView: View {
 		.refreshable {
 			await onRefresh()
 		}
-		.onScrollGeometryChange(for: Bool.self) { geometry in
-			guard geometry.contentSize != .zero else { return false }
-			let distanceFromBottom = geometry.contentSize.height - geometry.contentOffset.y - geometry.containerSize.height
-			return distanceFromBottom < 100
-		} action: { oldValue, isNearBottom in
-			if isNearBottom && !oldValue {
-				onLoadNextPage()
-			}
+		.onNearBottom {
+			onLoadNextPage()
 		}
 	}
 }

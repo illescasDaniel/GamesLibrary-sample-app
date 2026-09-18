@@ -3,6 +3,7 @@ import Foundation
 import GamesLibraryCore
 @testable import GamesLibrary
 import BetterLogger
+import ViewLoadState
 
 @Suite
 @MainActor

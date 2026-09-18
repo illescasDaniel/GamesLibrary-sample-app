@@ -1,5 +1,6 @@
 import XCTest
 import AccessibilityIdentifiers
+import XCUITestPOM
 
 enum AppLauncher {
 	@MainActor
@@ -9,7 +10,7 @@ enum AppLauncher {
 		let app = XCUIApplication()
 		app.terminate()
 		app.launchEnvironment = [
-			UITestEnvironment.configKey: configuration.encodeToLaunchEnvironmentValue(),
+			UITestEnvironment.configKey: LaunchEnvironmentCodec.encode(configuration),
 		]
 		app.launch()
 		return GamesListPage(app: app)

@@ -2,6 +2,7 @@ import Observation
 import Foundation
 import BetterLogger
 import GamesLibraryCore
+import ViewLoadState
 
 @Observable
 final class GameDetailsViewModel {

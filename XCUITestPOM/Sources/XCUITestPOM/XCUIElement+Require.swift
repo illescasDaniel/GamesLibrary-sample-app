@@ -1,10 +1,10 @@
 import XCTest
 
-enum UITestElementError: Error, LocalizedError {
+public enum UITestElementError: Error, LocalizedError {
 	case notFound(identifier: String, timeout: TimeInterval)
 	case unexpectedlyPresent(identifier: String, timeout: TimeInterval)
 
-	var errorDescription: String? {
+	public var errorDescription: String? {
 		switch self {
 		case .notFound(let identifier, let timeout):
 			"Element '\(identifier)' not found within \(timeout)s"
@@ -14,17 +14,17 @@ enum UITestElementError: Error, LocalizedError {
 	}
 }
 
-enum UITestTimeout {
-	static let screen: TimeInterval = 10
-	static let content: TimeInterval = 15
-	static let emptyState: TimeInterval = 20
-	static let absence: TimeInterval = 2
+public enum UITestTimeout {
+	public static let screen: TimeInterval = 10
+	public static let content: TimeInterval = 15
+	public static let emptyState: TimeInterval = 20
+	public static let absence: TimeInterval = 2
 }
 
 @MainActor
 extension XCUIElement {
 	@discardableResult
-	func requireExistence(
+	public func requireExistence(
 		identifier: String,
 		timeout: TimeInterval
 	) throws -> XCUIElement {
@@ -34,7 +34,7 @@ extension XCUIElement {
 		return self
 	}
 
-	func requireAbsence(
+	public func requireAbsence(
 		identifier: String,
 		timeout: TimeInterval = UITestTimeout.absence
 	) throws {

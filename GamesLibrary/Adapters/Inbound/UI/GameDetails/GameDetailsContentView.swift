@@ -1,6 +1,7 @@
 import SwiftUI
 import AccessibilityIdentifiers
 import GamesLibraryCore
+import HTMLText
 
 /// Scrollable details body composed of section views with narrow inputs.
 struct GameDetailsContentView: View {

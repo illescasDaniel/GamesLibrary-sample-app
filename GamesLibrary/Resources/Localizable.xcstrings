@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "(No available description)" : {
+      "comment" : "Placeholder when a game has no description text.",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(No hay descripción disponible)"
+          }
+        }
+      }
+    },
     "%@ ⭐" : {
       "comment" : "Game rating chip; the number is the user score out of 5.",
       "localizations" : {
@@ -19,17 +30,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld h"
-          }
-        }
-      }
-    },
-    "(No available description)" : {
-      "comment" : "Placeholder when a game has no description text.",
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "(No hay descripción disponible)"
           }
         }
       }
@@ -91,6 +91,7 @@
     },
     "Loading..." : {
       "comment" : "Loading overlay shown while content is fetching.",
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

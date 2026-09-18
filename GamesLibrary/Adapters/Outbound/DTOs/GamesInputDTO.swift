@@ -1,4 +1,5 @@
 import Foundation
+import HTTPConveniences
 
 struct GamesInputDTO: URLQueryEncodable, nonisolated Hashable, Sendable {
 	let page: Int?

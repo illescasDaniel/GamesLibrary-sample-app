@@ -1,20 +1,21 @@
 import SwiftUI
 
-struct LoadingView: View {
+public struct LoadingView: View {
 	let title: LocalizedStringResource
 
-	init(_ title: LocalizedStringResource) {
+	public init(_ title: LocalizedStringResource) {
 		self.title = title
 	}
 
-	init() {
+	public init() {
 		self.title = LocalizedStringResource(
 			"Loading...",
+			bundle: .module,
 			comment: "Loading overlay shown while content is fetching."
 		)
 	}
 
-	var body: some View {
+	public var body: some View {
 		ProgressView {
 			Text(title)
 		}

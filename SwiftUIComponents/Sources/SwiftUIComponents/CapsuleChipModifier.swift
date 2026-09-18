@@ -1,7 +1,9 @@
 import SwiftUI
 
-struct CapsuleChipModifier: ViewModifier {
-	func body(content: Content) -> some View {
+public struct CapsuleChipModifier: ViewModifier {
+	public init() {}
+
+	public func body(content: Content) -> some View {
 		content
 			.font(.footnote.monospaced())
 			.fontWeight(.medium)
@@ -10,12 +12,12 @@ struct CapsuleChipModifier: ViewModifier {
 			.padding(8)
 			.background(
 				Capsule()
-					.fill(Color(.systemGray6))
+					.fill(.quaternary)
 			)
 	}
 }
 
-extension View {
+public extension View {
 	func capsuleChipStyle() -> some View {
 		modifier(CapsuleChipModifier())
 	}

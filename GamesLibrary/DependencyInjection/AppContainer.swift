@@ -2,6 +2,7 @@ import Foundation
 import GamesLibraryCore
 import HTTIES
 import BetterLogger
+import HTTPConveniences
 
 final class AppContainer: AppContaining {
 	private let environment: AppEnvironment
@@ -48,7 +49,7 @@ final class AppContainer: AppContaining {
 		self.urlCache = urlCache ?? Self.makeDefaultURLCache()
 		self.httpDataRequestHandler = httpDataRequestHandler
 		self.requestInterceptors = requestInterceptors ?? [
-			APIKeyRequestInterceptor(apiKey: environment.apiKey, logger: logger),
+			QueryItemRequestInterceptor(name: "key", value: environment.apiKey),
 		]
 		self.responseInterceptors = responseInterceptors
 	}
