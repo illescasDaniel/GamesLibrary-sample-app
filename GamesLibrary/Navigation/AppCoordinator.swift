@@ -14,6 +14,10 @@ final class AppCoordinator {
 		path.append(route)
 	}
 
+	func resetNavigation() {
+		path = NavigationPath()
+	}
+
 	@ViewBuilder
 	func build(_ route: Route) -> some View {
 		switch route {

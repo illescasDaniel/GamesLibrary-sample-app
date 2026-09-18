@@ -75,9 +75,9 @@ Enable both in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulato
 
 The project requires an API key from https://rawg.io/apidocs (free tier).
 
-Copy `Config.xcconfig.sample` to `Config.xcconfig` and set `API_KEY` plus your Apple `DEVELOPMENT_TEAM`. Build settings inject the key into a small C helper via `OTHER_CFLAGS` (not `Info.plist`), so it is not readable from the bundled plist. `Config.xcconfig` is gitignored.
+Copy `Secrets.swift.sample` to `GamesLibrary/Configuration/Secrets.swift` and set your RAWG API key. Copy `Config.xcconfig.sample` to `Config.xcconfig` and set your Apple `DEVELOPMENT_TEAM`. Both local files are gitignored. The API key is a plain Swift string literal (not in `Info.plist`).
 
-**Security:** That C string is still **easily recoverable** from the app binary (`strings`, disassembly). Do **not** ship real production API keys in client apps — prefer a backend (BFF) that holds secrets and authenticates the client. This demo’s client key is intentional learning debt, not a pattern to copy.
+**Security:** That string is still **easily recoverable** from the app binary (`strings`, disassembly). Do **not** ship real production API keys in client apps — prefer a backend (BFF) that holds secrets and authenticates the client. This demo’s client key is intentional learning debt, not a pattern to copy.
 
 ### Previews
 

@@ -2,6 +2,24 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-18 — API key in gitignored Secrets.swift
+
+- **Context:** API key was injected via C/`OTHER_CFLAGS` from `Config.xcconfig`, requiring a bridging header. That avoided Info.plist leakage but added complexity without real security (literal still recoverable from the binary).
+- **Decision:** Move the API key to gitignored `GamesLibrary/Configuration/Secrets.swift` (`enum Secrets { static let apiKey }`); track `Secrets.swift.sample`. Slim `Config.xcconfig` to `DEVELOPMENT_TEAM` only. Delete `APIKey.c`/`APIKey.h`/bridging header and clear `SWIFT_OBJC_BRIDGING_HEADER`.
+- **Rationale:** Same honesty about client-side extractability; far less machinery; signing stays in xcconfig where build settings belong.
+
+## 2026-09-18 — Extract DEBUG UI-test kit to `GamesLibraryUITestKit`
+
+- **Context:** Shared-process UI test files (`UITest*`) lived in `GamesLibrary/App/` and polluted production navigation (`RootView`, `AppCoordinator.uiTestSessionGeneration`).
+- **Decision:** Local package `GamesLibraryUITestKit` holds stubs, scenario host, apply handler, runtime, and `UITestHarnessView`. App keeps thin glue under `GamesLibrary/App/UITest/` (`UITestAppContent`, delegate, `DebugContainerOverrides`). `DebugGamesLibraryApp` owns `@State uiTestSessionGeneration` + `@State scenarioHost` and wraps `RootView` only when UI testing.
+- **Rationale:** Template-scale separation: production shell stays clean; DEBUG kit is linkable from tests/previews; session reset state lives in the DEBUG entry point, not navigation coordinator.
+
+## 2026-09-18 — Shared-process UI tests via pasteboard + DEBUG deep link
+
+- **Context:** Each UI test relaunched the app with `UITEST_CONFIG` in launch environment. That isolates scenarios but scales poorly (~100 tests → ~100 cold launches). This repo is a template for larger apps.
+- **Decision:** Launch once with `UITESTING=1`. Each test calls `AppLauncher.apply(configuration:)`: pop to list if needed, open `gameslibrary-uitest://apply?config=<base64url JSON>` via `XCUIDevice.shared.system.open`, wait for `AccessibilityIdentifier.UITest.ready(sessionGeneration:)`. DEBUG `UITestScenarioHost` owns mutable stub use cases; apply resets navigation and bumps `sessionGeneration` so `RootView` recreates the list ViewModel. Named pasteboard + `uitest-apply-trigger` remain as DEBUG manual fallback; legacy env-only `UITEST_CONFIG` (without `UITESTING`) still works for one-shot launches.
+- **Rationale:** Launch environment cannot change after `launch()`; URL query carries config without cross-process pasteboard; `XCUIApplication.open` is unreliable after in-app navigation — `XCUIDevice.shared.system.open` + pop-to-root fixes delivery. Apply resets nav, replaces stub tables, bumps `sessionGeneration`, and `.id(generation)` recreates the list ViewModel. Serial test plan required (no parallel shared process). See adaptations doc § Shared-process UI tests for the full flow.
+
 ## 2026-09-18 — Extract shared helpers into three local Swift packages
 
 - **Context:** GamesLibrary had reusable UI-state, HTML stripping, HTTP interceptors, SwiftUI chrome, and XCUITest POM helpers inlined in the app. Other similar iOS apps cannot import them until they live as packages.

@@ -1,38 +1,50 @@
-#if DEBUG
 import Foundation
 import AccessibilityIdentifiers
 import GamesLibraryCore
 
-enum UITestSupport {
+public enum UITestSupport {
+	public struct StubTables {
+		public var searchResponses: [SearchStubKey: [GameSummary]]
+		public var gamesForDetails: [GameSummary]
+		public var detailsResponses: [GameID: [DetailsStubOutcome]]
+	}
+
 	private static var configurationJSON: String? {
 		ProcessInfo.processInfo.environment[UITestEnvironment.configKey]
 	}
 
-	static var isRunningUITests: Bool {
-		configurationJSON != nil
+	public static var isSharedProcessUITesting: Bool {
+		ProcessInfo.processInfo.environment[UITestEnvironment.testingKey] == "1"
 	}
 
-	/// Maps `UITEST_CONFIG` to composition-root use-case overrides for deterministic UI tests.
-	static func makeOverrides() -> DebugAppContainer.Overrides? {
+	public static var isRunningUITests: Bool {
+		isSharedProcessUITesting || configurationJSON != nil
+	}
+
+	public static func initialConfiguration() -> UITestConfiguration? {
 		guard let raw = configurationJSON else { return nil }
-		let configuration = UITestConfiguration.decode(fromLaunchEnvironmentValue: raw)
+		return UITestConfiguration.decodeIfPresent(fromLaunchEnvironmentValue: raw)
+	}
+
+	public static func makeStubTables(from configuration: UITestConfiguration) -> StubTables {
 		let searchStub = makeSearchStub(from: configuration.gamesList)
-		return DebugAppContainer.Overrides(
-			searchGamesUseCase: searchStub.useCase,
-			getGameDetailsUseCase: makeDetailsStub(
-				from: configuration.gameDetails,
-				fallbackGames: searchStub.gamesForDetails
-			),
-			urlCache: URLCache(memoryCapacity: 0, diskCapacity: 0)
+		let detailsResponses = makeDetailsStub(
+			from: configuration.gameDetails,
+			fallbackGames: searchStub.gamesForDetails
+		)
+		return StubTables(
+			searchResponses: searchStub.responses,
+			gamesForDetails: searchStub.gamesForDetails,
+			detailsResponses: detailsResponses
 		)
 	}
 
 	private static func makeSearchStub(
 		from gamesList: UITestConfiguration.GamesList
-	) -> (useCase: StubSearchGamesUseCase, gamesForDetails: [GameSummary]) {
+	) -> (responses: [SearchStubKey: [GameSummary]], gamesForDetails: [GameSummary]) {
 		guard let configured = gamesList.responses else {
 			return (
-				StubSearchGamesUseCase.constant(UITestFixtures.defaultGames),
+				[SearchStubKey(page: 1, searchText: ""): UITestFixtures.defaultGames],
 				UITestFixtures.defaultGames
 			)
 		}
@@ -49,19 +61,19 @@ enum UITestSupport {
 			}
 		}
 
-		return (StubSearchGamesUseCase(responses: responses), gamesForDetails)
+		return (responses, gamesForDetails)
 	}
 
 	private static func makeDetailsStub(
 		from gameDetails: UITestConfiguration.GameDetails,
 		fallbackGames: [GameSummary]
-	) -> StubGetGameDetailsUseCase {
+	) -> [GameID: [DetailsStubOutcome]] {
 		if let configured = gameDetails.responses {
 			var responses: [GameID: [DetailsStubOutcome]] = [:]
 			for entry in configured {
 				responses[GameID(entry.id)] = entry.outcomes.map { $0.toDomain() }
 			}
-			return StubGetGameDetailsUseCase(responses: responses)
+			return responses
 		}
 
 		var responses: [GameID: [DetailsStubOutcome]] = [:]
@@ -75,7 +87,6 @@ enum UITestSupport {
 				)
 			responses[game.id] = [.success(details)]
 		}
-		return StubGetGameDetailsUseCase(responses: responses)
+		return responses
 	}
 }
-#endif

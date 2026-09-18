@@ -1,6 +1,7 @@
 import Testing
 import Foundation
 import GamesLibraryCore
+import GamesLibraryUITestKit
 @testable import GamesLibrary
 import BetterLogger
 import ViewLoadState

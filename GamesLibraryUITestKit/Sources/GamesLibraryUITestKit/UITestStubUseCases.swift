@@ -1,52 +1,56 @@
-#if DEBUG
 import Foundation
-import Synchronization
 import AccessibilityIdentifiers
 import GamesLibraryCore
 
 /// Deterministic inbound stubs for UI tests and SwiftUI previews.
-/// Wired via `UITestSupport.makeOverrides()` or `DebugAppContainer.Overrides`.
-/// Stay on MainActor (module default) like test mocks — `nonisolated` port methods
-/// that touch isolated state deadlock when awaited from a MainActor ViewModel.
-enum UITestFixtures {
-	static let defaultGames: [GameSummary] = [
+public enum UITestFixtures {
+	public static let defaultGames: [GameSummary] = [
 		UITestConfiguration.GameSummaryFixture.stubGameOne.toDomain(),
 		UITestConfiguration.GameSummaryFixture.stubGameTwo.toDomain(),
 	]
 
-	static let defaultDetailsByID: [GameID: GameDetails] = [
+	public static let defaultDetailsByID: [GameID: GameDetails] = [
 		GameID(UITestConfiguration.GameSummaryFixture.stubGameOne.id):
 			UITestConfiguration.GameDetailsFixture.stubGameOne.toDomain(),
 	]
 }
 
 /// Dictionary key for canned search replies (`page` + `searchText`).
-struct SearchStubKey: Hashable, Sendable {
-	var page: Int
-	var searchText: String
+public struct SearchStubKey: Hashable, Sendable {
+	public var page: Int
+	public var searchText: String
+
+	public init(page: Int, searchText: String) {
+		self.page = page
+		self.searchText = searchText
+	}
 }
 
 /// Canned `(page, searchText)` → games lookup. Missing keys return `[]`.
 @MainActor
-final class StubSearchGamesUseCase: SearchGamesUseCasePort {
-	private let responses: [SearchStubKey: [GameSummary]]
+public final class StubSearchGamesUseCase: SearchGamesUseCasePort {
+	private var responses: [SearchStubKey: [GameSummary]]
 
-	init(responses: [SearchStubKey: [GameSummary]]) {
+	public init(responses: [SearchStubKey: [GameSummary]] = [:]) {
 		self.responses = responses
 	}
 
 	/// Registers a single `(1, "")` reply (typical list preview / happy-path load).
-	static func constant(_ games: [GameSummary]) -> StubSearchGamesUseCase {
+	public static func constant(_ games: [GameSummary]) -> StubSearchGamesUseCase {
 		StubSearchGamesUseCase(responses: [SearchStubKey(page: 1, searchText: ""): games])
 	}
 
-	func callAsFunction(page: Int, searchText: String) async throws -> [GameSummary] {
+	public func apply(responses: [SearchStubKey: [GameSummary]]) {
+		self.responses = responses
+	}
+
+	public func callAsFunction(page: Int, searchText: String) async throws -> [GameSummary] {
 		responses[SearchStubKey(page: page, searchText: searchText)] ?? []
 	}
 }
 
 /// One canned details reply (success payload or failure).
-enum DetailsStubOutcome: Sendable {
+public enum DetailsStubOutcome: Sendable {
 	case success(GameDetails)
 	case failure(any Error)
 }
@@ -54,11 +58,11 @@ enum DetailsStubOutcome: Sendable {
 /// Canned `GameID` → outcome queue. Each call consumes the next outcome for that id.
 /// `repeating` entries always succeed (previews / `.constant`) without consuming.
 @MainActor
-final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort {
-	private let repeating: [GameID: GameDetails]
+public final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort {
+	private var repeating: [GameID: GameDetails]
 	private var responses: [GameID: [DetailsStubOutcome]]
 
-	init(
+	public init(
 		responses: [GameID: [DetailsStubOutcome]] = [:],
 		repeating: [GameID: GameDetails] = [:]
 	) {
@@ -67,11 +71,19 @@ final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort {
 	}
 
 	/// Always returns `details` for `details.id` (typical details preview).
-	static func constant(_ details: GameDetails) -> StubGetGameDetailsUseCase {
+	public static func constant(_ details: GameDetails) -> StubGetGameDetailsUseCase {
 		StubGetGameDetailsUseCase(repeating: [details.id: details])
 	}
 
-	func callAsFunction(id: GameID) async throws -> GameDetails {
+	public func apply(
+		responses: [GameID: [DetailsStubOutcome]],
+		repeating: [GameID: GameDetails] = [:]
+	) {
+		self.responses = responses
+		self.repeating = repeating
+	}
+
+	public func callAsFunction(id: GameID) async throws -> GameDetails {
 		if let details = repeating[id] {
 			return details
 		}
@@ -89,13 +101,13 @@ final class StubGetGameDetailsUseCase: GetGameDetailsUseCasePort {
 	}
 }
 
-enum StubGetGameDetailsUseCaseError: Error {
+public enum StubGetGameDetailsUseCaseError: Error {
 	case noResponse(for: GameID)
 	case forcedFailure
 }
 
 extension UITestConfiguration.GameSummaryFixture {
-	func toDomain() -> GameSummary {
+	public func toDomain() -> GameSummary {
 		GameSummary(
 			id: GameID(id),
 			name: name,
@@ -113,7 +125,7 @@ extension UITestConfiguration.GameSummaryFixture {
 }
 
 extension UITestConfiguration.GameDetailsFixture {
-	func toDomain() -> GameDetails {
+	public func toDomain() -> GameDetails {
 		GameDetails(
 			summary: summary.toDomain(),
 			descriptionRaw: descriptionRaw,
@@ -124,7 +136,7 @@ extension UITestConfiguration.GameDetailsFixture {
 }
 
 extension UITestConfiguration.DetailsOutcome {
-	func toDomain() -> DetailsStubOutcome {
+	public func toDomain() -> DetailsStubOutcome {
 		switch self {
 		case .success(let fixture):
 			.success(fixture.toDomain())
@@ -133,4 +145,3 @@ extension UITestConfiguration.DetailsOutcome {
 		}
 	}
 }
-#endif

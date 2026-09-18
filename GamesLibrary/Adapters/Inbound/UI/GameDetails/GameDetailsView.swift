@@ -67,6 +67,8 @@ struct GameDetailsView: View {
 }
 
 #if DEBUG
+import GamesLibraryUITestKit
+
 #Preview {
 	let summary = GameSummary(id: GameID(1), name: "Preview Game", rating: 4.2, released: "2020-01-01")
 	let details = GameDetails(summary: summary, descriptionRaw: "A great game.")

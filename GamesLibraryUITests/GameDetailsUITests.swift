@@ -9,14 +9,14 @@ final class GameDetailsUITests: XCTestCase {
 
 	@MainActor
 	func testGivenGamesListWhenGameRowTappedThenOpensDetails() async throws {
-		let details = try await AppLauncher.launchGameDetails()
+		let details = try await AppLauncher.applyGameDetails()
 
 		_ = try await details.screen
 	}
 
 	@MainActor
 	func testGivenDetailsWhenLoadedThenShowsDescriptionAndWebsite() async throws {
-		let details = try await AppLauncher.launchGameDetails()
+		let details = try await AppLauncher.applyGameDetails()
 
 		_ = try await details.description
 		_ = try await details.websiteLink
@@ -24,7 +24,7 @@ final class GameDetailsUITests: XCTestCase {
 
 	@MainActor
 	func testGivenDetailsWhenLoadedThenShowsMetadataChips() async throws {
-		let details = try await AppLauncher.launchGameDetails()
+		let details = try await AppLauncher.applyGameDetails()
 
 		_ = try await details.rating
 		_ = try await details.year
@@ -35,7 +35,7 @@ final class GameDetailsUITests: XCTestCase {
 
 	@MainActor
 	func testGivenDetailsFailureWhenOpenedThenShowsErrorWithRetry() async throws {
-		let details = try await AppLauncher.launchGameDetails(
+		let details = try await AppLauncher.applyGameDetails(
 			configuration: .init(gameDetails: .failingThenSucceeding())
 		)
 
@@ -45,7 +45,7 @@ final class GameDetailsUITests: XCTestCase {
 
 	@MainActor
 	func testGivenDetailsFailureWhenRetryTappedThenShowsContent() async throws {
-		let details = try await AppLauncher.launchGameDetails(
+		let details = try await AppLauncher.applyGameDetails(
 			configuration: .init(gameDetails: .failingThenSucceeding())
 		)
 

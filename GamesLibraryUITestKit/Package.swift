@@ -2,24 +2,23 @@
 import PackageDescription
 
 let package = Package(
-	name: "XCUITestPOM",
+	name: "GamesLibraryUITestKit",
 	platforms: [.iOS("18.0"), .macOS("14.0")],
 	products: [
-		.library(name: "XCUITestPOM", targets: ["XCUITestPOM"]),
+		.library(name: "GamesLibraryUITestKit", targets: ["GamesLibraryUITestKit"]),
 	],
 	dependencies: [
+		.package(path: "../GamesLibraryCore"),
 		.package(path: "../GamesLibraryAccessibilityIdentifiers"),
 	],
 	targets: [
 		.target(
-			name: "XCUITestPOM",
+			name: "GamesLibraryUITestKit",
 			dependencies: [
+				"GamesLibraryCore",
 				.product(name: "AccessibilityIdentifiers", package: "GamesLibraryAccessibilityIdentifiers"),
 			],
-			path: "Sources/XCUITestPOM",
-			linkerSettings: [
-				.linkedFramework("XCTest"),
-			]
+			path: "Sources/GamesLibraryUITestKit"
 		),
 	]
 )

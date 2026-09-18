@@ -4,6 +4,18 @@ import Foundation
 public enum UITestEnvironment {
 	/// JSON-encoded `UITestConfiguration` for deterministic DEBUG UI-test overrides.
 	public static let configKey = "UITEST_CONFIG"
+
+	/// When `"1"`, the DEBUG app uses shared-process UI testing (one launch, runtime scenario apply).
+	public static let testingKey = "UITESTING"
+
+	/// Named pasteboard for `UITestConfiguration` JSON between UI tests and the app.
+	public static let pasteboardName = "gameslibrary.uitest.configuration"
+
+	/// DEBUG-only deep link scheme for applying a scenario without relaunching.
+	public static let deepLinkScheme = "gameslibrary-uitest"
+
+	/// Deep link host that triggers pasteboard read + scenario apply.
+	public static let applyHost = "apply"
 }
 
 /// Scenario payload passed via `UITEST_CONFIG`. Add per-screen nested configs instead of new env keys.
@@ -206,13 +218,14 @@ public struct UITestConfiguration: Codable, Equatable, Sendable {
 	}
 
 	public static func decode(fromLaunchEnvironmentValue value: String) -> UITestConfiguration {
-		guard let data = value.data(using: .utf8) else {
-			preconditionFailure("UITEST_CONFIG was not UTF-8")
+		guard let configuration = decodeIfPresent(fromLaunchEnvironmentValue: value) else {
+			preconditionFailure("Failed to decode UITEST_CONFIG")
 		}
-		do {
-			return try JSONDecoder().decode(UITestConfiguration.self, from: data)
-		} catch {
-			preconditionFailure("Failed to decode UITEST_CONFIG: \(error)")
-		}
+		return configuration
+	}
+
+	public static func decodeIfPresent(fromLaunchEnvironmentValue value: String) -> UITestConfiguration? {
+		guard let data = value.data(using: .utf8) else { return nil }
+		return try? JSONDecoder().decode(UITestConfiguration.self, from: data)
 	}
 }

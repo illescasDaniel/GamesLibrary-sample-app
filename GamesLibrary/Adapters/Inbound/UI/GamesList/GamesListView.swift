@@ -120,6 +120,8 @@ private struct GamesListContentView: View {
 }
 
 #if DEBUG
+import GamesLibraryUITestKit
+
 #Preview("Success") {
 	let container = DebugAppContainer(overrides: .init(
 		searchGamesUseCase: StubSearchGamesUseCase.constant([

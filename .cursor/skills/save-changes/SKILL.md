@@ -25,7 +25,7 @@ Hand off a dirty tree: refresh `memory/`, commit, push. Do **not** force-push, s
 
 2. **Review**
    - Parallel: `git status`, `git diff` (staged + unstaged), `git log` (recent messages for style), `git status -sb` (upstream).
-   - Do not stage secrets (`Config.xcconfig`, credentials, `.env`). Warn if the user asked to commit those.
+   - Do not stage secrets (`Config.xcconfig`, `GamesLibrary/Configuration/Secrets.swift`, credentials, `.env`). Warn if the user asked to commit those.
 
 3. **Stage and commit**
    - Stage relevant tracked/untracked files (`git add` paths; no `-i`).

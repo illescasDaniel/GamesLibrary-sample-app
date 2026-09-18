@@ -25,4 +25,13 @@ public enum AccessibilityIdentifier {
 	public static func gameRow(id: Int) -> String {
 		"\(GamesList.gameRowPrefix)\(id)"
 	}
+
+	/// Shared-process UI test session markers (DEBUG app only).
+	public enum UITest {
+		public static let applyTrigger = "uitest-apply-trigger"
+
+		public static func ready(sessionGeneration: Int) -> String {
+			"uitest-ready-\(sessionGeneration)"
+		}
+	}
 }

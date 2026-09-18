@@ -25,7 +25,7 @@ Commit any pending work on this worktree branch first, then merge that branch in
 
 2. **Commit worktree changes first (required if dirty)**
    - If the worktree has staged, unstaged, or untracked files that belong to the task, **commit them on the worktree branch before merging**.
-   - Follow the user’s git safety rules and commit style: review `git status` / `git diff` / recent `git log`; stage relevant paths only (never secrets such as `Config.xcconfig`); no `--no-verify`, no amend unless the usual amend conditions are met, no force-push, no git config changes, no `-i`.
+   - Follow the user’s git safety rules and commit style: review `git status` / `git diff` / recent `git log`; stage relevant paths only (never secrets such as `Config.xcconfig` or `GamesLibrary/Configuration/Secrets.swift`); no `--no-verify`, no amend unless the usual amend conditions are met, no force-push, no git config changes, no `-i`.
    - Use a HEREDOC for the message body; focus on why.
    - If the worktree is already clean, skip this step.
    - Do **not** skip ahead to copying dirty files into main — the apply path is commit-then-merge.

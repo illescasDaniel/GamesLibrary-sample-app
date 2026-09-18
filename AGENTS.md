@@ -2,6 +2,14 @@
 
 This repository uses **Spec-Driven Development (SDD)** and **Hexagonal Architecture**. Follow the Phase Gate Protocol for every feature or architectural change.
 
+## Scale mindset
+
+Despite the small current footprint, **always act as if this project will grow large.** Small, medium, and larger decisions alike should assume future scale — do not take shortcuts that would block that growth.
+
+- Follow layer boundaries, ports, specs, and tests even when a change feels trivial.
+- Prefer conventions and clear abstractions over one-off fixes that would not survive a bigger codebase.
+- When choosing between options, pick the one that stays correct as features, files, and contributors multiply.
+
 ## Memory bank
 
 Per-branch project state lives in `memory/` (git-tracked). Always-on rule: `.cursor/rules/agent-memory.mdc`.

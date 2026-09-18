@@ -44,6 +44,9 @@ _Last updated: 2026-09-18_
 - [x] Spanish localization (`es`): `GamesLibrary/Resources/` (`Assets.xcassets`, `Localizable.xcstrings`); SwiftUI literals + translator comments; UI tests stay on accessibility identifiers
 - [x] Extract reusable helpers into local packages: `IOSConveniences` (`ViewLoadState`, `HTMLText` Foundation scanner, `HTTPConveniences`), `SwiftUIComponents`, `XCUITestPOM`
 - [x] Agent skill `save-changes` (`/save-changes`): update memory, commit, and push
+- [x] Shared-process UI tests: one launch (`UITESTING=1`), runtime apply via deep-link URL + ready marker, mutable stub host
+- [x] `GamesLibraryUITestKit` local package; DEBUG glue in `GamesLibrary/App/UITest/`; documented reload flow in adaptations
+- [x] API key via gitignored `Secrets.swift` (+ sample); `Config.xcconfig` holds `DEVELOPMENT_TEAM` only; drop C/bridging
 
 ### Open
 
