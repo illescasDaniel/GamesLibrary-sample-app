@@ -45,6 +45,7 @@ _Last updated: 2026-09-18_
 - [x] Extract reusable helpers into local packages: `IOSConveniences` (`ViewLoadState`, `HTMLText` Foundation scanner, `HTTPConveniences`), `SwiftUIComponents`, `XCUITestPOM`
 - [x] Agent skill `save-changes` (`/save-changes`): update memory, commit, and push
 - [x] Shared-process UI tests: one launch (`UITESTING=1`), runtime apply via deep-link URL + ready marker, mutable stub host
+- [x] Slim UI-test harness: inline 1×1 ready marker; drop unused apply-trigger + pasteboard fallback
 - [x] `GamesLibraryUITestKit` local package; DEBUG glue in `GamesLibrary/App/UITest/`; documented reload flow in adaptations
 - [x] API key via gitignored `Secrets.swift` (+ sample); `Config.xcconfig` holds `DEVELOPMENT_TEAM` only; drop C/bridging
 

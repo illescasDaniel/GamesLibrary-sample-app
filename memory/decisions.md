@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-18 — Drop UITestHarnessView and pasteboard apply fallback
+
+- **Context:** Shared-process UI tests waited on an invisible `UITestHarnessView` overlay (`uitest-ready-{N}` plus unused `uitest-apply-trigger` / pasteboard). The overlay was not visible during automatic runs, so it looked unused.
+- **Decision:** Delete `UITestHarnessView`. Keep a 1×1 `Color.clear` ready marker on `UITestAppContent`. Apply scenarios via URL query only; remove pasteboard transport, apply-trigger button, and `UITestRuntime.onSessionApplied` (session generation already syncs from `UITestScenarioHost` via `onChange`).
+- **Rationale:** Automatic tests still need the generation-scoped ready handshake so they do not query leftover UI after `.id` recreate. The apply button and pasteboard path had no callers.
+
 ## 2026-09-18 — API key in gitignored Secrets.swift
 
 - **Context:** API key was injected via C/`OTHER_CFLAGS` from `Config.xcconfig`, requiring a bridging header. That avoided Info.plist leakage but added complexity without real security (literal still recoverable from the binary).

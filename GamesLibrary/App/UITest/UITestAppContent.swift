@@ -1,5 +1,6 @@
 #if DEBUG
 import SwiftUI
+import AccessibilityIdentifiers
 import GamesLibraryUITestKit
 
 /// DEBUG shell around production `RootView` for shared-process UI tests.
@@ -14,7 +15,13 @@ struct UITestAppContent: View {
 			RootView(coordinator: coordinator, container: container)
 				.id(uiTestSessionGeneration)
 			if uiTestSessionGeneration > 0 {
-				UITestHarnessView(sessionGeneration: uiTestSessionGeneration)
+				Color.clear
+					.frame(width: 1, height: 1)
+					.accessibilityElement()
+					.accessibilityIdentifier(
+						AccessibilityIdentifier.UITest.ready(sessionGeneration: uiTestSessionGeneration)
+					)
+					.allowsHitTesting(false)
 			}
 		}
 		.onAppear {
@@ -28,7 +35,6 @@ struct UITestAppContent: View {
 	private func wireUITestRuntime() {
 		UITestRuntime.scenarioHost = scenarioHost
 		UITestRuntime.navigationResetter = coordinator
-		UITestRuntime.onSessionApplied = { uiTestSessionGeneration = $0 }
 		uiTestSessionGeneration = scenarioHost.sessionGeneration
 	}
 }

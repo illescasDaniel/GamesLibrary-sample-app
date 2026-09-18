@@ -62,7 +62,7 @@ Do not treat the Swift string literal as secure storage. Prefer a backend that h
 | Playbook | GamesLibrary |
 |----------|--------------|
 | Unit tests from BDD (`Swift Testing`) | ViewModels + use cases in `GamesLibraryTests` and `GamesLibraryCoreTests` |
-| UI tests (`XCTest`) | `GamesLibraryUITests` — **shared-process**: launch once with `UITESTING=1`, apply each scenario via pasteboard + DEBUG deep link (`gameslibrary-uitest://apply`); run serially (`parallelizable: false` in test plan) |
+| UI tests (`XCTest`) | `GamesLibraryUITests` — **shared-process**: launch once with `UITESTING=1`, apply each scenario via DEBUG deep link (`gameslibrary-uitest://apply?config=…`); run serially (`parallelizable: false` in test plan) |
 | SDD exploratory UI (MCP) | `.cursor/mcp.json` → `ios-simulator` (`ios-mcp-server`); see [ios-simulator-mcp.md](ios-simulator-mcp.md) |
 
 ### UI test accessibility contract
@@ -83,7 +83,7 @@ Instead:
 | Shared IDs | `GamesLibraryAccessibilityIdentifiers` | Compile-time constants only |
 | Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; **async throwing** element accessors |
 | Launch | `GamesLibraryUITests/Support/AppLauncher` | `ensureLaunched()` once; `apply(configuration:)` per scenario |
-| DEBUG UI-test kit | `GamesLibraryUITestKit/` (local package) | Stubs, scenario host, apply handler, harness view |
+| DEBUG UI-test kit | `GamesLibraryUITestKit/` (local package) | Stubs, scenario host, apply handler, runtime |
 | DEBUG app glue | `GamesLibrary/App/UITest/` | `UITestAppContent` shell, container override mapping |
 | Tests | One `XCTestCase` per screen/feature | `async throws` tests; no raw identifiers |
 
@@ -106,7 +106,7 @@ Large suites should **not** relaunch the app per test.
 
 #### How config is passed (test → app)
 
-The scenario payload is a `UITestConfiguration` (Codable JSON). It travels in the **deep link query string**, not the pasteboard (pasteboard is unreliable cross-process between the test runner and the app).
+The scenario payload is a `UITestConfiguration` (Codable JSON). It travels in the **deep link query string**.
 
 1. Test builds URL: `gameslibrary-uitest://apply?config=<base64url(JSON)>`
    - Encoding lives in `UITestConfiguration.makeApplyDeepLinkURL()` (`AccessibilityIdentifiers`).
@@ -115,17 +115,15 @@ The scenario payload is a `UITestConfiguration` (Codable JSON). It travels in th
 3. Test pops to the games list first (`AppLauncher.popToRoot`) so the app is in a known state before apply.
 4. SwiftUI receives the URL via `.onOpenURL(perform: UITestRuntime.handleOpenURL)` on `UITestAppContent`.
 
-Pasteboard + the hidden `uitest-apply-trigger` button remain as a **manual DEBUG fallback** (tap trigger in the harness overlay); automated tests use the URL path only.
-
 #### How the app reloads (apply handler)
 
 When `UITestRuntime.handleOpenURL` runs:
 
-1. **Decode** — `UITestApplyHandler` reads `config` from the URL query (falls back to pasteboard for manual runs).
+1. **Decode** — `UITestApplyHandler` reads `config` from the URL query.
 2. **Reset navigation** — `AppCoordinator.resetNavigation()` clears `NavigationPath` (drops any details screen).
 3. **Replace stubs** — `UITestScenarioHost.apply(configuration)` rebuilds mutable `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` tables and bumps `sessionGeneration`.
 4. **Recreate UI** — `DebugGamesLibraryApp` holds `@State uiTestSessionGeneration`; `UITestAppContent` applies `.id(uiTestSessionGeneration)` on production `RootView`, forcing SwiftUI to destroy and recreate the list `@State` ViewModel (fresh `.task` → new stub data).
-5. **Signal ready** — harness overlay exposes `AccessibilityIdentifier.UITest.ready(sessionGeneration:)`; test waits for the matching generation before querying page objects.
+5. **Signal ready** — a 1×1 `Color.clear` overlay on `UITestAppContent` exposes `AccessibilityIdentifier.UITest.ready(sessionGeneration:)`; the test waits for the matching generation before querying page objects. Invisible on purpose so it does not show up in screenshots.
 
 Both sides track generation: app bumps `UITestScenarioHost.sessionGeneration`; test increments its own counter in `AppLauncher` and waits for `uitest-ready-{N}`.
 
@@ -140,7 +138,7 @@ let details = try await AppLauncher.applyGameDetails()    // apply + tap row
 #### Constraints
 
 - **Serial test plan only** — shared process is incompatible with parallel UI tests on one simulator.
-- **DEBUG only** — `gameslibrary-uitest` URL scheme and harness are not used in Release.
+- **DEBUG only** — `gameslibrary-uitest` URL scheme and ready marker are not used in Release.
 - **Legacy path** — one-launch-per-test via launch-environment `UITEST_CONFIG` (without `UITESTING=1`) still works via `DebugAppContainer.Overrides.uitestFromLaunchEnvironment()`.
 
 When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .empty)` through `AppLauncher.apply` (canned `(1, "")` → `[]`). For custom rows / search / pagination, set `gamesList.responses` to `[SearchResponse]` with `GameSummaryFixture` (mapped to Core in DEBUG `UITestSupport`). For details Retry, use `gameDetails: .failingThenSucceeding()` (per-id outcome queue: `.failure` then `.success`). `nil` details responses → one success per list stub game. Previews share `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` (`.constant(...)`) via Overrides — do not seed `ViewModel.searchText` from the container.

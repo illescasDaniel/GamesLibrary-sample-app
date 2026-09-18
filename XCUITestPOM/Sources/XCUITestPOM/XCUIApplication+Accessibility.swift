@@ -11,12 +11,6 @@ extension XCUIApplication {
 		try waitForElement(matching: identifier, timeout: timeout)
 	}
 
-	@discardableResult
-	public func tapUITestApplyTrigger(timeout: TimeInterval = UITestTimeout.screen) throws -> XCUIElement {
-		try waitForElement(matching: AccessibilityIdentifier.UITest.applyTrigger, timeout: timeout)
-			.tap()
-		return element(matching: AccessibilityIdentifier.UITest.applyTrigger)
-	}
 	public func element(matching identifier: String) -> XCUIElement {
 		descendants(matching: .any).matching(identifier: identifier).firstMatch
 	}

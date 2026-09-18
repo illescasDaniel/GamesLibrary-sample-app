@@ -8,13 +8,10 @@ public enum UITestEnvironment {
 	/// When `"1"`, the DEBUG app uses shared-process UI testing (one launch, runtime scenario apply).
 	public static let testingKey = "UITESTING"
 
-	/// Named pasteboard for `UITestConfiguration` JSON between UI tests and the app.
-	public static let pasteboardName = "gameslibrary.uitest.configuration"
-
 	/// DEBUG-only deep link scheme for applying a scenario without relaunching.
 	public static let deepLinkScheme = "gameslibrary-uitest"
 
-	/// Deep link host that triggers pasteboard read + scenario apply.
+	/// Deep link host that applies a scenario from the URL query `config` payload.
 	public static let applyHost = "apply"
 }
 

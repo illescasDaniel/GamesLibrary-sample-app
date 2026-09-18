@@ -12,11 +12,8 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Shared-process UI tests: one launch (`UITESTING=1`), runtime apply via deep-link URL + `XCUIDevice.shared.system.open`, ready marker
-- Extracted `GamesLibraryUITestKit`; app glue in `GamesLibrary/App/UITest/`; production `RootView` / `AppCoordinator` clean
-- Documented reload + config-passing flow in `GamesLibrary-adaptations.md`
-- API key moved to gitignored `Secrets.swift` (+ sample); removed C/bridging header
-- Removed deprecated `UITestAppDelegate` (SwiftUI `.onOpenURL` only)
+- Slimmed UI-test harness: deleted `UITestHarnessView`; 1×1 `Color.clear` ready marker on `UITestAppContent`
+- URL-only scenario apply; removed pasteboard transport, apply-trigger, `onSessionApplied`
 
 ## Next steps
 
