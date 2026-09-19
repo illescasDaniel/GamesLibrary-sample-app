@@ -64,6 +64,7 @@ _Last updated: 2026-09-19_
 - [x] Debug-only `Info-Debug.plist` for UI-test deep link scheme; Release uses generated Info.plist (no `gameslibrary-uitest` URL type)
 - [x] README documents ASTK (shared-process launch + async POM) and current stack
 - [x] Merge `develop` into `main`
+- [x] Confirm signing team comes from gitignored `Config.xcconfig` only (no hardcoded `DEVELOPMENT_TEAM` in `project.pbxproj`)
 
 ### Open
 

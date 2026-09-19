@@ -4,16 +4,16 @@ _Last updated: 2026-09-19_
 
 ## Branch
 
-- `develop` (merged into `main`)
+- `main` (synced with `develop`)
 
 ## Current focus
 
-Continue hexagonal/SDD feature work on `develop`. `main` is caught up with develop.
+Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- README: first-class ASTK callout (shared-process launch + async POM), authored dependencies, Spanish localization, iOS 26.4 / Swift 6, test-plan notes.
-- Merged `develop` into `main` and pushed both remotes.
+- Set local gitignored `Config.xcconfig` `DEVELOPMENT_TEAM = PRK6268SLD`
+- Cleared local hardcoded `DEVELOPMENT_TEAM` overrides from `project.pbxproj` so Debug/Release inherit via `baseConfigurationReference` → `Config.xcconfig` (tracked project already had this layout)
 
 ## Next steps
 
