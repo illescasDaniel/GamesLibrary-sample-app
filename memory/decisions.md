@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-19 — Debug-only Info.plist for UI-test deep link scheme
+
+- **Context:** `gameslibrary-uitest` URL scheme was registered in a shared `Info.plist` referenced by both Debug and Release build configurations, even though shared-process UI tests and the deep-link transport are DEBUG-only.
+- **Decision:** Rename to `Info-Debug.plist`; set `INFOPLIST_FILE` on Debug only. Release uses `GENERATE_INFOPLIST_FILE = YES` with no custom plist (no URL types). Document in adaptations + ASTK README reference in transport comment.
+- **Rationale:** Release builds should not advertise a test-only URL scheme; aligns with ASTK's recommended Debug-only plist pattern.
+
 ## 2026-09-19 — Publish ASTK as standalone GitHub repo
 
 - **Context:** `AsyncSharedTestingKit` was a local package inside GamesLibrary, ready for reuse but not independently versioned or consumable by other projects.

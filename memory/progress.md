@@ -61,6 +61,7 @@ _Last updated: 2026-09-19_
 - [x] Colocate UI-test session generation in `UITestAppContent`; drop legacy launch-env `uitestFromLaunchEnvironment()` path
 - [x] Colocate shared-process UI-test bootstrapping in `UITestAppContent` (`scenarioHost`, coordinator, container); slim `DebugAppContainer` to `Overrides` only (no stored `scenarioHost`)
 - [x] Private app content shells: Release `AppContent`, DEBUG `DebugAppContent`; `@main` structs route only (no coordinator `@State` in `App`)
+- [x] Debug-only `Info-Debug.plist` for UI-test deep link scheme; Release uses generated Info.plist (no `gameslibrary-uitest` URL type)
 
 ### Open
 

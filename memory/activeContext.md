@@ -12,11 +12,9 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Published **ASTK** (`AsyncSharedTestingKit`) to https://github.com/illescasDaniel/astk — tag **0.1.0**, GitHub release published.
-- Moved local package from `GamesLibrary/AsyncSharedTestingKit/` to sibling folder `/Users/daniel/Projects/Xcode/astk`.
-- GamesLibrary now links ASTK as a remote SPM dependency (`from: "0.1.0"`); `Package.resolved` pins revision `d075c6c`.
-- README in astk repo includes GamesLibrary wiring examples (scenario host, session shell, launcher, test).
-- All tests green after migration: 37 unit + 8 UI (GamesLibrary), 11 ASTK package unit tests.
+- UI-test deep link scheme (`gameslibrary-uitest`) moved to **Debug-only** `GamesLibrary/Info-Debug.plist`; Release uses generated Info.plist with no custom URL types.
+- Deleted shared `GamesLibrary/Info.plist`; Debug `INFOPLIST_FILE` points at `Info-Debug.plist`; Release omits `INFOPLIST_FILE`.
+- Adaptations doc + `GamesLibraryUITestTransport` comment updated to document Debug-only plist pattern (ASTK README reference).
 
 ## Next steps
 

@@ -168,7 +168,7 @@ let details = try await AppLauncher.applyGameDetails()    // apply + tap row
 #### Constraints
 
 - **Serial test plan only** — shared process is incompatible with parallel UI tests on one simulator.
-- **DEBUG only** — `gameslibrary-uitest` URL scheme and ready marker are not used in Release.
+- **DEBUG only** — `gameslibrary-uitest` URL scheme lives in `GamesLibrary/Info-Debug.plist` (Debug `INFOPLIST_FILE` only); ready marker and session shell are not compiled into Release.
 - **Shared-process only** — UI tests launch with `UITESTING=1`; per-scenario config is applied at runtime via deep link, not relaunch `UITEST_CONFIG`.
 
 When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .empty)` through `AppLauncher.apply` (canned `(1, "")` → `[]`). For custom rows / search / pagination, set `gamesList.responses` to `[String: [GameSummaryFixture]]` keyed by `GamesList.searchKey(page:searchText:)` (e.g. `"1|"`, `"1|zelda"`; mapped to Core in `UITestSupport.makeStubTables`). For details Retry, use `gameDetails: .failingThenSucceeding()` (`[Int: [DetailsOutcome]]` per-id outcome queue: `.failure` then `.success`). `nil` details responses → one success per list stub game. Previews share `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` (`.constant(...)`) via Overrides — do not seed `ViewModel.searchText` from the container.
