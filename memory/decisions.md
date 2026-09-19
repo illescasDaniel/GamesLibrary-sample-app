@@ -2,6 +2,18 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-19 — Private `AppContent` / `DebugAppContent` shells
+
+- **Context:** Release and DEBUG `@main` structs owned coordinator `@State` in `App.init()`, while UI-test glue had moved into `UITestAppContent`.
+- **Decision:** Extract private `AppContent` (Release) and `DebugAppContent` (DEBUG) views that create container + coordinator + `AppRootView`. `@main` only routes: `UITestAppContent()` / `EmptyView()` / `DebugAppContent()` or `AppContent()`.
+- **Rationale:** Idiomatic SwiftUI — `@State` belongs on Views, not `App`; symmetric shells across Release/DEBUG/UITest; entry points stay thin routers.
+
+## 2026-09-19 — `UITestAppContent` as shared-process composition root; `DebugAppContainer` overrides-only
+
+- **Context:** `DebugGamesLibraryApp` owned `scenarioHost` and passed it into both `DebugAppContainer(scenarioHost:)` and `UITestAppContent`. The container duplicated host lookup in `make*ViewModel` instead of using `Overrides` alone.
+- **Decision:** `UITestAppContent()` owns host creation, initial apply, `DebugAppContainer(overrides:)` (host stub use cases + zero `urlCache`), coordinator, and session shell. Remove `scenarioHost` from `DebugAppContainer`; ViewModels resolve from `overrides` only. Store `coordinator` and `scenarioHost` as `@State` in `UITestAppContent` so URL apply and ready-marker generation stay wired to one host instance.
+- **Rationale:** UI-test glue colocated under `App/UITest/`; container stays a generic DEBUG override wrapper without UITestKit coupling; `@State` prevents SwiftUI re-init from breaking shared-process apply handshake.
+
 ## 2026-09-19 — `UnitTestProcessInfo` + drop legacy launch-env UI-test path
 
 - **Context:** DEBUG `@main` used `IS_TESTING=1` on the Launch action only; hosted unit tests (`TEST_HOST`) did not set it, so the app rendered UI during Swift Testing runs. A parallel legacy path (`uitestFromLaunchEnvironment`) relaunched with `UITEST_CONFIG` without shared-process mode.

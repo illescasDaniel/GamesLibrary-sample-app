@@ -17,13 +17,13 @@ We combine both playbooks:
 - **`AppRootView`** — app shell in `Navigation/` (today: hosts `GamesNavigationView`; future: `TabView` and other top-level chrome).
 - **`GamesNavigationView`** — games feature `NavigationStack` + list root + details destinations under `Adapters/Inbound/UI/GamesList/` (feature root; not a screen subview).
 - **`AppContainer`** — production implementation; wires HTTP, cache, repository, use cases, ViewModel factories. Init injects `urlCache`, `httpDataRequestHandler`, `requestInterceptors`, and `responseInterceptors` (sensible production defaults; `nil` request/cache = production API-key interceptor / default image cache). No Overrides, no `#if DEBUG`
-- **`DebugAppContainer`** — DEBUG-only; wraps `AppContainer` and applies `Overrides` when set (**use cases**, `urlCache`, `logger`). Passes logger, optional `urlCache`, and `HTTPResponseLoggerInterceptor` into `AppContainer` at construction. No repository override bag. Forwards to production when nothing relevant is overridden. No DIC / service locator.
+- **`DebugAppContainer`** — DEBUG-only; wraps `AppContainer` and applies `Overrides` when set (**use cases**, `urlCache`, `logger`). Passes logger, optional `urlCache`, and `HTTPResponseLoggerInterceptor` into `AppContainer` at construction. No repository override bag, no stored scenario host — shared-process UI tests pass the host's mutable stub use cases through `Overrides` from `UITestAppContent`. Forwards to production when nothing relevant is overridden. No DIC / service locator.
 - **`AppCoordinator`** — owns `NavigationPath`, holds `AppContaining`, and builds all routed views (`.gamesList`, `.details`, …)
 - **Constructor injection** — ViewModels receive inbound ports in `init`; views receive ViewModels from the coordinator/container
 
 The Hexagonal playbook shows `.environment(AppContainer)`; here we inject ViewModels directly and pass the coordinator via `.environment` for navigation only.
 
-DEBUG entry (`DebugGamesLibraryApp`): shared-process UI tests (`UITESTING=1`) → `UITestAppContent` + `GamesLibraryUITestKit`; otherwise plain `DebugAppContainer()`. Release `@main` uses `AppContainer()` only.
+DEBUG entry (`DebugGamesLibraryApp`): shared-process UI tests (`UITESTING=1`) → `UITestAppContent()`; hosted unit tests → `EmptyView()`; otherwise `DebugAppContent()` (private shell: `DebugAppContainer` + coordinator + `AppRootView`). Release `@main` (`GamesLibraryApp`) → private `AppContent()` (`AppContainer` + coordinator + `AppRootView`).
 
 ### Preview seams
 

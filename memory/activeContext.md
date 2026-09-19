@@ -8,16 +8,18 @@ _Last updated: 2026-09-19_
 
 ## Current focus
 
-Move shared-process UI-test bootstrapping into `UITestAppContent` (`scenarioHost` + coordinator + container).
+Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Fixed DEBUG app unit-test detection: `UnitTestProcessInfo` checks `XCTestBundlePath` / `XCTestConfigurationFilePath` (Xcode test-host signals), not only `IS_TESTING`.
-- Moved `uiTestSessionGeneration` into `UITestAppContent`; dropped legacy `DebugAppContainer.Overrides.uitestFromLaunchEnvironment()`.
-- Added `UnitTestProcessInfoTests` (Swift Testing); `IS_TESTING=1` on `GamesLibraryTests` scheme.
+- Moved shared-process UI-test bootstrapping into `UITestAppContent` (parameterless init: host + `DebugAppContainer` overrides + coordinator + session shell).
+- Slimmed `DebugAppContainer` to `Overrides` only; dropped stored `scenarioHost` and UITestKit import.
+- Extracted private `DebugAppContent` / Release `AppContent` shells — `@main` structs route only; coordinator `@State` lives in content views.
+- Fixed `@State` for `coordinator`/`scenarioHost` in `UITestAppContent` so apply handshake stays stable across SwiftUI re-inits.
+- All tests green: 45/45 (37 unit + 8 UI).
 
 ## Next steps
 
-1. Move `scenarioHost` (and shared-process coordinator/container wiring) into `UITestAppContent`; slim `DebugGamesLibraryApp`.
-2. Continue hexagonal/SDD feature work (new screens: IDs → nested page accessors → feature UITest file)
+1. Continue hexagonal/SDD feature work (new screens: IDs → nested page accessors → feature UITest file)
+2. Add search/pagination entries in `gamesList.responses` when a UI test needs typed search or page 2
 3. Optional: publish `AsyncSharedTestingKit` to its own GitHub repo when ready

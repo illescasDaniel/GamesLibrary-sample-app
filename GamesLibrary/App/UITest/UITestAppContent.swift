@@ -5,22 +5,36 @@ import ASTK
 import ASTKApp
 import GamesLibraryUITestKit
 
-/// DEBUG shell around production `AppRootView` for shared-process UI tests.
+/// DEBUG composition root + session shell for shared-process UI tests.
 struct UITestAppContent: View {
-	@Bindable var coordinator: AppCoordinator
-	@Bindable var scenarioHost: UITestScenarioHost
+	@State private var coordinator: AppCoordinator
+	@State private var scenarioHost: UITestScenarioHost
 	@State private var uiTestSessionGeneration = 0
 	@State private var sessionCoordinator: UITestSessionCoordinator<UITestConfiguration>
 
-	init(coordinator: AppCoordinator, scenarioHost: UITestScenarioHost) {
-		self._coordinator = Bindable(coordinator)
-		self._scenarioHost = Bindable(scenarioHost)
+	init() {
+		let host = UITestScenarioHost()
+		if let initial = UITestSupport.initialConfiguration() {
+			host.apply(initial)
+		} else {
+			host.apply(.default)
+		}
+		let debugContainer = DebugAppContainer(overrides: .init(
+			searchGamesUseCase: host.searchGamesUseCase,
+			getGameDetailsUseCase: host.getGameDetailsUseCase,
+			urlCache: URLCache(memoryCapacity: 0, diskCapacity: 0)
+		))
+		self._scenarioHost = State(initialValue: host)
+		self._coordinator = State(initialValue: AppCoordinator(container: debugContainer))
 		self._sessionCoordinator = State(
 			initialValue: UITestSessionCoordinator(settings: UITestSupport.sessionSettings)
 		)
 	}
 
 	var body: some View {
+		@Bindable var coordinator = coordinator
+		@Bindable var scenarioHost = scenarioHost
+
 		ZStack(alignment: .topLeading) {
 			AppRootView(coordinator: coordinator)
 				.id(uiTestSessionGeneration)
@@ -35,7 +49,7 @@ struct UITestAppContent: View {
 			}
 		}
 		.onAppear {
-			wireSessionRuntime()
+			wireSessionRuntime(scenarioHost: scenarioHost, coordinator: coordinator)
 		}
 		.onChange(of: scenarioHost.sessionGeneration) { _, generation in
 			uiTestSessionGeneration = generation
@@ -43,7 +57,10 @@ struct UITestAppContent: View {
 		.onOpenURL { sessionCoordinator.handleOpenURL($0) }
 	}
 
-	private func wireSessionRuntime() {
+	private func wireSessionRuntime(
+		scenarioHost: UITestScenarioHost,
+		coordinator: AppCoordinator
+	) {
 		sessionCoordinator.scenarioHost = scenarioHost
 		sessionCoordinator.navigationResetter = coordinator
 		uiTestSessionGeneration = scenarioHost.sessionGeneration
