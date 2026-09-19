@@ -13,8 +13,12 @@ description: Hexagonal architecture file placement and port naming for GamesLibr
 | Inbound port | `GamesLibraryCore/.../Application/Ports/Inbound/` |
 | Outbound port | `GamesLibraryCore/.../Application/Ports/Outbound/` |
 | Use case | `GamesLibraryCore/.../Application/UseCases/` |
-| ViewModel | `GamesLibrary/Adapters/Inbound/UI/` |
-| View | `GamesLibrary/Adapters/Inbound/UI/` |
+| Screen view | `GamesLibrary/Adapters/Inbound/UI/<Feature>/<Screen>View.swift` |
+| Screen ViewModel | `GamesLibrary/Adapters/Inbound/UI/<Feature>/<Screen>ViewModel.swift` |
+| Screen subviews | `GamesLibrary/Adapters/Inbound/UI/<Feature>/Subviews/` |
+| Feature navigation view | `GamesLibrary/Adapters/Inbound/UI/<Feature>/` (e.g. `GamesNavigationView`; not in `Subviews/`) |
+| Shared UI helpers | `GamesLibrary/Adapters/Inbound/UI/ConvenienceViews/`, `…/Models/` |
+| App root shell | `GamesLibrary/Navigation/` (`AppRootView`) |
 | Assets / String Catalog | `GamesLibrary/Resources/` (`Assets.xcassets`, `Localizable.xcstrings`) |
 | DTO (`Decodable`) | `GamesLibrary/Adapters/Outbound/DTOs/` |
 | Mapper | `GamesLibrary/Adapters/Outbound/Mappers/` |
@@ -48,7 +52,7 @@ When writing or reviewing SwiftUI, also apply `swiftui-specialist` (and `swiftui
 
 Follow `docs/playbooks/GamesLibrary-adaptations.md` → **SwiftUI view factoring** and Apple `swiftui-specialist/references/structure.md`:
 
-- Named sections and list rows → separate `struct …: View` with **narrow inputs** (not `private var …: some View` on the parent for organization).
+- Named sections and list rows → separate `struct …: View` with **narrow inputs** (not `private var …: some View` on the parent for organization), in `Subviews/`.
 - Screen views own `@State` ViewModels; section views do **not** get their own ViewModels and should not take the full ViewModel.
 - Tiny constant fragments may stay as computed properties.
 

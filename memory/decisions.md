@@ -2,6 +2,36 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-19 — Coordinator via environment from `AppRootView`
+
+- **Context:** `AppRootView` and `GamesNavigationView` passed `AppCoordinator` as a constructor parameter while leaf screens already read it from `@Environment`, duplicating the delivery path.
+- **Decision:** `AppRootView` injects `.environment(coordinator)` once; `GamesNavigationView` and screens read `@Environment(AppCoordinator.self)`. App entry points still own `@State coordinator` and pass it into `AppRootView`.
+- **Rationale:** Matches project adaptations (coordinator via environment for navigation only); scales when `AppRootView` gains tabs or other top-level chrome without prop-drilling.
+
+## 2026-09-19 — Per-screen UI folders: view, ViewModel, Subviews
+
+- **Context:** Feature UI folders mixed the screen view, ViewModel, navigation wrapper, and extracted section/row views in one directory, which would not stay navigable as screens grow.
+- **Decision:** Each screen keeps `<Screen>View.swift` and `<Screen>ViewModel.swift` at `Adapters/Inbound/UI/<Feature>/`. Extracted section/row views live in `Subviews/`. Feature navigation views stay at the feature root; shared helpers stay in `ConvenienceViews/` / `Models/`.
+- **Rationale:** Matches the existing SwiftUI factoring rule (screen owns the ViewModel; leaves are narrow-input structs) with a folder layout that scales without extra ViewModels per section.
+
+## 2026-09-19 — Coordinator-only shell; list route in `AppCoordinator.build`
+
+- **Context:** `AppRootView` / `GamesNavigationView` took both `AppCoordinator` and `AppContaining`, duplicating the container already held by the coordinator.
+- **Decision:** Add `Route.gamesList`; `AppCoordinator.build(_:)` constructs `GameListView` and feature destinations. Shell views take only `@Bindable var coordinator`.
+- **Rationale:** Single injection seam at the composition root; navigation layer owns view construction from the container.
+
+## 2026-09-19 — Split app root shell from feature navigation views
+
+- **Context:** `RootView` in `Navigation/` combined app-level composition with the games `NavigationStack`, which would not scale when adding tabs or other top-level features.
+- **Decision:** `AppRootView` in `Navigation/` is the app shell (today hosts `GamesNavigationView`; future `TabView`). `GamesNavigationView` lives under `Adapters/Inbound/UI/GamesList/` and owns the games stack, list root, and details destinations.
+- **Rationale:** Separates app chrome from feature-scoped inbound UI; matches hexagonal placement for feature views while keeping composition/navigation infrastructure together.
+
+## 2026-09-19 — UITestConfiguration stub tables are native JSON dicts
+
+- **Context:** `gamesList.responses` and `gameDetails.responses` used wrapper row types (`SearchResponse`, `DetailsResponse`) that duplicated stub map shapes and forced array→dictionary folding in `UITestSupport.makeStubTables`.
+- **Decision:** Config uses synthesized Codable dicts: `[String: [GameSummaryFixture]]?` (keys via `GamesList.searchKey(page:searchText:)` → `"page|searchText"`) and `[Int: [DetailsOutcome]]?`. Remove wrapper structs. `SearchStubKey` in `GamesLibraryUITestKit` parses wire keys via `init?(encoded:)`. URL/deep-link transport unchanged (same JSON, base64url in query).
+- **Rationale:** JSON-native maps match runtime stub tables; less mapping ceremony; smaller deep-link payloads; fixture→domain and details fallback remain in the kit seam.
+
 ## 2026-09-18 — Drop UITestHarnessView and pasteboard apply fallback
 
 - **Context:** Shared-process UI tests waited on an invisible `UITestHarnessView` overlay (`uitest-ready-{N}` plus unused `uitest-apply-trigger` / pasteboard). The overlay was not visible during automatic runs, so it looked unused.

@@ -37,13 +37,4 @@ final class GameDetailsViewModel {
 			gamesState = .error(error)
 		}
 	}
-
-	#if DEBUG
-	/// First-frame Preview content. Stub remains wired for Retry / later `.task` loads.
-	@discardableResult
-	func previewSucceeding(_ details: GameDetails) -> GameDetailsViewModel {
-		gamesState = .success(details)
-		return self
-	}
-	#endif
 }

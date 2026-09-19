@@ -13,10 +13,12 @@ This project follows the senior iOS playbooks with these **intentional deviation
 
 We combine both playbooks:
 
-- **`AppContaining`** — ViewModel factory surface only (`makeGamesListViewModel` / `makeGameDetailsViewModel`); `AppCoordinator` / `RootView` depend on `any AppContaining`. Use cases and `configureSharedURLCache` stay on concrete containers.
+- **`AppContaining`** — ViewModel factory surface only (`makeGamesListViewModel` / `makeGameDetailsViewModel`); held privately by `AppCoordinator` at the composition root. Use cases and `configureSharedURLCache` stay on concrete containers.
+- **`AppRootView`** — app shell in `Navigation/` (today: hosts `GamesNavigationView`; future: `TabView` and other top-level chrome).
+- **`GamesNavigationView`** — games feature `NavigationStack` + list root + details destinations under `Adapters/Inbound/UI/GamesList/` (feature root; not a screen subview).
 - **`AppContainer`** — production implementation; wires HTTP, cache, repository, use cases, ViewModel factories. Init injects `urlCache`, `httpDataRequestHandler`, `requestInterceptors`, and `responseInterceptors` (sensible production defaults; `nil` request/cache = production API-key interceptor / default image cache). No Overrides, no `#if DEBUG`
 - **`DebugAppContainer`** — DEBUG-only; wraps `AppContainer` and applies `Overrides` when set (**use cases**, `urlCache`, `logger`). Passes logger, optional `urlCache`, and `HTTPResponseLoggerInterceptor` into `AppContainer` at construction. No repository override bag. Forwards to production when nothing relevant is overridden. No DIC / service locator.
-- **`AppCoordinator`** — owns `NavigationPath` and route → view building
+- **`AppCoordinator`** — owns `NavigationPath`, holds `AppContaining`, and builds all routed views (`.gamesList`, `.details`, …)
 - **Constructor injection** — ViewModels receive inbound ports in `init`; views receive ViewModels from the coordinator/container
 
 The Hexagonal playbook shows `.environment(AppContainer)`; here we inject ViewModels directly and pass the coordinator via `.environment` for navigation only.
@@ -45,6 +47,13 @@ A `View` type is SwiftUI’s invalidation boundary. `private var …: some View`
 - Pure visual constant (e.g. a placeholder glyph)
 
 **Do not:** invent ViewModels per section; pass the screen ViewModel into leaves “for convenience”; extract every 3-line snippet into its own file. Section/row structs take **narrow value inputs** (and callbacks), not the full `@Observable` ViewModel. Screen views own `@State` ViewModels and compose sections.
+
+**Folder layout per screen** (`Adapters/Inbound/UI/<Feature>/`):
+
+- Screen view and ViewModel files at the feature folder root
+- Extracted section/row views in `Subviews/`
+- Feature navigation views (e.g. `GamesNavigationView`) stay at the feature root
+- Cross-screen helpers stay in `ConvenienceViews/` / `Models/`
 
 ## Security (client API key)
 
@@ -122,7 +131,7 @@ When `UITestRuntime.handleOpenURL` runs:
 1. **Decode** — `UITestApplyHandler` reads `config` from the URL query.
 2. **Reset navigation** — `AppCoordinator.resetNavigation()` clears `NavigationPath` (drops any details screen).
 3. **Replace stubs** — `UITestScenarioHost.apply(configuration)` rebuilds mutable `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` tables and bumps `sessionGeneration`.
-4. **Recreate UI** — `DebugGamesLibraryApp` holds `@State uiTestSessionGeneration`; `UITestAppContent` applies `.id(uiTestSessionGeneration)` on production `RootView`, forcing SwiftUI to destroy and recreate the list `@State` ViewModel (fresh `.task` → new stub data).
+4. **Recreate UI** — `DebugGamesLibraryApp` holds `@State uiTestSessionGeneration`; `UITestAppContent` applies `.id(uiTestSessionGeneration)` on production `AppRootView`, forcing SwiftUI to destroy and recreate the list `@State` ViewModel (fresh `.task` → new stub data).
 5. **Signal ready** — a 1×1 `Color.clear` overlay on `UITestAppContent` exposes `AccessibilityIdentifier.UITest.ready(sessionGeneration:)`; the test waits for the matching generation before querying page objects. Invisible on purpose so it does not show up in screenshots.
 
 Both sides track generation: app bumps `UITestScenarioHost.sessionGeneration`; test increments its own counter in `AppLauncher` and waits for `uitest-ready-{N}`.
@@ -141,7 +150,7 @@ let details = try await AppLauncher.applyGameDetails()    // apply + tap row
 - **DEBUG only** — `gameslibrary-uitest` URL scheme and ready marker are not used in Release.
 - **Legacy path** — one-launch-per-test via launch-environment `UITEST_CONFIG` (without `UITESTING=1`) still works via `DebugAppContainer.Overrides.uitestFromLaunchEnvironment()`.
 
-When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .empty)` through `AppLauncher.apply` (canned `(1, "")` → `[]`). For custom rows / search / pagination, set `gamesList.responses` to `[SearchResponse]` with `GameSummaryFixture` (mapped to Core in DEBUG `UITestSupport`). For details Retry, use `gameDetails: .failingThenSucceeding()` (per-id outcome queue: `.failure` then `.success`). `nil` details responses → one success per list stub game. Previews share `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` (`.constant(...)`) via Overrides — do not seed `ViewModel.searchText` from the container.
+When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .empty)` through `AppLauncher.apply` (canned `(1, "")` → `[]`). For custom rows / search / pagination, set `gamesList.responses` to `[String: [GameSummaryFixture]]` keyed by `GamesList.searchKey(page:searchText:)` (e.g. `"1|"`, `"1|zelda"`; mapped to Core in `UITestSupport.makeStubTables`). For details Retry, use `gameDetails: .failingThenSucceeding()` (`[Int: [DetailsOutcome]]` per-id outcome queue: `.failure` then `.success`). `nil` details responses → one success per list stub game. Previews share `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` (`.constant(...)`) via Overrides — do not seed `ViewModel.searchText` from the container.
 
 ## SDD source of truth
 

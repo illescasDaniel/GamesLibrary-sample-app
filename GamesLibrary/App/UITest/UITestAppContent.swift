@@ -3,16 +3,15 @@ import SwiftUI
 import AccessibilityIdentifiers
 import GamesLibraryUITestKit
 
-/// DEBUG shell around production `RootView` for shared-process UI tests.
+/// DEBUG shell around production `AppRootView` for shared-process UI tests.
 struct UITestAppContent: View {
 	@Bindable var coordinator: AppCoordinator
-	let container: any AppContaining
 	@Bindable var scenarioHost: UITestScenarioHost
 	@Binding var uiTestSessionGeneration: Int
 
 	var body: some View {
 		ZStack(alignment: .topLeading) {
-			RootView(coordinator: coordinator, container: container)
+			AppRootView(coordinator: coordinator)
 				.id(uiTestSessionGeneration)
 			if uiTestSessionGeneration > 0 {
 				Color.clear

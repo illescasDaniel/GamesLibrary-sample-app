@@ -21,6 +21,8 @@ final class AppCoordinator {
 	@ViewBuilder
 	func build(_ route: Route) -> some View {
 		switch route {
+		case .gamesList:
+			GameListView(viewModel: container.makeGamesListViewModel())
 		case .details(let summary):
 			GameDetailsView(
 				viewModel: container.makeGameDetailsViewModel(),

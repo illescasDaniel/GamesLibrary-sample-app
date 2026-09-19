@@ -1,6 +1,6 @@
 # Progress
 
-_Last updated: 2026-09-18_
+_Last updated: 2026-09-19_
 
 ## Hexagonal + SDD refactor (on `develop`)
 
@@ -44,6 +44,10 @@ _Last updated: 2026-09-18_
 - [x] Spanish localization (`es`): `GamesLibrary/Resources/` (`Assets.xcassets`, `Localizable.xcstrings`); SwiftUI literals + translator comments; UI tests stay on accessibility identifiers
 - [x] Extract reusable helpers into local packages: `IOSConveniences` (`ViewLoadState`, `HTMLText` Foundation scanner, `HTTPConveniences`), `SwiftUIComponents`, `XCUITestPOM`
 - [x] Agent skill `save-changes` (`/save-changes`): update memory, commit, and push
+- [x] Per-screen UI folders: screen view + ViewModel at feature root; section/row views in `Subviews/`
+- [x] Split `RootView` into `AppRootView` (app shell) + `GamesNavigationView` (games stack); `Route.gamesList` in `AppCoordinator.build`
+- [x] Coordinator via `.environment` from `AppRootView`; feature views read `@Environment(AppCoordinator.self)`
+- [x] `UITestConfiguration` stub tables as native JSON dicts (`gamesList.responses` / `gameDetails.responses`); drop wrapper row types
 - [x] Shared-process UI tests: one launch (`UITESTING=1`), runtime apply via deep-link URL + ready marker, mutable stub host
 - [x] Slim UI-test harness: inline 1×1 ready marker; drop unused apply-trigger + pasteboard fallback
 - [x] `GamesLibraryUITestKit` local package; DEBUG glue in `GamesLibrary/App/UITest/`; documented reload flow in adaptations

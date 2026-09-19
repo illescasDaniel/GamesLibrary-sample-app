@@ -76,7 +76,7 @@ import GamesLibraryUITestKit
 		getGameDetailsUseCase: StubGetGameDetailsUseCase.constant(details)
 	))
 	GameDetailsView(
-		viewModel: container.makeGameDetailsViewModel().previewSucceeding(details),
+		viewModel: container.makeGameDetailsViewModel(),
 		summary: summary
 	)
 	.environment(\.locale, Locale(identifier: "es"))

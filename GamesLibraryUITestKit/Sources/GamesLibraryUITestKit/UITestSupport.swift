@@ -53,9 +53,12 @@ public enum UITestSupport {
 		var gamesForDetails: [GameSummary] = []
 		var seenIDs = Set<GameID>()
 
-		for entry in configured {
-			let games = entry.games.map { $0.toDomain() }
-			responses[SearchStubKey(page: entry.page, searchText: entry.searchText)] = games
+		for (rawKey, fixtures) in configured {
+			guard let key = SearchStubKey(encoded: rawKey) else {
+				preconditionFailure("Invalid search stub key: \(rawKey)")
+			}
+			let games = fixtures.map { $0.toDomain() }
+			responses[key] = games
 			for game in games where seenIDs.insert(game.id).inserted {
 				gamesForDetails.append(game)
 			}
@@ -69,11 +72,9 @@ public enum UITestSupport {
 		fallbackGames: [GameSummary]
 	) -> [GameID: [DetailsStubOutcome]] {
 		if let configured = gameDetails.responses {
-			var responses: [GameID: [DetailsStubOutcome]] = [:]
-			for entry in configured {
-				responses[GameID(entry.id)] = entry.outcomes.map { $0.toDomain() }
-			}
-			return responses
+			return Dictionary(uniqueKeysWithValues: configured.map { id, outcomes in
+				(GameID(id), outcomes.map { $0.toDomain() })
+			})
 		}
 
 		var responses: [GameID: [DetailsStubOutcome]] = [:]

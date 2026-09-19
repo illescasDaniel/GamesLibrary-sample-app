@@ -24,6 +24,19 @@ public struct SearchStubKey: Hashable, Sendable {
 		self.page = page
 		self.searchText = searchText
 	}
+
+	/// Wire-format key matching `UITestConfiguration.GamesList.searchKey(page:searchText:)`.
+	public var encoded: String {
+		UITestConfiguration.GamesList.searchKey(page: page, searchText: searchText)
+	}
+
+	/// Parses `"page|searchText"` (`searchText` may be empty; must not contain extra `|` segments).
+	public init?(encoded: String) {
+		let parts = encoded.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
+		guard parts.count == 2, let page = Int(parts[0]) else { return nil }
+		self.page = page
+		self.searchText = String(parts[1])
+	}
 }
 
 /// Canned `(page, searchText)` → games lookup. Missing keys return `[]`.

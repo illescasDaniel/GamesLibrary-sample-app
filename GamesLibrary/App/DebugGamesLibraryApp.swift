@@ -5,7 +5,6 @@ import GamesLibraryUITestKit
 
 @main
 struct DebugGamesLibraryApp: App {
-	private let container: any AppContaining
 	@State private var coordinator: AppCoordinator
 	@State private var scenarioHost: UITestScenarioHost?
 	@State private var uiTestSessionGeneration = 0
@@ -38,7 +37,6 @@ struct DebugGamesLibraryApp: App {
 			coordinator = AppCoordinator(container: debugContainer)
 		}
 
-		self.container = container
 		self._coordinator = State(initialValue: coordinator)
 		self._scenarioHost = State(initialValue: scenarioHost)
 		self._uiTestSessionGeneration = State(initialValue: initialSessionGeneration)
@@ -51,16 +49,12 @@ struct DebugGamesLibraryApp: App {
 			} else if let scenarioHost {
 				UITestAppContent(
 					coordinator: coordinator,
-					container: container,
 					scenarioHost: scenarioHost,
 					uiTestSessionGeneration: $uiTestSessionGeneration
 				)
 				.onOpenURL(perform: UITestRuntime.handleOpenURL)
 			} else {
-				RootView(
-					coordinator: coordinator,
-					container: container
-				)
+				AppRootView(coordinator: coordinator)
 			}
 		}
 	}

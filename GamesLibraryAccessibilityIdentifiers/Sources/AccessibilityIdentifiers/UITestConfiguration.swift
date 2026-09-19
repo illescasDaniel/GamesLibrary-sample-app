@@ -34,30 +34,23 @@ public struct UITestConfiguration: Codable, Equatable, Sendable {
 	///
 	/// `responses == nil` → DEBUG `UITestSupport` uses built-in `(1, "")` fixtures.
 	/// Pass an explicit `responses` table for empty results, custom rows, search, or pagination.
+	/// Keys are `"page|searchText"` (see `searchKey(page:searchText:)`); `searchText` must not contain `|`.
 	public struct GamesList: Codable, Equatable, Sendable {
-		public var responses: [SearchResponse]?
+		public var responses: [String: [GameSummaryFixture]]?
 
-		public init(responses: [SearchResponse]? = nil) {
+		public init(responses: [String: [GameSummaryFixture]]? = nil) {
 			self.responses = responses
+		}
+
+		/// Encoded lookup key for `(page, searchText)` — e.g. `"1|"`, `"1|zelda"`.
+		public static func searchKey(page: Int, searchText: String) -> String {
+			"\(page)|\(searchText)"
 		}
 
 		/// Initial load returns no rows (`(1, "")` → `[]`).
 		public static let empty = GamesList(
-			responses: [SearchResponse(page: 1, searchText: "", games: [])]
+			responses: [searchKey(page: 1, searchText: ""): []]
 		)
-	}
-
-	/// One canned search reply. Keys match `SearchGamesUseCasePort` `(page, searchText)`.
-	public struct SearchResponse: Codable, Equatable, Sendable {
-		public var page: Int
-		public var searchText: String
-		public var games: [GameSummaryFixture]
-
-		public init(page: Int, searchText: String, games: [GameSummaryFixture]) {
-			self.page = page
-			self.searchText = searchText
-			self.games = games
-		}
 	}
 
 	/// Codable stand-in for list/details stub rows (keep Core `GameSummary` out of this package).
@@ -137,10 +130,11 @@ public struct UITestConfiguration: Codable, Equatable, Sendable {
 	/// Game details screen stub knobs.
 	///
 	/// `responses == nil` → DEBUG `UITestSupport` builds one success outcome per game from the list stub.
+	/// Keys are game ids; each value is an ordered outcome queue consumed per `getGameDetails` call.
 	public struct GameDetails: Codable, Equatable, Sendable {
-		public var responses: [DetailsResponse]?
+		public var responses: [Int: [DetailsOutcome]]?
 
-		public init(responses: [DetailsResponse]? = nil) {
+		public init(responses: [Int: [DetailsOutcome]]? = nil) {
 			self.responses = responses
 		}
 
@@ -150,21 +144,8 @@ public struct UITestConfiguration: Codable, Equatable, Sendable {
 			details: GameDetailsFixture = .stubGameOne
 		) -> GameDetails {
 			GameDetails(
-				responses: [
-					DetailsResponse(id: id, outcomes: [.failure, .success(details)]),
-				]
+				responses: [id: [.failure, .success(details)]]
 			)
-		}
-	}
-
-	/// Ordered outcomes for one game id; each `getGameDetails` call consumes the next entry.
-	public struct DetailsResponse: Codable, Equatable, Sendable {
-		public var id: Int
-		public var outcomes: [DetailsOutcome]
-
-		public init(id: Int, outcomes: [DetailsOutcome]) {
-			self.id = id
-			self.outcomes = outcomes
 		}
 	}
 
