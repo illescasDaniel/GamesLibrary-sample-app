@@ -1,8 +1,8 @@
 # GamesLibrary
 
-Simple iOS app that presents a list of games using the RAWG API.
+Simple iOS app that presents a list of games using the [RAWG](https://rawg.io/apidocs) API.
 
-Built with **Hexagonal Architecture**, **Spec-Driven Development (SDD)**, and **MVVM** as the UI presentation pattern.
+Built with **Hexagonal Architecture**, **Spec-Driven Development (SDD)**, and **MVVM** as the UI presentation pattern. Requires **iOS 26.4+** and **Swift 6**.
 
 ## AI-ready
 
@@ -12,7 +12,7 @@ This repo is set up so humans and AI agents share the same source of truth:
 |-------|-------|---------|
 | Agent protocol | [AGENTS.md](AGENTS.md) | Phase gates for spec → ports → tests → implementation |
 | Always-on rules | `.cursor/rules/` | Hexagonal boundaries, SDD, playbooks, **memory protocol** |
-| Skills | `.cursor/skills/` | Project workflows (`sdd-feature`, `hexagonal-ios`, `playbooks`) plus Apple Xcode 27 skills (`swiftui-specialist`, …) |
+| Skills | `.cursor/skills/` | Project workflows (`sdd-feature`, `hexagonal-ios`, `playbooks`, `save-changes`) plus Apple Xcode 27 skills (`swiftui-specialist`, …) |
 | Specs | `specs/<feature>/SPEC.md` | Feature truth (BDD acceptance criteria) |
 | Memory bank | [memory/](memory/README.md) | Per-branch progress, session context, and decision log |
 | MCP | [below](#mcp-tools-ai-assisted-development) | Simulator exploration and Xcode build/test/preview |
@@ -34,11 +34,15 @@ Business logic lives in a local Swift package, **`GamesLibraryCore`**, with comp
 
 Dependency flow: **Views → ViewModels → Use Cases → Repository Port → Network/Cache**
 
+Local helper packages: `IOSConveniences`, `SwiftUIComponents`, `GamesLibraryUITestKit`, `GamesLibraryAccessibilityIdentifiers`.
+
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/playbooks/](docs/playbooks/README.md) for the full playbook reference.
 
 ### Dependencies
 
-- **OptimizedAsyncImage** — used instead of SwiftUI `AsyncImage` primarily for **ImageIO downsampling via `targetSize`** (list/detail thumbnails). Native `AsyncImage` gained HTTP caching on iOS 27+, but it does not downsample; revisit only if the deployment target is iOS 27+ *and* downsampling is reimplemented or dropped.
+- **[ASTK](https://github.com/illescasDaniel/astk)** (`AsyncSharedTestingKit`) — shared-process UI testing framework extracted from this app: launch once, apply Codable scenarios at runtime, drive screens with async page objects. See [UI tests](#ui-tests).
+- **[OptimizedAsyncImage](https://github.com/illescasDaniel/OptimizedAsyncImage)** — used instead of SwiftUI `AsyncImage` primarily for **ImageIO downsampling via `targetSize`** (list/detail thumbnails). Native `AsyncImage` gained HTTP caching on iOS 27+, but it does not downsample; revisit only if the deployment target is iOS 27+ *and* downsampling is reimplemented or dropped.
+- **[HTTIES](https://github.com/illescasDaniel/HTTIES)**, **[BetterLogger](https://github.com/illescasDaniel/BetterLogger)**, **[TTLCache](https://github.com/illescasDaniel/TTLCache)** — HTTP client, logging, and in-memory TTL cache.
 
 ### Spec-Driven Development (SDD)
 
@@ -68,7 +72,9 @@ Enable both in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulato
 
 - Game list with search, pull-to-refresh, and infinite scroll
 - Game details screen
+- English and Spanish (String Catalog)
 - In-memory TTL cache (5 minutes)
+- Shared-process UI tests via [ASTK](https://github.com/illescasDaniel/astk) (no live API)
 - Swift 6, Swift Testing
 
 ## Development
@@ -89,16 +95,18 @@ Previews use mock use-case ports — no live API key required.
 # Core package tests
 cd GamesLibraryCore && swift test
 
-# App unit tests (via Xcode scheme GamesLibraryTests)
+# App unit tests and UI tests: Xcode scheme GamesLibrary / GamesLibrary.xctestplan
 ```
+
+UI tests are serial (`parallelizable: false`) because they share one app process.
 
 ### UI tests
 
-UI tests launch once (`UITESTING=1`) and apply scenarios at runtime via deep link — no cold relaunch per test. Stubs are wired at the composition root through `UITestConfiguration`; no network, no API key, no dependency on RAWG uptime.
+UI tests use **[ASTK](https://github.com/illescasDaniel/astk)** (`AsyncSharedTestingKit`), a shared-process framework extracted from this app and published for reuse. It targets the two expensive parts of XCUITest: **cold launching per test** and **blocking sequential waits**.
 
-Page objects live in `GamesLibraryUITests/Pages/` and use the published [**ASTK**](https://github.com/illescasDaniel/astk) package (`ASTKXCTest` product). Element accessors are `get async throws`: they wait via **`XCTWaiter`** (`XCTNSPredicateExpectation` + `fulfillment`) instead of blocking on sync `waitForExistence`, so the test run loop can stay responsive. See the ASTK README for the reusable shared-process framework and GamesLibrary wiring examples.
+**Shared-process launch** — the suite starts the app once (`UITESTING=1`) and applies each scenario at runtime via a Debug-only deep link (`gameslibrary-uitest://apply?config=…`). SwiftUI recreates the root with `.id(generation)` so ViewModels and `.task` loaders run fresh, without a process restart. Stubs are wired at the composition root through `UITestConfiguration`; no network, no API key, no dependency on RAWG uptime. Release builds do not register the test URL scheme.
 
-When several elements on the same screen appear together, tests use **`async let`** to wait in parallel:
+**Async page objects** — pages live in `GamesLibraryUITests/Pages/` and import the `ASTKXCTest` product. Element accessors are `get async throws`: they wait via **`XCTWaiter`** (`XCTNSPredicateExpectation` + `fulfillment`) instead of blocking on sync `waitForExistence`. When several elements on the same screen appear together, tests wait in parallel:
 
 ```swift
 async let rating = details.rating
@@ -107,8 +115,8 @@ async let playtime = details.playtime
 _ = try await (rating, year, playtime)
 ```
 
-On an iPhone 18 Pro simulator (8 UI tests, Sep 2026), that cut total suite time from **70.3s → 60.4s (~14%)**; the metadata-chips test alone dropped **12.4s → 8.1s (~35%)** because five sequential waits became one concurrent wait.
+On an iPhone 18 Pro simulator (8 UI tests, Sep 2026), switching from sync waits to async + `async let` cut total suite time from **70.3s → 60.4s (~14%)**; the metadata-chips test alone dropped **12.4s → 8.1s (~35%)** because five sequential waits became one concurrent wait. Combined with one launch for the whole suite, that removes both inter-test launch cost and in-test idle time.
 
-See [docs/playbooks/GamesLibrary-adaptations.md](docs/playbooks/GamesLibrary-adaptations.md) for POM layout, shared-process launch, and scenario config.
+See the [ASTK README](https://github.com/illescasDaniel/astk) for the reusable framework and [docs/playbooks/GamesLibrary-adaptations.md](docs/playbooks/GamesLibrary-adaptations.md) for POM layout, shared-process launch, and scenario config in this app.
 
 Agent memory bank (per-branch project state): [memory/README.md](memory/README.md).

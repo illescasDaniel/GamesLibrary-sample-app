@@ -62,6 +62,8 @@ _Last updated: 2026-09-19_
 - [x] Colocate shared-process UI-test bootstrapping in `UITestAppContent` (`scenarioHost`, coordinator, container); slim `DebugAppContainer` to `Overrides` only (no stored `scenarioHost`)
 - [x] Private app content shells: Release `AppContent`, DEBUG `DebugAppContent`; `@main` structs route only (no coordinator `@State` in `App`)
 - [x] Debug-only `Info-Debug.plist` for UI-test deep link scheme; Release uses generated Info.plist (no `gameslibrary-uitest` URL type)
+- [x] README documents ASTK (shared-process launch + async POM) and current stack
+- [x] Merge `develop` into `main`
 
 ### Open
 
