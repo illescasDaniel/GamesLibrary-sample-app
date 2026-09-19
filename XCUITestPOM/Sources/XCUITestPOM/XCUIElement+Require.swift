@@ -34,11 +34,31 @@ extension XCUIElement {
 		return self
 	}
 
+	@discardableResult
+	public func requireExistenceAsync(
+		identifier: String,
+		timeout: TimeInterval
+	) async throws -> XCUIElement {
+		guard await waitForExistenceAsync(timeout: timeout) else {
+			throw UITestElementError.notFound(identifier: identifier, timeout: timeout)
+		}
+		return self
+	}
+
 	public func requireAbsence(
 		identifier: String,
 		timeout: TimeInterval = UITestTimeout.absence
 	) throws {
 		if waitForExistence(timeout: timeout) {
+			throw UITestElementError.unexpectedlyPresent(identifier: identifier, timeout: timeout)
+		}
+	}
+
+	public func requireAbsenceAsync(
+		identifier: String,
+		timeout: TimeInterval = UITestTimeout.absence
+	) async throws {
+		if await waitForExistenceAsync(timeout: timeout) {
 			throw UITestElementError.unexpectedlyPresent(identifier: identifier, timeout: timeout)
 		}
 	}

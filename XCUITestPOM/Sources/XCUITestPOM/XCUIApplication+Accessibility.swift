@@ -11,6 +11,14 @@ extension XCUIApplication {
 		try waitForElement(matching: identifier, timeout: timeout)
 	}
 
+	public func waitForUITestReadyAsync(
+		sessionGeneration: Int,
+		timeout: TimeInterval = UITestTimeout.screen
+	) async throws {
+		let identifier = AccessibilityIdentifier.UITest.ready(sessionGeneration: sessionGeneration)
+		try await waitForElementAsync(matching: identifier, timeout: timeout)
+	}
+
 	public func element(matching identifier: String) -> XCUIElement {
 		descendants(matching: .any).matching(identifier: identifier).firstMatch
 	}
@@ -30,6 +38,15 @@ extension XCUIApplication {
 	}
 
 	@discardableResult
+	public func waitForElementAsync(
+		matching identifier: String,
+		timeout: TimeInterval = UITestTimeout.screen
+	) async throws -> XCUIElement {
+		try await element(matching: identifier)
+			.requireExistenceAsync(identifier: identifier, timeout: timeout)
+	}
+
+	@discardableResult
 	public func waitForElements(
 		matchingIdentifierPrefix prefix: String,
 		timeout: TimeInterval = UITestTimeout.content
@@ -42,11 +59,32 @@ extension XCUIApplication {
 		return query
 	}
 
+	@discardableResult
+	public func waitForElementsAsync(
+		matchingIdentifierPrefix prefix: String,
+		timeout: TimeInterval = UITestTimeout.content
+	) async throws -> XCUIElementQuery {
+		let query = elements(matchingIdentifierPrefix: prefix)
+		_ = try await query.firstMatch.requireExistenceAsync(
+			identifier: "\(prefix)*",
+			timeout: timeout
+		)
+		return query
+	}
+
 	public func requireNoElements(
 		matchingIdentifierPrefix prefix: String,
 		timeout: TimeInterval = UITestTimeout.absence
 	) throws {
 		try elements(matchingIdentifierPrefix: prefix).firstMatch
 			.requireAbsence(identifier: "\(prefix)*", timeout: timeout)
+	}
+
+	public func requireNoElementsAsync(
+		matchingIdentifierPrefix prefix: String,
+		timeout: TimeInterval = UITestTimeout.absence
+	) async throws {
+		try await elements(matchingIdentifierPrefix: prefix).firstMatch
+			.requireAbsenceAsync(identifier: "\(prefix)*", timeout: timeout)
 	}
 }

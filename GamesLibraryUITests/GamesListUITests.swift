@@ -8,28 +8,28 @@ final class GamesListUITests: XCTestCase {
 	}
 
 	@MainActor
-	func testGivenGamesListWhenLaunchedThenShowsTitle() throws {
-		let list = try AppLauncher.apply()
+	func testGivenGamesListWhenLaunchedThenShowsTitle() async throws {
+		let list = try await AppLauncher.apply()
 
-		_ = try list.screen
+		_ = try await list.screen
 	}
 
 	@MainActor
-	func testGivenGamesListWhenLoadedThenShowsRows() throws {
-		let list = try AppLauncher.apply()
+	func testGivenGamesListWhenLoadedThenShowsRows() async throws {
+		let list = try await AppLauncher.apply()
 
-		_ = try list.gameRows
+		_ = try await list.gameRows
 	}
 
 	@MainActor
-	func testGivenGamesListWhenEmptyResultsForcedThenShowsNoResults() throws {
+	func testGivenGamesListWhenEmptyResultsForcedThenShowsNoResults() async throws {
 		// SwiftUI `.searchable` text entry is unreliable in XCUITest; configure an empty
 		// canned `(1, "")` response instead of seeding ViewModel.searchText.
-		let list = try AppLauncher.apply(
+		let list = try await AppLauncher.apply(
 			configuration: .init(gamesList: .empty)
 		)
 
-		_ = try list.emptyState
-		try list.requireNoGameRows()
+		_ = try await list.emptyState
+		try await list.requireNoGameRows()
 	}
 }

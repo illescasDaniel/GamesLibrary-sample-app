@@ -32,7 +32,7 @@ _Last updated: 2026-09-19_
 - [x] Commit cleanup batch on `develop` (flatten, a11y SPM, POM pages, Config.xcconfig sample, shared httpClient)
 - [x] `AppContainer.Overrides` + thin UITest bootstrap (`UITestSupport.makeOverrides()`)
 - [x] POM scaffolding: `AppLauncher`, fluent page nav, split UITest files, adaptations doc
-- [x] Throwing page-object accessors (`try page.screen`); UI tests `throws` (sync wait via `waitForElement`)
+- [x] Async XCTWaiter page-object waits (`waitForExistenceAsync`, parallel `async let`); ~14% faster UI suite (70.3s → 60.4s)
 - [x] Game Details UI coverage: content chips/description/website + error/Retry via `UITEST_FORCE_DETAILS_FAILURE`
 - [x] `AppContaining` + production `AppContainer` + DEBUG `DebugAppContainer` (wrap + Overrides)
 - [x] Debug `Overrides` use-case-only (no repository field); UITestSupport injects stub use cases

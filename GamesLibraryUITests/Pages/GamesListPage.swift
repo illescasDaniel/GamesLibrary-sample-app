@@ -8,8 +8,8 @@ struct GamesListPage {
 
 	/// Waits until the list screen exists; throws if it does not appear in time.
 	var screen: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GamesList.screen,
 				timeout: UITestTimeout.screen
 			)
@@ -18,8 +18,8 @@ struct GamesListPage {
 
 	/// Waits until the empty state exists; throws if it does not appear in time.
 	var emptyState: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GamesList.emptyState,
 				timeout: UITestTimeout.emptyState
 			)
@@ -28,8 +28,8 @@ struct GamesListPage {
 
 	/// Waits until at least one game row exists; throws if none appear in time.
 	var gameRows: XCUIElementQuery {
-		get throws {
-			try app.waitForElements(
+		get async throws {
+			try await app.waitForElementsAsync(
 				matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix,
 				timeout: UITestTimeout.content
 			)
@@ -37,10 +37,10 @@ struct GamesListPage {
 	}
 
 	@discardableResult
-	func tapGameRow(at index: Int = 0) throws -> GameDetailsPage {
-		let rows = try gameRows
+	func tapGameRow(at index: Int = 0) async throws -> GameDetailsPage {
+		let rows = try await gameRows
 		let row = rows.element(boundBy: index)
-		_ = try row.requireExistence(
+		_ = try await row.requireExistenceAsync(
 			identifier: "\(AccessibilityIdentifier.GamesList.gameRowPrefix)[\(index)]",
 			timeout: UITestTimeout.content
 		)
@@ -49,12 +49,12 @@ struct GamesListPage {
 	}
 
 	@discardableResult
-	func tapFirstGameRow() throws -> GameDetailsPage {
-		try tapGameRow(at: 0)
+	func tapFirstGameRow() async throws -> GameDetailsPage {
+		try await tapGameRow(at: 0)
 	}
 
-	func requireNoGameRows(timeout: TimeInterval = UITestTimeout.absence) throws {
-		try app.requireNoElements(
+	func requireNoGameRows(timeout: TimeInterval = UITestTimeout.absence) async throws {
+		try await app.requireNoElementsAsync(
 			matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix,
 			timeout: timeout
 		)

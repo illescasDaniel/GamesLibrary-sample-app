@@ -90,20 +90,22 @@ Instead:
 | Layer | Location | Rule |
 |-------|----------|------|
 | Shared IDs | `GamesLibraryAccessibilityIdentifiers` | Compile-time constants only |
-| Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; **throwing** element accessors |
+| Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; **async throwing** element accessors (`XCTWaiter`) |
 | Launch | `GamesLibraryUITests/Support/AppLauncher` | `ensureLaunched()` once; `apply(configuration:)` per scenario |
 | DEBUG UI-test kit | `GamesLibraryUITestKit/` (local package) | Stubs, scenario host, apply handler, runtime |
 | DEBUG app glue | `GamesLibrary/App/UITest/` | `UITestAppContent` shell, container override mapping |
-| Tests | One `XCTestCase` per screen/feature | `throws` tests; no raw identifiers |
+| Tests | One `XCTestCase` per screen/feature | `async throws` tests; no raw identifiers |
 
-Do **not** expose unloaded `XCUIElement` properties. Page accessors wait then return or throw:
+Do **not** expose unloaded `XCUIElement` properties. Page accessors wait via `XCTWaiter` then return or throw:
 
 ```swift
-let screen = try details.screen
-_ = try list.gameRows
+let screen = try await details.screen
+async let rating = details.rating
+async let year = details.year
+_ = try await (rating, year)
 ```
 
-Missing elements throw `UITestElementError` (test fails via `throws`). Absence checks use `requireNo…` / `requireAbsence`. Navigate actions return the next page (e.g. `try list.tapGameRow(at:) -> GameDetailsPage`). Prefer `AppLauncher.applyGameDetails(index:)` when a test starts on details rather than composing list apply + tap. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty (list empty state / details error) and query the Retry **button** via that same id. Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states = new fields on the matching per-screen nested config inside `UITestConfiguration` + stub mapping in `UITestSupport.makeStubTables(from:)` — never seed `ViewModel` state from the container.
+Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…Async` / `requireAbsenceAsync`. Navigate actions return the next page (e.g. `try await list.tapGameRow(at:) -> GameDetailsPage`). Prefer `async let` when asserting several independent elements on the same screen. Prefer `AppLauncher.applyGameDetails(index:)` when a test starts on details rather than composing list apply + tap. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty (list empty state / details error) and query the Retry **button** via that same id. Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states = new fields on the matching per-screen nested config inside `UITestConfiguration` + stub mapping in `UITestSupport.makeStubTables(from:)` — never seed `ViewModel` state from the container.
 
 ### Shared-process UI tests (template-scale)
 

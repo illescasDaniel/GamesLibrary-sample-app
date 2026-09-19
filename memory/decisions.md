@@ -152,6 +152,12 @@ _Log of significant technical, structural, or dependency choices. Newest first._
 - **Decision:** Wrap `Overrides` and the `overrides:` init/accessors in `#if DEBUG`. Release has only `AppContainer(environment:)`. Add `responseInterceptors: [any HTTPResponseInterceptor]?` to `Overrides` (`nil` = DEBUG default logger interceptor; non-`nil` including `[]` = explicit replacement).
 - **Rationale:** Compile-time guarantee that production cannot inject test/preview seams; grow the override surface by fields consistently with repository/cache/logger.
 
+## 2026-09-19 — Async XCTWaiter page-object waits + parallel assertions
+
+- **Context:** Sync `waitForExistence` blocked the test thread; multi-element assertions (metadata chips, error+retry) waited sequentially even when elements appear together.
+- **Decision:** Add `waitForExistenceAsync` (`XCTNSPredicateExpectation` + `XCTWaiter.fulfillment`), async `requireExistenceAsync` / `waitForElementAsync` in `XCUITestPOM`, and restore `get async throws` page accessors. Use `async let` for independent elements on the same screen. Keep sync helpers for short `popToRoot` polls.
+- **Rationale:** Real suspension via XCTWaiter; parallel waits cut suite time ~14% (70.3s → 60.4s on 8 tests; metadata-chips test 12.4s → 8.1s).
+
 ## 2026-09-19 — Sync throwing page-object element accessors
 
 - **Context:** Page accessors used `get async throws` but `waitForElement` / `requireExistence` poll synchronously via `XCUIElement.waitForExistence` — no real suspension point.

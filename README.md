@@ -94,6 +94,21 @@ cd GamesLibraryCore && swift test
 
 ### UI tests
 
-UI tests launch with `UITEST_CONFIG`, which wires stub inbound use cases at the composition root. No network, no API key, no dependency on RAWG uptime.
+UI tests launch once (`UITESTING=1`) and apply scenarios at runtime via deep link — no cold relaunch per test. Stubs are wired at the composition root through `UITestConfiguration`; no network, no API key, no dependency on RAWG uptime.
+
+Page objects live in `GamesLibraryUITests/Pages/` and use the local **`XCUITestPOM`** package. Element accessors are `get async throws`: they wait via **`XCTWaiter`** (`XCTNSPredicateExpectation` + `fulfillment`) instead of blocking on sync `waitForExistence`, so the test run loop can stay responsive.
+
+When several elements on the same screen appear together, tests use **`async let`** to wait in parallel:
+
+```swift
+async let rating = details.rating
+async let year = details.year
+async let playtime = details.playtime
+_ = try await (rating, year, playtime)
+```
+
+On an iPhone 18 Pro simulator (8 UI tests, Sep 2026), that cut total suite time from **70.3s → 60.4s (~14%)**; the metadata-chips test alone dropped **12.4s → 8.1s (~35%)** because five sequential waits became one concurrent wait.
+
+See [docs/playbooks/GamesLibrary-adaptations.md](docs/playbooks/GamesLibrary-adaptations.md) for POM layout, shared-process launch, and scenario config.
 
 Agent memory bank (per-branch project state): [memory/README.md](memory/README.md).

@@ -27,7 +27,7 @@ enum AppLauncher {
 	@discardableResult
 	static func apply(
 		configuration: UITestConfiguration = .default
-	) throws -> GamesListPage {
+	) async throws -> GamesListPage {
 		try ensureLaunched()
 		guard let app else {
 			preconditionFailure("Shared-process UI test app was not launched")
@@ -38,7 +38,7 @@ enum AppLauncher {
 		let url = configuration.makeApplyDeepLinkURL()
 		app.activate()
 		XCUIDevice.shared.system.open(url)
-		try app.waitForUITestReady(sessionGeneration: generation)
+		try await app.waitForUITestReadyAsync(sessionGeneration: generation)
 		return GamesListPage(app: app)
 	}
 
@@ -46,9 +46,9 @@ enum AppLauncher {
 	static func applyGameDetails(
 		index: Int = 0,
 		configuration: UITestConfiguration = .default
-	) throws -> GameDetailsPage {
-		let list = try apply(configuration: configuration)
-		return try list.tapGameRow(at: index)
+	) async throws -> GameDetailsPage {
+		let list = try await apply(configuration: configuration)
+		return try await list.tapGameRow(at: index)
 	}
 
 	private static func popToRoot(in app: XCUIApplication) {

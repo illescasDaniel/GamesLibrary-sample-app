@@ -8,8 +8,8 @@ struct GameDetailsPage {
 
 	/// Waits until the details screen exists; throws if it does not appear in time.
 	var screen: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.screen,
 				timeout: UITestTimeout.screen
 			)
@@ -17,8 +17,8 @@ struct GameDetailsPage {
 	}
 
 	var loading: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.loading,
 				timeout: UITestTimeout.screen
 			)
@@ -26,8 +26,8 @@ struct GameDetailsPage {
 	}
 
 	var error: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.error,
 				timeout: UITestTimeout.content
 			)
@@ -37,11 +37,11 @@ struct GameDetailsPage {
 	/// Retry is the button that inherits the error root identifier
 	/// (`ContentUnavailableView` does not expose a separate child id).
 	var retryButton: XCUIElement {
-		get throws {
+		get async throws {
 			let button = app.descendants(matching: .button)
 				.matching(identifier: AccessibilityIdentifier.GameDetails.error)
 				.firstMatch
-			return try button.requireExistence(
+			return try await button.requireExistenceAsync(
 				identifier: AccessibilityIdentifier.GameDetails.error,
 				timeout: UITestTimeout.content
 			)
@@ -49,8 +49,8 @@ struct GameDetailsPage {
 	}
 
 	var description: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.description,
 				timeout: UITestTimeout.content
 			)
@@ -58,8 +58,8 @@ struct GameDetailsPage {
 	}
 
 	var websiteLink: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.websiteLink,
 				timeout: UITestTimeout.content
 			)
@@ -67,8 +67,8 @@ struct GameDetailsPage {
 	}
 
 	var rating: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.rating,
 				timeout: UITestTimeout.content
 			)
@@ -76,8 +76,8 @@ struct GameDetailsPage {
 	}
 
 	var year: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.year,
 				timeout: UITestTimeout.content
 			)
@@ -85,8 +85,8 @@ struct GameDetailsPage {
 	}
 
 	var playtime: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.playtime,
 				timeout: UITestTimeout.content
 			)
@@ -94,8 +94,8 @@ struct GameDetailsPage {
 	}
 
 	var esrb: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.esrb,
 				timeout: UITestTimeout.content
 			)
@@ -103,8 +103,8 @@ struct GameDetailsPage {
 	}
 
 	var platforms: XCUIElement {
-		get throws {
-			try app.waitForElement(
+		get async throws {
+			try await app.waitForElementAsync(
 				matching: AccessibilityIdentifier.GameDetails.platforms,
 				timeout: UITestTimeout.content
 			)
@@ -112,8 +112,8 @@ struct GameDetailsPage {
 	}
 
 	@discardableResult
-	func tapRetry() throws -> Self {
-		let button = try retryButton
+	func tapRetry() async throws -> Self {
+		let button = try await retryButton
 		button.tap()
 		return self
 	}
