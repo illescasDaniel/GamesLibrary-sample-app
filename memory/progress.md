@@ -32,7 +32,7 @@ _Last updated: 2026-09-19_
 - [x] Commit cleanup batch on `develop` (flatten, a11y SPM, POM pages, Config.xcconfig sample, shared httpClient)
 - [x] `AppContainer.Overrides` + thin UITest bootstrap (`UITestSupport.makeOverrides()`)
 - [x] POM scaffolding: `AppLauncher`, fluent page nav, split UITest files, adaptations doc
-- [x] Async throwing page-object accessors (`try await page.screen`); UI tests `async throws`
+- [x] Throwing page-object accessors (`try page.screen`); UI tests `throws` (sync wait via `waitForElement`)
 - [x] Game Details UI coverage: content chips/description/website + error/Retry via `UITEST_FORCE_DETAILS_FAILURE`
 - [x] `AppContaining` + production `AppContainer` + DEBUG `DebugAppContainer` (wrap + Overrides)
 - [x] Debug `Overrides` use-case-only (no repository field); UITestSupport injects stub use cases
@@ -53,6 +53,7 @@ _Last updated: 2026-09-19_
 - [x] `GamesLibraryUITestKit` local package; DEBUG glue in `GamesLibrary/App/UITest/`; documented reload flow in adaptations
 - [x] API key via gitignored `Secrets.swift` (+ sample); `Config.xcconfig` holds `DEVELOPMENT_TEAM` only; drop C/bridging
 - [x] Games list rows use `NavigationLink(value: Route.details)` for disclosure indicator; path-driven navigation via existing `navigationDestination`
+- [x] Fix shared-process UI tests: `popToRoot` Back-button query no longer throws after popping to Games Library
 
 ### Open
 

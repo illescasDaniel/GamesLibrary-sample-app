@@ -8,51 +8,51 @@ final class GameDetailsUITests: XCTestCase {
 	}
 
 	@MainActor
-	func testGivenGamesListWhenGameRowTappedThenOpensDetails() async throws {
-		let details = try await AppLauncher.applyGameDetails()
+	func testGivenGamesListWhenGameRowTappedThenOpensDetails() throws {
+		let details = try AppLauncher.applyGameDetails()
 
-		_ = try await details.screen
+		_ = try details.screen
 	}
 
 	@MainActor
-	func testGivenDetailsWhenLoadedThenShowsDescriptionAndWebsite() async throws {
-		let details = try await AppLauncher.applyGameDetails()
+	func testGivenDetailsWhenLoadedThenShowsDescriptionAndWebsite() throws {
+		let details = try AppLauncher.applyGameDetails()
 
-		_ = try await details.description
-		_ = try await details.websiteLink
+		_ = try details.description
+		_ = try details.websiteLink
 	}
 
 	@MainActor
-	func testGivenDetailsWhenLoadedThenShowsMetadataChips() async throws {
-		let details = try await AppLauncher.applyGameDetails()
+	func testGivenDetailsWhenLoadedThenShowsMetadataChips() throws {
+		let details = try AppLauncher.applyGameDetails()
 
-		_ = try await details.rating
-		_ = try await details.year
-		_ = try await details.playtime
-		_ = try await details.esrb
-		_ = try await details.platforms
+		_ = try details.rating
+		_ = try details.year
+		_ = try details.playtime
+		_ = try details.esrb
+		_ = try details.platforms
 	}
 
 	@MainActor
-	func testGivenDetailsFailureWhenOpenedThenShowsErrorWithRetry() async throws {
-		let details = try await AppLauncher.applyGameDetails(
+	func testGivenDetailsFailureWhenOpenedThenShowsErrorWithRetry() throws {
+		let details = try AppLauncher.applyGameDetails(
 			configuration: .init(gameDetails: .failingThenSucceeding())
 		)
 
-		_ = try await details.error
-		_ = try await details.retryButton
+		_ = try details.error
+		_ = try details.retryButton
 	}
 
 	@MainActor
-	func testGivenDetailsFailureWhenRetryTappedThenShowsContent() async throws {
-		let details = try await AppLauncher.applyGameDetails(
+	func testGivenDetailsFailureWhenRetryTappedThenShowsContent() throws {
+		let details = try AppLauncher.applyGameDetails(
 			configuration: .init(gameDetails: .failingThenSucceeding())
 		)
 
-		_ = try await details.error
-		_ = try await details.tapRetry()
+		_ = try details.error
+		_ = try details.tapRetry()
 
-		_ = try await details.description
-		_ = try await details.websiteLink
+		_ = try details.description
+		_ = try details.websiteLink
 	}
 }

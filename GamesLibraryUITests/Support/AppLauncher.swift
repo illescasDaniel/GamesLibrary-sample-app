@@ -46,9 +46,9 @@ enum AppLauncher {
 	static func applyGameDetails(
 		index: Int = 0,
 		configuration: UITestConfiguration = .default
-	) async throws -> GameDetailsPage {
+	) throws -> GameDetailsPage {
 		let list = try apply(configuration: configuration)
-		return try await list.tapGameRow(at: index)
+		return try list.tapGameRow(at: index)
 	}
 
 	private static func popToRoot(in app: XCUIApplication) {
@@ -64,9 +64,17 @@ enum AppLauncher {
 		if emptyState.waitForExistence(timeout: 0.5) {
 			return
 		}
-		let backButton = app.navigationBars.buttons.element(boundBy: 0)
-		for _ in 0 ..< 5 where backButton.exists && backButton.isHittable {
+		// Do not use `element(boundBy: 0)` + `isHittable` in a `for … where` filter.
+		// After the first pop the Games Library bar has no buttons; XCTest throws
+		// "No matches found for Descendants matching type Button" instead of false.
+		for _ in 0 ..< 5 {
+			let navButtons = app.navigationBars.buttons
+			guard navButtons.count > 0 else { return }
+			let backButton = navButtons.firstMatch
+			guard backButton.exists else { return }
 			backButton.tap()
+			if listScreen.waitForExistence(timeout: 0.5) { return }
+			if emptyState.waitForExistence(timeout: 0.3) { return }
 		}
 	}
 }

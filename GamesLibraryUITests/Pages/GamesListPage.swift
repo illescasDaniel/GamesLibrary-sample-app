@@ -8,7 +8,7 @@ struct GamesListPage {
 
 	/// Waits until the list screen exists; throws if it does not appear in time.
 	var screen: XCUIElement {
-		get async throws {
+		get throws {
 			try app.waitForElement(
 				matching: AccessibilityIdentifier.GamesList.screen,
 				timeout: UITestTimeout.screen
@@ -18,7 +18,7 @@ struct GamesListPage {
 
 	/// Waits until the empty state exists; throws if it does not appear in time.
 	var emptyState: XCUIElement {
-		get async throws {
+		get throws {
 			try app.waitForElement(
 				matching: AccessibilityIdentifier.GamesList.emptyState,
 				timeout: UITestTimeout.emptyState
@@ -28,7 +28,7 @@ struct GamesListPage {
 
 	/// Waits until at least one game row exists; throws if none appear in time.
 	var gameRows: XCUIElementQuery {
-		get async throws {
+		get throws {
 			try app.waitForElements(
 				matchingIdentifierPrefix: AccessibilityIdentifier.GamesList.gameRowPrefix,
 				timeout: UITestTimeout.content
@@ -37,8 +37,8 @@ struct GamesListPage {
 	}
 
 	@discardableResult
-	func tapGameRow(at index: Int = 0) async throws -> GameDetailsPage {
-		let rows = try await gameRows
+	func tapGameRow(at index: Int = 0) throws -> GameDetailsPage {
+		let rows = try gameRows
 		let row = rows.element(boundBy: index)
 		_ = try row.requireExistence(
 			identifier: "\(AccessibilityIdentifier.GamesList.gameRowPrefix)[\(index)]",
@@ -49,8 +49,8 @@ struct GamesListPage {
 	}
 
 	@discardableResult
-	func tapFirstGameRow() async throws -> GameDetailsPage {
-		try await tapGameRow(at: 0)
+	func tapFirstGameRow() throws -> GameDetailsPage {
+		try tapGameRow(at: 0)
 	}
 
 	func requireNoGameRows(timeout: TimeInterval = UITestTimeout.absence) throws {

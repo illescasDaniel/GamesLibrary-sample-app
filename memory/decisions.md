@@ -152,6 +152,12 @@ _Log of significant technical, structural, or dependency choices. Newest first._
 - **Decision:** Wrap `Overrides` and the `overrides:` init/accessors in `#if DEBUG`. Release has only `AppContainer(environment:)`. Add `responseInterceptors: [any HTTPResponseInterceptor]?` to `Overrides` (`nil` = DEBUG default logger interceptor; non-`nil` including `[]` = explicit replacement).
 - **Rationale:** Compile-time guarantee that production cannot inject test/preview seams; grow the override surface by fields consistently with repository/cache/logger.
 
+## 2026-09-19 — Sync throwing page-object element accessors
+
+- **Context:** Page accessors used `get async throws` but `waitForElement` / `requireExistence` poll synchronously via `XCUIElement.waitForExistence` — no real suspension point.
+- **Decision:** Element accessors are `var …: XCUIElement { get throws }` (or query). UI tests and navigate actions are `throws` only (`try list.screen`, `try list.tapGameRow(at:)`). Reserve `async` for page objects only if we add a truly async wait primitive later.
+- **Rationale:** `async` implied concurrency that does not exist; sync `throws` matches XCTest polling and keeps call sites simpler.
+
 ## 2026-09-17 — Async throwing page-object element accessors
 
 - **Context:** Page objects exposed raw `XCUIElement` vars that were unloaded until a separate `waitFor*` call; easy to tap/assert too early.
