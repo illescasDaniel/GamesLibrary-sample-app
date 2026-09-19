@@ -9,17 +9,12 @@ import GamesLibraryUITestKit
 struct UITestAppContent: View {
 	@Bindable var coordinator: AppCoordinator
 	@Bindable var scenarioHost: UITestScenarioHost
-	@Binding var uiTestSessionGeneration: Int
+	@State private var uiTestSessionGeneration = 0
 	@State private var sessionCoordinator: UITestSessionCoordinator<UITestConfiguration>
 
-	init(
-		coordinator: AppCoordinator,
-		scenarioHost: UITestScenarioHost,
-		uiTestSessionGeneration: Binding<Int>
-	) {
+	init(coordinator: AppCoordinator, scenarioHost: UITestScenarioHost) {
 		self._coordinator = Bindable(coordinator)
 		self._scenarioHost = Bindable(scenarioHost)
-		self._uiTestSessionGeneration = uiTestSessionGeneration
 		self._sessionCoordinator = State(
 			initialValue: UITestSessionCoordinator(settings: UITestSupport.sessionSettings)
 		)

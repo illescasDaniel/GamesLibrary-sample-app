@@ -56,6 +56,8 @@ _Last updated: 2026-09-19_
 - [x] Fix shared-process UI tests: `popToRoot` Back-button query no longer throws after popping to Games Library
 - [x] Nested POM subviews (`GamesListPage.GameRow`, `GameDetailsPage.Header`/`Content`); row child accessibility IDs; opt-in `requireAsync` + `ElementRequirement` in `XCUITestPOM`
 - [x] Extract publishable **`AsyncSharedTestingKit`** (`ASTK` / `ASTKApp` / `ASTKXCTest`): shared-process UI testing + async POM; replace `XCUITestPOM`; slim `AccessibilityIdentifiers` + `GamesLibraryUITestKit`; 11 package tests + 8 UI tests green (~62s)
+- [x] Reliable DEBUG test-host detection via `UnitTestProcessInfo` (`XCTestBundlePath` / `XCTestConfigurationFilePath` + `IS_TESTING` on test scheme)
+- [x] Colocate UI-test session generation in `UITestAppContent`; drop legacy launch-env `uitestFromLaunchEnvironment()` path
 
 ### Open
 

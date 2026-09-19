@@ -23,7 +23,7 @@ We combine both playbooks:
 
 The Hexagonal playbook shows `.environment(AppContainer)`; here we inject ViewModels directly and pass the coordinator via `.environment` for navigation only.
 
-DEBUG entry (`DebugGamesLibraryApp`): shared-process UI tests → `UITestAppContent` + `GamesLibraryUITestKit`; legacy env-only → `DebugAppContainer.Overrides.uitestFromLaunchEnvironment()`; otherwise plain `DebugAppContainer()`. Release `@main` uses `AppContainer()` only.
+DEBUG entry (`DebugGamesLibraryApp`): shared-process UI tests (`UITESTING=1`) → `UITestAppContent` + `GamesLibraryUITestKit`; otherwise plain `DebugAppContainer()`. Release `@main` uses `AppContainer()` only.
 
 ### Preview seams
 
@@ -152,7 +152,7 @@ When `UITestSessionCoordinator.handleOpenURL` runs (ASTKApp):
 1. **Decode** — ASTK `UITestApplyHandler` reads `config` from the URL query.
 2. **Reset navigation** — `AppCoordinator.resetNavigation()` clears `NavigationPath` (drops any details screen).
 3. **Replace stubs** — `UITestScenarioHost.apply(configuration)` rebuilds mutable `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` tables and bumps `sessionGeneration`.
-4. **Recreate UI** — `DebugGamesLibraryApp` holds `@State uiTestSessionGeneration`; `UITestAppContent` applies `.id(uiTestSessionGeneration)` on production `AppRootView`, forcing SwiftUI to destroy and recreate the list `@State` ViewModel (fresh `.task` → new stub data).
+4. **Recreate UI** — `UITestAppContent` owns `@State uiTestSessionGeneration` and applies `.id(uiTestSessionGeneration)` on production `AppRootView`, forcing SwiftUI to destroy and recreate the list `@State` ViewModel (fresh `.task` → new stub data).
 5. **Signal ready** — a 1×1 `Color.clear` overlay on `UITestAppContent` exposes `UITestReadyMarker.identifier(sessionGeneration:)`; the test waits for the matching generation before querying page objects. Invisible on purpose so it does not show up in screenshots.
 
 Both sides track generation: app bumps `UITestScenarioHost.sessionGeneration`; `SharedProcessLauncher` increments its counter and waits for `uitest-ready-{N}`.
@@ -169,7 +169,7 @@ let details = try await AppLauncher.applyGameDetails()    // apply + tap row
 
 - **Serial test plan only** — shared process is incompatible with parallel UI tests on one simulator.
 - **DEBUG only** — `gameslibrary-uitest` URL scheme and ready marker are not used in Release.
-- **Legacy path** — one-launch-per-test via launch-environment `UITEST_CONFIG` (without `UITESTING=1`) still works via `DebugAppContainer.Overrides.uitestFromLaunchEnvironment()`.
+- **Shared-process only** — UI tests launch with `UITESTING=1`; per-scenario config is applied at runtime via deep link, not relaunch `UITEST_CONFIG`.
 
 When SwiftUI `.searchable` text entry is unreliable in XCUITest, pass `UITestConfiguration(gamesList: .empty)` through `AppLauncher.apply` (canned `(1, "")` → `[]`). For custom rows / search / pagination, set `gamesList.responses` to `[String: [GameSummaryFixture]]` keyed by `GamesList.searchKey(page:searchText:)` (e.g. `"1|"`, `"1|zelda"`; mapped to Core in `UITestSupport.makeStubTables`). For details Retry, use `gameDetails: .failingThenSucceeding()` (`[Int: [DetailsOutcome]]` per-id outcome queue: `.failure` then `.success`). `nil` details responses → one success per list stub game. Previews share `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` (`.constant(...)`) via Overrides — do not seed `ViewModel.searchText` from the container.
 

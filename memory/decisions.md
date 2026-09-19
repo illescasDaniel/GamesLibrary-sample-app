@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-19 — `UnitTestProcessInfo` + drop legacy launch-env UI-test path
+
+- **Context:** DEBUG `@main` used `IS_TESTING=1` on the Launch action only; hosted unit tests (`TEST_HOST`) did not set it, so the app rendered UI during Swift Testing runs. A parallel legacy path (`uitestFromLaunchEnvironment`) relaunched with `UITEST_CONFIG` without shared-process mode.
+- **Decision:** Add `UnitTestProcessInfo` checking `XCTestBundlePath`, `XCTestConfigurationFilePath`, and `IS_TESTING`; set `IS_TESTING=1` on the `GamesLibraryTests` scheme. Move `uiTestSessionGeneration` into `UITestAppContent`. Remove `DebugAppContainer.Overrides.uitestFromLaunchEnvironment()` — UI tests use shared-process only (`UITESTING=1` + runtime deep link).
+- **Rationale:** Test-host detection must match Xcode’s actual signals; session state belongs with the UI-test shell; one apply path reduces maintenance.
+
 ## 2026-09-19 — Extract `AsyncSharedTestingKit` (ASTK) from XCUITestPOM + shared-process glue
 
 - **Context:** Shared-process UI testing (one launch, runtime Codable apply, SwiftUI `.id` recreate, async POM) lived split across `XCUITestPOM`, `GamesLibraryUITestKit`, and app glue — reusable but not publishable as a single framework.

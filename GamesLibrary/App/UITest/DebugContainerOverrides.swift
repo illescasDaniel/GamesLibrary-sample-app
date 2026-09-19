@@ -12,15 +12,5 @@ extension DebugAppContainer.Overrides {
 			urlCache: URLCache(memoryCapacity: 0, diskCapacity: 0)
 		)
 	}
-
-	static func uitestFromLaunchEnvironment() -> Self? {
-		guard
-			!UITestSupport.isSharedProcessUITesting,
-			let configuration = UITestSupport.initialConfiguration()
-		else {
-			return nil
-		}
-		return uitest(configuration)
-	}
 }
 #endif
