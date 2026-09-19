@@ -1,9 +1,9 @@
-import XCTest
 import AccessibilityIdentifiers
-import XCUITestPOM
+import ASTKXCTest
+import XCTest
 
 @MainActor
-struct GameDetailsPage {
+struct GameDetailsPage: PageObject {
 	let app: XCUIApplication
 
 	@MainActor

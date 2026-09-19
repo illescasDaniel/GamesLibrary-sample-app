@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-19 — Extract `AsyncSharedTestingKit` (ASTK) from XCUITestPOM + shared-process glue
+
+- **Context:** Shared-process UI testing (one launch, runtime Codable apply, SwiftUI `.id` recreate, async POM) lived split across `XCUITestPOM`, `GamesLibraryUITestKit`, and app glue — reusable but not publishable as a single framework.
+- **Decision:** Replace `XCUITestPOM/` with local package **`AsyncSharedTestingKit`**: three products — `ASTK` (settings, URL transport, protocols, ready marker), `ASTKApp` (session coordinator + optional `UITestSessionView`), `ASTKXCTest` (async POM, `SharedProcessLauncher`, `NavigationBarPopper`). Keep app-specific fixtures/stubs in `GamesLibraryUITestKit` + `AccessibilityIdentifiers`; slim transport to `GamesLibraryUITestTransport.deepLinkScheme`. GamesLibrary `UITestAppContent` inlines the session shell (uses ASTK types) because generic `UITestSessionView` hit a Swift `View` demangle crash in this hierarchy.
+- **Rationale:** XCTest must not link into the app; one package with clear products is publishable later. Generic config stays in adopters; ASTK owns the handshake loop. 11 package unit tests + 8 UI tests green (~62s).
+
 ## 2026-09-19 — Nested POM subviews + unified opt-in `requireAsync`
 
 - **Context:** Page objects were flat (screen-level only); tests asserted existence only. Needed subview grouping (game row, details header/content) and richer opt-in checks (visible, tappable, non-empty text, negative assertions after actions).

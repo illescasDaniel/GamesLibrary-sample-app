@@ -96,7 +96,7 @@ cd GamesLibraryCore && swift test
 
 UI tests launch once (`UITESTING=1`) and apply scenarios at runtime via deep link — no cold relaunch per test. Stubs are wired at the composition root through `UITestConfiguration`; no network, no API key, no dependency on RAWG uptime.
 
-Page objects live in `GamesLibraryUITests/Pages/` and use the local **`XCUITestPOM`** package. Element accessors are `get async throws`: they wait via **`XCTWaiter`** (`XCTNSPredicateExpectation` + `fulfillment`) instead of blocking on sync `waitForExistence`, so the test run loop can stay responsive.
+Page objects live in `GamesLibraryUITests/Pages/` and use the local **`AsyncSharedTestingKit`** package (`ASTKXCTest` product). Element accessors are `get async throws`: they wait via **`XCTWaiter`** (`XCTNSPredicateExpectation` + `fulfillment`) instead of blocking on sync `waitForExistence`, so the test run loop can stay responsive. See [AsyncSharedTestingKit/README.md](AsyncSharedTestingKit/README.md) for the reusable shared-process framework.
 
 When several elements on the same screen appear together, tests use **`async let`** to wait in parallel:
 

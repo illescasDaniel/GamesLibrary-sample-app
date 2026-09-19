@@ -10,6 +10,7 @@ let package = Package(
 	dependencies: [
 		.package(path: "../GamesLibraryCore"),
 		.package(path: "../GamesLibraryAccessibilityIdentifiers"),
+		.package(path: "../AsyncSharedTestingKit"),
 	],
 	targets: [
 		.target(
@@ -17,6 +18,7 @@ let package = Package(
 			dependencies: [
 				"GamesLibraryCore",
 				.product(name: "AccessibilityIdentifiers", package: "GamesLibraryAccessibilityIdentifiers"),
+				.product(name: "ASTK", package: "AsyncSharedTestingKit"),
 			],
 			path: "Sources/GamesLibraryUITestKit"
 		),

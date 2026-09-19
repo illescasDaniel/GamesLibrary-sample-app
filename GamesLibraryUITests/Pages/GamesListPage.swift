@@ -1,45 +1,37 @@
-import XCTest
 import AccessibilityIdentifiers
-import XCUITestPOM
+import ASTKXCTest
+import XCTest
 
 @MainActor
-struct GamesListPage {
+struct GamesListPage: PageObject {
 	let app: XCUIApplication
 
 	@MainActor
-	struct GameRow {
+	struct GameRow: NestedPageObject {
 		let root: XCUIElement
 		let app: XCUIApplication
 
 		var name: XCUIElement {
 			get async throws {
-				try await childElement(
-					matching: AccessibilityIdentifier.GamesList.GameRow.name
-				)
+				try await childElement(matching: AccessibilityIdentifier.GamesList.GameRow.name)
 			}
 		}
 
 		var thumbnail: XCUIElement {
 			get async throws {
-				try await childElement(
-					matching: AccessibilityIdentifier.GamesList.GameRow.thumbnail
-				)
+				try await childElement(matching: AccessibilityIdentifier.GamesList.GameRow.thumbnail)
 			}
 		}
 
 		var rating: XCUIElement {
 			get async throws {
-				try await childElement(
-					matching: AccessibilityIdentifier.GamesList.GameRow.rating
-				)
+				try await childElement(matching: AccessibilityIdentifier.GamesList.GameRow.rating)
 			}
 		}
 
 		var year: XCUIElement {
 			get async throws {
-				try await childElement(
-					matching: AccessibilityIdentifier.GamesList.GameRow.year
-				)
+				try await childElement(matching: AccessibilityIdentifier.GamesList.GameRow.year)
 			}
 		}
 
@@ -52,16 +44,6 @@ struct GamesListPage {
 			)
 			root.tap()
 			return GameDetailsPage(app: app)
-		}
-
-		private func childElement(matching identifier: String) async throws -> XCUIElement {
-			let element = root.descendants(matching: .any)
-				.matching(identifier: identifier)
-				.firstMatch
-			return try await element.requireExistenceAsync(
-				identifier: identifier,
-				timeout: UITestTimeout.content
-			)
 		}
 	}
 

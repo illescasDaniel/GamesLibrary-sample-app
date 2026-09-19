@@ -1,5 +1,5 @@
+import ASTK
 import XCTest
-import AccessibilityIdentifiers
 
 @MainActor
 extension XCUIApplication {
@@ -7,7 +7,7 @@ extension XCUIApplication {
 		sessionGeneration: Int,
 		timeout: TimeInterval = UITestTimeout.screen
 	) throws {
-		let identifier = AccessibilityIdentifier.UITest.ready(sessionGeneration: sessionGeneration)
+		let identifier = UITestReadyMarker.identifier(sessionGeneration: sessionGeneration)
 		try waitForElement(matching: identifier, timeout: timeout)
 	}
 
@@ -15,7 +15,7 @@ extension XCUIApplication {
 		sessionGeneration: Int,
 		timeout: TimeInterval = UITestTimeout.screen
 	) async throws {
-		let identifier = AccessibilityIdentifier.UITest.ready(sessionGeneration: sessionGeneration)
+		let identifier = UITestReadyMarker.identifier(sessionGeneration: sessionGeneration)
 		try await waitForElementAsync(matching: identifier, timeout: timeout)
 	}
 

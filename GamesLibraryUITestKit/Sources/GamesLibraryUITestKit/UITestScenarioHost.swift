@@ -1,3 +1,4 @@
+import ASTK
 import Observation
 import AccessibilityIdentifiers
 
@@ -5,7 +6,9 @@ import AccessibilityIdentifiers
 /// Each `apply` replaces stub tables and bumps `sessionGeneration` so SwiftUI resets root state.
 @MainActor
 @Observable
-public final class UITestScenarioHost {
+public final class UITestScenarioHost: UITestScenarioApplying {
+	public typealias Configuration = UITestConfiguration
+
 	public private(set) var sessionGeneration = 0
 
 	public let searchGamesUseCase = StubSearchGamesUseCase()

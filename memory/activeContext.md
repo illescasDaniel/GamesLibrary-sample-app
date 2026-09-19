@@ -12,12 +12,15 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Nested POM: `GamesListPage.GameRow`, `GameDetailsPage.Header`/`Content`; row child accessibility IDs on `GameRowView`.
-- `XCUITestPOM`: `ElementRequirement` + opt-in `requireAsync(checks:in:)` (`.visible()`, `.visible(scroll: true)`, `.exists(false)`, etc.); `scrollIntoViewIfNeededAsync`.
-- UI tests updated to nested paths + parallel `requireAsync` validation. All 8 UI tests pass (~63s).
+- Extracted **`AsyncSharedTestingKit`** (`ASTK`, `ASTKApp`, `ASTKXCTest`) from `XCUITestPOM` + shared-process glue; deleted `XCUITestPOM/`.
+- `GamesLibraryUITestKit` now depends on `ASTK`; dropped `UITestRuntime` / `UITestApplyHandler` / `UITestNavigationResetting`.
+- `AccessibilityIdentifiers`: `GamesLibraryUITestTransport.deepLinkScheme` only; dropped URL transport + `UITest.ready`.
+- `AppLauncher` → thin `SharedProcessLauncher` wrapper; page objects use `PageObject` / `NestedPageObject`.
+- `UITestAppContent` inlines session shell (`.id` + ready marker + `UITestSessionCoordinator`) — avoids generic `UITestSessionView` demangle crash in this app hierarchy.
+- ASTK: 11 Swift Testing unit tests; UI suite: 8/8 pass (~62s).
 
 ## Next steps
 
 1. Continue hexagonal/SDD feature work (new screens: IDs → nested page accessors → feature UITest file)
 2. Add search/pagination entries in `gamesList.responses` when a UI test needs typed search or page 2
-3. Optional: dedicated slow-details field if a loading-overlay UI assertion is needed
+3. Optional: publish `AsyncSharedTestingKit` to its own GitHub repo when ready

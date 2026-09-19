@@ -22,7 +22,8 @@
 		65SUIC003EE0000000000003 /* SwiftUIComponents in Frameworks */ = {isa = PBXBuildFile; productRef = 65SUIC002EE0000000000002 /* SwiftUIComponents */; };
 		65UITK003EE0000000000003 /* GamesLibraryUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 65UITK002EE0000000000002 /* GamesLibraryUITestKit */; };
 		65UITK004EE0000000000004 /* GamesLibraryUITestKit in Frameworks */ = {isa = PBXBuildFile; productRef = 65UITK002EE0000000000002 /* GamesLibraryUITestKit */; };
-		65XCUI003EE0000000000003 /* XCUITestPOM in Frameworks */ = {isa = PBXBuildFile; productRef = 65XCUI002EE0000000000002 /* XCUITestPOM */; };
+		65ASTK005EE0000000000005 /* ASTKApp in Frameworks */ = {isa = PBXBuildFile; productRef = 65ASTK002EE0000000000002 /* ASTKApp */; };
+		65ASTK006EE0000000000006 /* ASTKXCTest in Frameworks */ = {isa = PBXBuildFile; productRef = 65ASTK003EE0000000000003 /* ASTKXCTest */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 				65IOSC007EE0000000000007 /* HTTPConveniences in Frameworks */,
 				65SUIC003EE0000000000003 /* SwiftUIComponents in Frameworks */,
 				65UITK003EE0000000000003 /* GamesLibraryUITestKit in Frameworks */,
+				65ASTK005EE0000000000005 /* ASTKApp in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,7 +118,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				65A11Y004EE0000000000004 /* AccessibilityIdentifiers in Frameworks */,
-				65XCUI003EE0000000000003 /* XCUITestPOM in Frameworks */,
+				65ASTK006EE0000000000006 /* ASTKXCTest in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +179,7 @@
 				65IOSC004EE0000000000004 /* HTTPConveniences */,
 				65SUIC002EE0000000000002 /* SwiftUIComponents */,
 				65UITK002EE0000000000002 /* GamesLibraryUITestKit */,
+				65ASTK002EE0000000000002 /* ASTKApp */,
 			);
 			productName = GamesLibrary;
 			productReference = 65194F082FAB46AA0098077E /* GamesLibrary.app */;
@@ -227,7 +230,7 @@
 			name = GamesLibraryUITests;
 			packageProductDependencies = (
 				65A11Y002EE0000000000002 /* AccessibilityIdentifiers */,
-				65XCUI002EE0000000000002 /* XCUITestPOM */,
+				65ASTK003EE0000000000003 /* ASTKXCTest */,
 			);
 			productName = GamesLibraryUITests;
 			productReference = 65194F1F2FAB46AB0098077E /* GamesLibraryUITests.xctest */;
@@ -275,7 +278,7 @@
 				65A11Y001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryAccessibilityIdentifiers" */,
 				65IOSC001EE0000000000001 /* XCLocalSwiftPackageReference "IOSConveniences" */,
 				65SUIC001EE0000000000001 /* XCLocalSwiftPackageReference "SwiftUIComponents" */,
-				65XCUI001EE0000000000001 /* XCLocalSwiftPackageReference "XCUITestPOM" */,
+				65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */,
 				65UITK001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryUITestKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -695,9 +698,9 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = GamesLibraryUITestKit;
 		};
-		65XCUI001EE0000000000001 /* XCLocalSwiftPackageReference "XCUITestPOM" */ = {
+		65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = XCUITestPOM;
+			relativePath = AsyncSharedTestingKit;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -792,10 +795,15 @@
 			package = 65UITK001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryUITestKit" */;
 			productName = GamesLibraryUITestKit;
 		};
-		65XCUI002EE0000000000002 /* XCUITestPOM */ = {
+		65ASTK002EE0000000000002 /* ASTKApp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 65XCUI001EE0000000000001 /* XCLocalSwiftPackageReference "XCUITestPOM" */;
-			productName = XCUITestPOM;
+			package = 65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */;
+			productName = ASTKApp;
+		};
+		65ASTK003EE0000000000003 /* ASTKXCTest */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */;
+			productName = ASTKXCTest;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

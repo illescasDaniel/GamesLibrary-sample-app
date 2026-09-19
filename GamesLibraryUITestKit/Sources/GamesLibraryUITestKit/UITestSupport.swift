@@ -1,3 +1,4 @@
+import ASTK
 import Foundation
 import AccessibilityIdentifiers
 import GamesLibraryCore
@@ -9,21 +10,24 @@ public enum UITestSupport {
 		public var detailsResponses: [GameID: [DetailsStubOutcome]]
 	}
 
-	private static var configurationJSON: String? {
-		ProcessInfo.processInfo.environment[UITestEnvironment.configKey]
+	public static var sessionSettings: UITestSessionSettings {
+		UITestSessionSettings(deepLinkScheme: GamesLibraryUITestTransport.deepLinkScheme)
+	}
+
+	private static var processInfo: UITestProcessInfo {
+		UITestProcessInfo()
 	}
 
 	public static var isSharedProcessUITesting: Bool {
-		ProcessInfo.processInfo.environment[UITestEnvironment.testingKey] == "1"
+		processInfo.isSharedProcessUITesting(settings: sessionSettings)
 	}
 
 	public static var isRunningUITests: Bool {
-		isSharedProcessUITesting || configurationJSON != nil
+		processInfo.isRunningUITests(settings: sessionSettings)
 	}
 
 	public static func initialConfiguration() -> UITestConfiguration? {
-		guard let raw = configurationJSON else { return nil }
-		return UITestConfiguration.decodeIfPresent(fromLaunchEnvironmentValue: raw)
+		processInfo.initialConfiguration(settings: sessionSettings, as: UITestConfiguration.self)
 	}
 
 	public static func makeStubTables(from configuration: UITestConfiguration) -> StubTables {

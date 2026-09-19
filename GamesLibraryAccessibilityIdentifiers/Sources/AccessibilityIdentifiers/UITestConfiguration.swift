@@ -1,20 +1,5 @@
 import Foundation
 
-/// Launch-environment keys shared between UI tests and the DEBUG app entry.
-public enum UITestEnvironment {
-	/// JSON-encoded `UITestConfiguration` for deterministic DEBUG UI-test overrides.
-	public static let configKey = "UITEST_CONFIG"
-
-	/// When `"1"`, the DEBUG app uses shared-process UI testing (one launch, runtime scenario apply).
-	public static let testingKey = "UITESTING"
-
-	/// DEBUG-only deep link scheme for applying a scenario without relaunching.
-	public static let deepLinkScheme = "gameslibrary-uitest"
-
-	/// Deep link host that applies a scenario from the URL query `config` payload.
-	public static let applyHost = "apply"
-}
-
 /// Scenario payload passed via `UITEST_CONFIG`. Add per-screen nested configs instead of new env keys.
 public struct UITestConfiguration: Codable, Equatable, Sendable {
 	public var gamesList: GamesList
@@ -179,31 +164,5 @@ public struct UITestConfiguration: Codable, Equatable, Sendable {
 			website: "https://example.com/stub-game",
 			playtime: 12
 		)
-	}
-
-	public func encodeToLaunchEnvironmentValue() -> String {
-		do {
-			let encoder = JSONEncoder()
-			encoder.outputFormatting = [.sortedKeys]
-			let data = try encoder.encode(self)
-			guard let string = String(data: data, encoding: .utf8) else {
-				preconditionFailure("UITestConfiguration JSON was not UTF-8")
-			}
-			return string
-		} catch {
-			preconditionFailure("Failed to encode UITestConfiguration: \(error)")
-		}
-	}
-
-	public static func decode(fromLaunchEnvironmentValue value: String) -> UITestConfiguration {
-		guard let configuration = decodeIfPresent(fromLaunchEnvironmentValue: value) else {
-			preconditionFailure("Failed to decode UITEST_CONFIG")
-		}
-		return configuration
-	}
-
-	public static func decodeIfPresent(fromLaunchEnvironmentValue value: String) -> UITestConfiguration? {
-		guard let data = value.data(using: .utf8) else { return nil }
-		return try? JSONDecoder().decode(UITestConfiguration.self, from: data)
 	}
 }

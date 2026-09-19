@@ -25,4 +25,12 @@ public enum LaunchEnvironmentCodec {
 			preconditionFailure("Failed to decode launch environment: \(error)")
 		}
 	}
+
+	public static func decodeIfPresent<T: Decodable>(
+		_ value: String,
+		as type: T.Type = T.self
+	) -> T? {
+		guard let data = value.data(using: .utf8) else { return nil }
+		return try? JSONDecoder().decode(T.self, from: data)
+	}
 }

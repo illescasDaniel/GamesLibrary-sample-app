@@ -1,6 +1,6 @@
-import XCTest
 import AccessibilityIdentifiers
-import XCUITestPOM
+import ASTKXCTest
+import XCTest
 
 final class GameDetailsUITests: XCTestCase {
 

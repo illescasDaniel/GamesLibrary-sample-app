@@ -52,7 +52,6 @@ struct DebugGamesLibraryApp: App {
 					scenarioHost: scenarioHost,
 					uiTestSessionGeneration: $uiTestSessionGeneration
 				)
-				.onOpenURL(perform: UITestRuntime.handleOpenURL)
 			} else {
 				AppRootView(coordinator: coordinator)
 			}

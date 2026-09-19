@@ -55,6 +55,7 @@ _Last updated: 2026-09-19_
 - [x] Games list rows use `NavigationLink(value: Route.details)` for disclosure indicator; path-driven navigation via existing `navigationDestination`
 - [x] Fix shared-process UI tests: `popToRoot` Back-button query no longer throws after popping to Games Library
 - [x] Nested POM subviews (`GamesListPage.GameRow`, `GameDetailsPage.Header`/`Content`); row child accessibility IDs; opt-in `requireAsync` + `ElementRequirement` in `XCUITestPOM`
+- [x] Extract publishable **`AsyncSharedTestingKit`** (`ASTK` / `ASTKApp` / `ASTKXCTest`): shared-process UI testing + async POM; replace `XCUITestPOM`; slim `AccessibilityIdentifiers` + `GamesLibraryUITestKit`; 11 package tests + 8 UI tests green (~62s)
 
 ### Open
 

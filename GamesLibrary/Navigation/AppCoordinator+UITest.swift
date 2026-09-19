@@ -1,5 +1,5 @@
 #if DEBUG
-import GamesLibraryUITestKit
+import ASTK
 
 extension AppCoordinator: UITestNavigationResetting {}
 #endif

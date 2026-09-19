@@ -91,10 +91,11 @@ Instead:
 |-------|----------|------|
 | Shared IDs | `GamesLibraryAccessibilityIdentifiers` | Compile-time constants only |
 | Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; nested `@MainActor` structs for subviews (e.g. `GamesListPage.GameRow`, `GameDetailsPage.Header`); **async throwing** element accessors (`XCTWaiter`) |
-| Validation | `XCUITestPOM` | Opt-in `requireAsync(checks:in:)` with `ElementRequirement` (`.visible()`, `.visible(false)`, `.exists(false)`, `.tappable()`, `.nonEmptyText()`, …) |
-| Launch | `GamesLibraryUITests/Support/AppLauncher` | `ensureLaunched()` once; `apply(configuration:)` per scenario |
-| DEBUG UI-test kit | `GamesLibraryUITestKit/` (local package) | Stubs, scenario host, apply handler, runtime |
-| DEBUG app glue | `GamesLibrary/App/UITest/` | `UITestAppContent` shell, container override mapping |
+| Validation | `AsyncSharedTestingKit` (`ASTKXCTest`) | Opt-in `requireAsync(checks:in:)` with `ElementRequirement` (`.visible()`, `.visible(false)`, `.exists(false)`, `.tappable()`, `.nonEmptyText()`, …) |
+| Launch | `GamesLibraryUITests/Support/AppLauncher` | Thin wrapper over `SharedProcessLauncher` — `ensureLaunched()` once; `apply(configuration:)` per scenario |
+| DEBUG UI-test kit | `GamesLibraryUITestKit/` (local package) | App-specific stubs, `UITestScenarioHost`, `UITestSupport.makeStubTables` |
+| Shared-process framework | `AsyncSharedTestingKit/` (`ASTK`, `ASTKApp`, `ASTKXCTest`) | Generic settings, URL transport, ready marker, session coordinator, POM helpers — see package README |
+| DEBUG app glue | `GamesLibrary/App/UITest/` | `UITestAppContent` shell (inline `.id` + ready marker + `UITestSessionCoordinator`), container override mapping |
 | Tests | One `XCTestCase` per screen/feature | `async throws` tests; no raw identifiers |
 
 Do **not** expose unloaded `XCUIElement` properties. Page accessors wait via `XCTWaiter` then return or throw:
@@ -138,23 +139,23 @@ Large suites should **not** relaunch the app per test.
 The scenario payload is a `UITestConfiguration` (Codable JSON). It travels in the **deep link query string**.
 
 1. Test builds URL: `gameslibrary-uitest://apply?config=<base64url(JSON)>`
-   - Encoding lives in `UITestConfiguration.makeApplyDeepLinkURL()` (`AccessibilityIdentifiers`).
+   - Encoding via ASTK `Encodable.makeApplyDeepLinkURL(settings:)`; scheme constant in `GamesLibraryUITestTransport`.
 2. Test opens URL via **`XCUIDevice.shared.system.open(url)`** — not `app.open(url)`.
    - After in-app navigation (e.g. details screen), `XCUIApplication.open` often fails to deliver the URL; `system.open` still does.
-3. Test pops to the games list first (`AppLauncher.popToRoot`) so the app is in a known state before apply.
-4. SwiftUI receives the URL via `.onOpenURL(perform: UITestRuntime.handleOpenURL)` on `UITestAppContent`.
+3. Test pops to the games list first (`NavigationBarPopper.popTowardRoot`) so the app is in a known state before apply.
+4. SwiftUI receives the URL via `.onOpenURL { sessionCoordinator.handleOpenURL($0) }` on `UITestAppContent`.
 
 #### How the app reloads (apply handler)
 
-When `UITestRuntime.handleOpenURL` runs:
+When `UITestSessionCoordinator.handleOpenURL` runs (ASTKApp):
 
-1. **Decode** — `UITestApplyHandler` reads `config` from the URL query.
+1. **Decode** — ASTK `UITestApplyHandler` reads `config` from the URL query.
 2. **Reset navigation** — `AppCoordinator.resetNavigation()` clears `NavigationPath` (drops any details screen).
 3. **Replace stubs** — `UITestScenarioHost.apply(configuration)` rebuilds mutable `StubSearchGamesUseCase` / `StubGetGameDetailsUseCase` tables and bumps `sessionGeneration`.
 4. **Recreate UI** — `DebugGamesLibraryApp` holds `@State uiTestSessionGeneration`; `UITestAppContent` applies `.id(uiTestSessionGeneration)` on production `AppRootView`, forcing SwiftUI to destroy and recreate the list `@State` ViewModel (fresh `.task` → new stub data).
-5. **Signal ready** — a 1×1 `Color.clear` overlay on `UITestAppContent` exposes `AccessibilityIdentifier.UITest.ready(sessionGeneration:)`; the test waits for the matching generation before querying page objects. Invisible on purpose so it does not show up in screenshots.
+5. **Signal ready** — a 1×1 `Color.clear` overlay on `UITestAppContent` exposes `UITestReadyMarker.identifier(sessionGeneration:)`; the test waits for the matching generation before querying page objects. Invisible on purpose so it does not show up in screenshots.
 
-Both sides track generation: app bumps `UITestScenarioHost.sessionGeneration`; test increments its own counter in `AppLauncher` and waits for `uitest-ready-{N}`.
+Both sides track generation: app bumps `UITestScenarioHost.sessionGeneration`; `SharedProcessLauncher` increments its counter and waits for `uitest-ready-{N}`.
 
 #### Test-side API
 
