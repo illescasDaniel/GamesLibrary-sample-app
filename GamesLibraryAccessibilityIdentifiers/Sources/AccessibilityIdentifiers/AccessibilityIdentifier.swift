@@ -7,6 +7,13 @@ public enum AccessibilityIdentifier {
 		public static let emptyState = "games-list-empty-state"
 		public static let loading = "games-list-loading"
 		public static let gameRowPrefix = "game-row-"
+
+		public enum GameRow {
+			public static let name = "game-row-name"
+			public static let thumbnail = "game-row-thumbnail"
+			public static let rating = "game-row-rating"
+			public static let year = "game-row-year"
+		}
 	}
 
 	public enum GameDetails {

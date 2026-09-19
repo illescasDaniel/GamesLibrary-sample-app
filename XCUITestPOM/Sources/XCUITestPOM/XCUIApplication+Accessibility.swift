@@ -85,6 +85,11 @@ extension XCUIApplication {
 		timeout: TimeInterval = UITestTimeout.absence
 	) async throws {
 		try await elements(matchingIdentifierPrefix: prefix).firstMatch
-			.requireAbsenceAsync(identifier: "\(prefix)*", timeout: timeout)
+			.requireAsync(
+				identifier: "\(prefix)*",
+				timeout: timeout,
+				in: self,
+				.exists(false)
+			)
 	}
 }

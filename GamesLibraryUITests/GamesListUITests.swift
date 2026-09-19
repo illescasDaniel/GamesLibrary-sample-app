@@ -1,5 +1,6 @@
 import XCTest
 import AccessibilityIdentifiers
+import XCUITestPOM
 
 final class GamesListUITests: XCTestCase {
 
@@ -11,14 +12,33 @@ final class GamesListUITests: XCTestCase {
 	func testGivenGamesListWhenLaunchedThenShowsTitle() async throws {
 		let list = try await AppLauncher.apply()
 
-		_ = try await list.screen
+		let screen = try await list.screen
+		try await screen.requireAsync(
+			identifier: AccessibilityIdentifier.GamesList.screen,
+			checks: [.visible()],
+			in: list.app
+		)
 	}
 
 	@MainActor
 	func testGivenGamesListWhenLoadedThenShowsRows() async throws {
 		let list = try await AppLauncher.apply()
 
-		_ = try await list.gameRows
+		let row = try await list.gameRow(at: 0)
+		async let name = row.name
+		async let thumbnail = row.thumbnail
+		let (nameElement, thumbnailElement) = try await (name, thumbnail)
+		async let nameCheck = nameElement.requireAsync(
+			identifier: AccessibilityIdentifier.GamesList.GameRow.name,
+			checks: [.visible(), .nonEmptyText()],
+			in: list.app
+		)
+		async let thumbnailCheck = thumbnailElement.requireAsync(
+			identifier: AccessibilityIdentifier.GamesList.GameRow.thumbnail,
+			checks: [.visible()],
+			in: list.app
+		)
+		_ = try await (nameCheck, thumbnailCheck)
 	}
 
 	@MainActor
@@ -29,7 +49,12 @@ final class GamesListUITests: XCTestCase {
 			configuration: .init(gamesList: .empty)
 		)
 
-		_ = try await list.emptyState
+		let emptyState = try await list.emptyState
+		try await emptyState.requireAsync(
+			identifier: AccessibilityIdentifier.GamesList.emptyState,
+			checks: [.visible()],
+			in: list.app
+		)
 		try await list.requireNoGameRows()
 	}
 }

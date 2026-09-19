@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-19 — Nested POM subviews + unified opt-in `requireAsync`
+
+- **Context:** Page objects were flat (screen-level only); tests asserted existence only. Needed subview grouping (game row, details header/content) and richer opt-in checks (visible, tappable, non-empty text, negative assertions after actions).
+- **Decision:** Add nested `@MainActor` page structs (`GamesListPage.GameRow`, `GameDetailsPage.Header`/`Content`) mirroring SwiftUI subviews; relative row child IDs scoped via `root.descendants`. In `XCUITestPOM`, add `ElementRequirement` enum and single opt-in `requireAsync(checks:in:)` — `.visible()`, `.visible(scroll: true)`, `.visible(false)`, `.exists(false)`, etc. Page accessors stay existence-only; tests and navigate actions call `requireAsync` explicitly. Migrate `requireNoElementsAsync` to `.exists(false)`.
+- **Rationale:** Nested POM scales with extracted SwiftUI subviews; unified bool-parameter requirements support both positive and later negative assertions without baking validation into accessors; scroll folded into `.visible(scroll: true)`.
+
 ## 2026-09-19 — Coordinator via environment from `AppRootView`
 
 - **Context:** `AppRootView` and `GamesNavigationView` passed `AppCoordinator` as a constructor parameter while leaf screens already read it from `@Environment`, duplicating the delivery path.

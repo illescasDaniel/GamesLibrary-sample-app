@@ -12,10 +12,12 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Async XCTWaiter waits in `XCUITestPOM` (`waitForExistenceAsync`), `get async throws` page accessors, parallel `async let` in multi-element tests. README UI-test section documents the ~14% suite speedup (70.3s → 60.4s). Pushed with sync-throwing cleanup commit (`3a4aa82`).
+- Nested POM: `GamesListPage.GameRow`, `GameDetailsPage.Header`/`Content`; row child accessibility IDs on `GameRowView`.
+- `XCUITestPOM`: `ElementRequirement` + opt-in `requireAsync(checks:in:)` (`.visible()`, `.visible(scroll: true)`, `.exists(false)`, etc.); `scrollIntoViewIfNeededAsync`.
+- UI tests updated to nested paths + parallel `requireAsync` validation. All 8 UI tests pass (~63s).
 
 ## Next steps
 
-1. Continue hexagonal/SDD feature work (new screens: IDs → async page accessors → feature UITest file)
+1. Continue hexagonal/SDD feature work (new screens: IDs → nested page accessors → feature UITest file)
 2. Add search/pagination entries in `gamesList.responses` when a UI test needs typed search or page 2
 3. Optional: dedicated slow-details field if a loading-overlay UI assertion is needed

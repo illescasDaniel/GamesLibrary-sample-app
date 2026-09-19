@@ -90,7 +90,8 @@ Instead:
 | Layer | Location | Rule |
 |-------|----------|------|
 | Shared IDs | `GamesLibraryAccessibilityIdentifiers` | Compile-time constants only |
-| Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; **async throwing** element accessors (`XCTWaiter`) |
+| Page objects | `GamesLibraryUITests/Pages/` | One struct per screen; nested `@MainActor` structs for subviews (e.g. `GamesListPage.GameRow`, `GameDetailsPage.Header`); **async throwing** element accessors (`XCTWaiter`) |
+| Validation | `XCUITestPOM` | Opt-in `requireAsync(checks:in:)` with `ElementRequirement` (`.visible()`, `.visible(false)`, `.exists(false)`, `.tappable()`, `.nonEmptyText()`, …) |
 | Launch | `GamesLibraryUITests/Support/AppLauncher` | `ensureLaunched()` once; `apply(configuration:)` per scenario |
 | DEBUG UI-test kit | `GamesLibraryUITestKit/` (local package) | Stubs, scenario host, apply handler, runtime |
 | DEBUG app glue | `GamesLibrary/App/UITest/` | `UITestAppContent` shell, container override mapping |
@@ -99,13 +100,30 @@ Instead:
 Do **not** expose unloaded `XCUIElement` properties. Page accessors wait via `XCTWaiter` then return or throw:
 
 ```swift
-let screen = try await details.screen
-async let rating = details.rating
-async let year = details.year
-_ = try await (rating, year)
+let row = try await list.gameRow(at: 0)
+async let name = row.name
+let nameElement = try await name
+try await nameElement.requireAsync(
+	identifier: AccessibilityIdentifier.GamesList.GameRow.name,
+	checks: [.visible(), .nonEmptyText()],
+	in: list.app
+)
 ```
 
-Missing elements throw `UITestElementError` (test fails via `async throws`). Absence checks use `requireNo…Async` / `requireAbsenceAsync`. Navigate actions return the next page (e.g. `try await list.tapGameRow(at:) -> GameDetailsPage`). Prefer `async let` when asserting several independent elements on the same screen. Prefer `AppLauncher.applyGameDetails(index:)` when a test starts on details rather than composing list apply + tap. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty (list empty state / details error) and query the Retry **button** via that same id. Cross-screen smoke can live in a small `NavigationUITests` when needed. New UI states = new fields on the matching per-screen nested config inside `UITestConfiguration` + stub mapping in `UITestSupport.makeStubTables(from:)` — never seed `ViewModel` state from the container.
+Page accessors wait for **existence only**. Stronger checks are **opt-in** via `requireAsync` so tests can resolve an element, perform an action, then assert a negative state later (e.g. `.exists(false)` after retry, `.visible(false)` when off-screen is enough).
+
+| `ElementRequirement` | Meaning |
+|---------------------|---------|
+| `.exists()` / `.exists(false)` | In hierarchy / gone from hierarchy (replaces `requireAbsenceAsync`) |
+| `.visible()` / `.visible(false)` | On screen (frame intersects viewport) / not on screen |
+| `.visible(scroll: true)` | Scroll into view first, then on-screen check |
+| `.tappable()` / `.tappable(false)` | Hittable / not hittable |
+| `.enabled()` / `.enabled(false)` | Enabled / disabled |
+| `.nonEmptyText()` / `.nonEmptyText(false)` | Label or value trimmed non-empty / empty |
+
+Non-empty text checks assert structural content only — never compare against localized copy or fixture names. Container elements (e.g. platforms `ScrollView`) may have no label; use `.visible()` without `.nonEmptyText()` for those.
+
+Nested row IDs are **relative** (`game-row-name`, …); query via `row.root.descendants(matching:)` so the same ID resolves per row. Navigate actions return the next page (e.g. `try await list.tapGameRow(at:) -> GameDetailsPage`). Prefer `async let` when asserting several independent elements. Prefer `AppLauncher.applyGameDetails(index:)` when a test starts on details. `ContentUnavailableView` inherits the parent accessibility identifier and drops child IDs — use a root id swap for error/empty and query the Retry **button** via that same id. New UI states = new fields on the matching per-screen nested config inside `UITestConfiguration` + stub mapping in `UITestSupport.makeStubTables(from:)` — never seed `ViewModel` state from the container.
 
 ### Shared-process UI tests (template-scale)
 
