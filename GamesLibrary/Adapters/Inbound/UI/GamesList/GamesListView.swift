@@ -6,7 +6,6 @@ import ViewLoadState
 
 struct GameListView: View {
 	@State private var viewModel: GamesListViewModel
-	@Environment(AppCoordinator.self) private var coordinator
 
 	init(viewModel: GamesListViewModel) {
 		_viewModel = State(initialValue: viewModel)
@@ -17,9 +16,6 @@ struct GameListView: View {
 			ZStack {
 				GamesListContentView(
 					games: viewModel.games,
-					onSelect: { game in
-						coordinator.push(.details(game))
-					},
 					onRefresh: {
 						await viewModel.searchGame()
 					},

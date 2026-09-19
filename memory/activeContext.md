@@ -12,10 +12,7 @@ Continue hexagonal/SDD feature work on `develop`.
 
 ## Just changed
 
-- Navigation shell refactor: `AppRootView` → `GamesNavigationView`; coordinator owns view construction (`Route.gamesList`, `.details`)
-- Coordinator injected via `.environment` at `AppRootView`; `GamesNavigationView` preview uses `DebugAppContainer` + stub use case
-- Per-screen UI folders: screen view + ViewModel at feature root; section/row views in `Subviews/`
-- `UITestConfiguration` stub tables are native JSON dicts (no `SearchResponse` / `DetailsResponse` wrappers)
+- Games list rows: `NavigationLink(value: Route.details(game))` replaces `Button` + `coordinator.push`; disclosure chevron via system list styling; `GameListView` no longer reads coordinator for row taps
 
 ## Next steps
 

@@ -6,15 +6,12 @@ import SwiftUIComponents
 /// List + pagination shell. Owns no ViewModel; receives games and callbacks.
 struct GamesListContentView: View {
 	let games: [GameSummary]
-	let onSelect: (GameSummary) -> Void
 	let onRefresh: () async -> Void
 	let onLoadNextPage: () -> Void
 
 	var body: some View {
 		List(games) { game in
-			Button {
-				onSelect(game)
-			} label: {
+			NavigationLink(value: Route.details(game)) {
 				GameRowView(
 					name: game.name,
 					rating: game.rating,
@@ -22,7 +19,6 @@ struct GamesListContentView: View {
 					backgroundImageURL: game.backgroundImageURL
 				)
 			}
-			.buttonStyle(.plain)
 			.accessibilityIdentifier(AccessibilityIdentifier.gameRow(id: game.id.rawValue))
 		}
 		.animation(.default, value: games)

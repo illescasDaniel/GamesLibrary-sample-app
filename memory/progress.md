@@ -52,6 +52,7 @@ _Last updated: 2026-09-19_
 - [x] Slim UI-test harness: inline 1×1 ready marker; drop unused apply-trigger + pasteboard fallback
 - [x] `GamesLibraryUITestKit` local package; DEBUG glue in `GamesLibrary/App/UITest/`; documented reload flow in adaptations
 - [x] API key via gitignored `Secrets.swift` (+ sample); `Config.xcconfig` holds `DEVELOPMENT_TEAM` only; drop C/bridging
+- [x] Games list rows use `NavigationLink(value: Route.details)` for disclosure indicator; path-driven navigation via existing `navigationDestination`
 
 ### Open
 
