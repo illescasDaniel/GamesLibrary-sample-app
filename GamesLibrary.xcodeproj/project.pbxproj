@@ -278,7 +278,7 @@
 				65A11Y001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryAccessibilityIdentifiers" */,
 				65IOSC001EE0000000000001 /* XCLocalSwiftPackageReference "IOSConveniences" */,
 				65SUIC001EE0000000000001 /* XCLocalSwiftPackageReference "SwiftUIComponents" */,
-				65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */,
+				65ASTK001EE0000000000001 /* XCRemoteSwiftPackageReference "astk" */,
 				65UITK001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryUITestKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -682,10 +682,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = GamesLibraryAccessibilityIdentifiers;
 		};
-		65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = AsyncSharedTestingKit;
-		};
 		65CORE001EE0000000000001 /* XCLocalSwiftPackageReference "GamesLibraryCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = GamesLibraryCore;
@@ -705,6 +701,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		65ASTK001EE0000000000001 /* XCRemoteSwiftPackageReference "astk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/illescasDaniel/astk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
 		650717312FB34B04009FA940 /* XCRemoteSwiftPackageReference "TTLCache" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/illescasDaniel/TTLCache";
@@ -767,12 +771,12 @@
 		};
 		65ASTK002EE0000000000002 /* ASTKApp */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */;
+			package = 65ASTK001EE0000000000001 /* XCRemoteSwiftPackageReference "astk" */;
 			productName = ASTKApp;
 		};
 		65ASTK003EE0000000000003 /* ASTKXCTest */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 65ASTK001EE0000000000001 /* XCLocalSwiftPackageReference "AsyncSharedTestingKit" */;
+			package = 65ASTK001EE0000000000001 /* XCRemoteSwiftPackageReference "astk" */;
 			productName = ASTKXCTest;
 		};
 		65CORE002EE0000000000002 /* GamesLibraryCore */ = {

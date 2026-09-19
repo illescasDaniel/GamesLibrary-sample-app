@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-09-19 — Publish ASTK as standalone GitHub repo
+
+- **Context:** `AsyncSharedTestingKit` was a local package inside GamesLibrary, ready for reuse but not independently versioned or consumable by other projects.
+- **Decision:** Move the package to sibling folder `../astk`, publish as public repo [illescasDaniel/astk](https://github.com/illescasDaniel/astk) with tag **0.1.0** and GitHub release. GamesLibrary links it via remote SPM (`from: "0.1.0"`); README documents GamesLibrary wiring as the reference integration.
+- **Rationale:** Independent versioning and distribution; GamesLibrary validates the published artifact; local sibling copy remains for ASTK development without nesting in the app repo.
+
 ## 2026-09-19 — Private `AppContent` / `DebugAppContent` shells
 
 - **Context:** Release and DEBUG `@main` structs owned coordinator `@State` in `App.init()`, while UI-test glue had moved into `UITestAppContent`.

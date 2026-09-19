@@ -94,7 +94,7 @@ Instead:
 | Validation | `AsyncSharedTestingKit` (`ASTKXCTest`) | Opt-in `requireAsync(checks:in:)` with `ElementRequirement` (`.visible()`, `.visible(false)`, `.exists(false)`, `.tappable()`, `.nonEmptyText()`, …) |
 | Launch | `GamesLibraryUITests/Support/AppLauncher` | Thin wrapper over `SharedProcessLauncher` — `ensureLaunched()` once; `apply(configuration:)` per scenario |
 | DEBUG UI-test kit | `GamesLibraryUITestKit/` (local package) | App-specific stubs, `UITestScenarioHost`, `UITestSupport.makeStubTables` |
-| Shared-process framework | `AsyncSharedTestingKit/` (`ASTK`, `ASTKApp`, `ASTKXCTest`) | Generic settings, URL transport, ready marker, session coordinator, POM helpers — see package README |
+| Shared-process framework | [ASTK](https://github.com/illescasDaniel/astk) (`ASTK`, `ASTKApp`, `ASTKXCTest`) | Generic settings, URL transport, ready marker, session coordinator, POM helpers — see package README |
 | DEBUG app glue | `GamesLibrary/App/UITest/` | `UITestAppContent` shell (inline `.id` + ready marker + `UITestSessionCoordinator`), container override mapping |
 | Tests | One `XCTestCase` per screen/feature | `async throws` tests; no raw identifiers |
 
