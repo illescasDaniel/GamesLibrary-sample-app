@@ -1,0 +1,16 @@
+{
+	"mcpServers": {
+		"codenav-swift": {
+			"command": "codenav-swift-mcp",
+			"args": []
+		},
+		"ios-simulator": {
+			"command": "npx",
+			"args": ["-y", "ios-mcp-server"]
+		},
+		"xcode-tools": {
+			"command": "uvx",
+			"args": ["--from", "mcpbridge-wrapper", "mcpbridge-wrapper", "--broker"]
+		}
+	}
+}

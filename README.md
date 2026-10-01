@@ -63,9 +63,9 @@ This project configures MCP servers for agent workflows:
 
 | Server | Config | Purpose |
 |--------|--------|---------|
-| **`ios-simulator`** | [`.cursor/mcp.json`](.cursor/mcp.json) | Explore live UI on a booted simulator (`get_ui_tree`, tap, type) before writing XCUITests |
-| **`xcode-tools`** | `~/.cursor/mcp.json` (global) | Build, run tests, render SwiftUI previews from Xcode |
-| **[`codenav-swift`](https://github.com/illescasDaniel/codenav-swift-mcp)** | `.mcp.json` (local, gitignored) | Compiler-accurate navigation via sourcekit-lsp: `symbol_info`, `references`, `callers`, `implementations`, `type_at`, `outline`, `diagnostics` — by symbol name instead of grep |
+| **`ios-simulator`** | [`.cursor/mcp.json`](.cursor/mcp.json) (Cursor), [`.mcp.json`](.mcp.json) (Claude Code) | Explore live UI on a booted simulator (`get_ui_tree`, tap, type) before writing XCUITests |
+| **`xcode-tools`** | `~/.cursor/mcp.json` (Cursor, global), [`.mcp.json`](.mcp.json) (Claude Code) | Build, run tests, render SwiftUI previews from Xcode |
+| **[`codenav-swift`](https://github.com/illescasDaniel/codenav-swift-mcp)** | [`.mcp.json`](.mcp.json) | Compiler-accurate navigation via sourcekit-lsp: `symbol_info`, `references`, `callers`, `implementations`, `type_at`, `outline`, `diagnostics` — by symbol name instead of grep |
 
 Enable the Cursor servers in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulator-mcp.md](docs/playbooks/ios-simulator-mcp.md) for setup and the SDD explore → interact → codify UI-test workflow.
 
@@ -76,21 +76,7 @@ brew install illescasDaniel/tap/codenav-swift-mcp xcode-build-server
 xcode-build-server config -project GamesLibrary.xcodeproj -scheme GamesLibrary --build_root "$PWD/DerivedData/GamesLibrary"
 ```
 
-Nothing creates `.mcp.json` for you, so add it at the repo root (replace the path with your clone):
-
-```json
-{
-	"mcpServers": {
-		"codenav-swift": {
-			"command": "codenav-swift-mcp",
-			"args": [],
-			"env": {
-				"CODENAV_SWIFT_WORKSPACE": "/path/to/GamesLibrary"
-			}
-		}
-	}
-}
-```
+[`.mcp.json`](.mcp.json) is checked in and registers all three servers for Claude Code. It sets no workspace: codenav-swift resolves the repo from the client's roots, then `CLAUDE_PROJECT_DIR`, then the current directory. Clients that start servers elsewhere (Cursor) must pin it with `CODENAV_SWIFT_WORKSPACE`. The first `xcode-tools` call asks Xcode to approve the agent: have Xcode open and call `XcodeOpenWorkspace` on `GamesLibrary.xcodeproj`.
 
 Alternatively, `claude mcp add codenav-swift --scope user -- codenav-swift-mcp` registers it for every project without a file. Apps that don't inherit your shell `PATH` (Cursor, for example) need the absolute `command`: `/opt/homebrew/bin/codenav-swift-mcp`.
 

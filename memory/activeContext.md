@@ -12,9 +12,9 @@ Continue hexagonal/SDD feature work. Code navigation now uses the Homebrew-insta
 
 ## Just changed
 
-- `.mcp.json` (local, gitignored) now runs `codenav-swift-mcp` from `PATH` (Homebrew `illescasDaniel/tap`, 0.1.1) with `CODENAV_SWIFT_WORKSPACE` pinned to the repo
-- Verified all codenav tools natively after an MCP restart (`workspace`, `symbol_info`, `implementations`, `callers`, `outline`, `diagnostics`, `search_symbol`, `references`, `type_at`); index ready, no phantom hits
-- README documents `codenav-swift` (MCP table, setup, `.mcp.json` example, features list)
+- `.mcp.json` is now checked in (removed from `.gitignore`) and registers `codenav-swift`, `ios-simulator`, and `xcode-tools` for Claude Code; no `CODENAV_SWIFT_WORKSPACE` needed because codenav resolves the repo from `CLAUDE_PROJECT_DIR` (verified with its `workspace` tool)
+- All three servers verified connected; `xcode-tools` needs a first `XcodeOpenWorkspace` call on `GamesLibrary.xcodeproj` (with Xcode open) to approve the agent
+- README MCP section updated accordingly; the old `.mcp.json` example was removed
 - Build output / index store lives in `DerivedData/` (see `AGENTS.md`)
 
 ## Next steps
