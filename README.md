@@ -76,7 +76,23 @@ brew install illescasDaniel/tap/codenav-swift-mcp xcode-build-server
 xcode-build-server config -project GamesLibrary.xcodeproj -scheme GamesLibrary --build_root "$PWD/DerivedData/GamesLibrary"
 ```
 
-Then register it with `claude mcp add codenav-swift -- codenav-swift-mcp`, or in a `.mcp.json` with `"command": "codenav-swift-mcp"` and `CODENAV_SWIFT_WORKSPACE` set to the repo path.
+Nothing creates `.mcp.json` for you, so add it at the repo root (replace the path with your clone):
+
+```json
+{
+	"mcpServers": {
+		"codenav-swift": {
+			"command": "codenav-swift-mcp",
+			"args": [],
+			"env": {
+				"CODENAV_SWIFT_WORKSPACE": "/path/to/GamesLibrary"
+			}
+		}
+	}
+}
+```
+
+Alternatively, `claude mcp add codenav-swift --scope user -- codenav-swift-mcp` registers it for every project without a file. Apps that don't inherit your shell `PATH` (Cursor, for example) need the absolute `command`: `/opt/homebrew/bin/codenav-swift-mcp`.
 
 ## Features
 
