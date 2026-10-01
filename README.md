@@ -15,7 +15,7 @@ This repo is set up so humans and AI agents share the same source of truth:
 | Skills | `.cursor/skills/` | Project workflows (`sdd-feature`, `hexagonal-ios`, `playbooks`, `save-changes`) plus Apple Xcode 27 skills (`swiftui-specialist`, …) |
 | Specs | `specs/<feature>/SPEC.md` | Feature truth (BDD acceptance criteria) |
 | Memory bank | [memory/](memory/README.md) | Per-branch progress, session context, and decision log |
-| MCP | [below](#mcp-tools-ai-assisted-development) | Simulator exploration and Xcode build/test/preview |
+| MCP | [below](#mcp-tools-ai-assisted-development) | Simulator exploration, Xcode build/test/preview, and compiler-accurate Swift code navigation |
 
 The memory bank is **tracked in git** so context follows the branch (same protocol as [srxy](https://github.com/illescasDaniel/srxy)). Agents read it at session start and update it at milestones — see [memory/README.md](memory/README.md).
 
@@ -65,8 +65,18 @@ This project configures MCP servers for agent workflows:
 |--------|--------|---------|
 | **`ios-simulator`** | [`.cursor/mcp.json`](.cursor/mcp.json) | Explore live UI on a booted simulator (`get_ui_tree`, tap, type) before writing XCUITests |
 | **`xcode-tools`** | `~/.cursor/mcp.json` (global) | Build, run tests, render SwiftUI previews from Xcode |
+| **[`codenav-swift`](https://github.com/illescasDaniel/codenav-swift-mcp)** | `.mcp.json` (local, gitignored) | Compiler-accurate navigation via sourcekit-lsp: `symbol_info`, `references`, `callers`, `implementations`, `type_at`, `outline`, `diagnostics` — by symbol name instead of grep |
 
-Enable both in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulator-mcp.md](docs/playbooks/ios-simulator-mcp.md) for setup and the SDD explore → interact → codify UI-test workflow.
+Enable the Cursor servers in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulator-mcp.md](docs/playbooks/ios-simulator-mcp.md) for setup and the SDD explore → interact → codify UI-test workflow.
+
+**Setting up `codenav-swift`:** install it with Homebrew, generate `buildServer.json` for the Xcode project, and build the scheme once so the index exists (details in [AGENTS.md](AGENTS.md#build-output-and-code-navigation-index)):
+
+```bash
+brew install illescasDaniel/tap/codenav-swift-mcp xcode-build-server
+xcode-build-server config -project GamesLibrary.xcodeproj -scheme GamesLibrary --build_root "$PWD/DerivedData/GamesLibrary"
+```
+
+Then register it with `claude mcp add codenav-swift -- codenav-swift-mcp`, or in a `.mcp.json` with `"command": "codenav-swift-mcp"` and `CODENAV_SWIFT_WORKSPACE` set to the repo path.
 
 ## Features
 
@@ -76,6 +86,7 @@ Enable both in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulato
 - In-memory TTL cache (5 minutes)
 - Shared-process UI tests via [ASTK](https://github.com/illescasDaniel/astk) (no live API)
 - Swift 6, Swift Testing
+- Compiler-accurate code navigation for AI agents via [codenav-swift-mcp](https://github.com/illescasDaniel/codenav-swift-mcp)
 
 ## Development
 

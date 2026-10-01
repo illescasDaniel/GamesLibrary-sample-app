@@ -103,3 +103,7 @@ Package.resolved
 
 Config.xcconfig
 GamesLibrary/Configuration/Secrets.swift
+
+# xcode-build-server (machine-specific paths)
+buildServer.json
+.mcp.json

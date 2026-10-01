@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-10-01 — Build output and index store inside the repo
+
+- **Context:** codenav-swift returned phantom references/callers (one line before each real hit). Cause: three stale index units for the same file in the shared `~/Library/.../DerivedData` store; a fresh index returned exactly the grep results.
+- **Decision:** Keep DerivedData in `DerivedData/` (gitignored): `WorkspaceSettings.xcsettings` for the Xcode IDE, `-derivedDataPath DerivedData/GamesLibrary` for `xcodebuild` (matches the nested folder Xcode creates), `buildServer.json` `build_root` pointing at that folder. `buildServer.json` and `.mcp.json` are gitignored (absolute paths). AGENTS.md tells agents to `rm -rf DerivedData` and rebuild when codenav disagrees with grep.
+- **Rationale:** An index scoped to the repo is easy to inspect and wipe without touching other projects' caches.
+
 ## 2026-09-19 — Debug-only Info.plist for UI-test deep link scheme
 
 - **Context:** `gameslibrary-uitest` URL scheme was registered in a shared `Info.plist` referenced by both Debug and Release build configurations, even though shared-process UI tests and the deep-link transport are DEBUG-only.

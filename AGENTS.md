@@ -60,6 +60,23 @@ Senior iOS engineering playbooks are vendored in `docs/playbooks/`. Read `docs/p
 
 See `docs/playbooks/ios-simulator-mcp.md`. Enable servers in Cursor Settings → MCP.
 
+## Build output and code navigation index
+
+Build products and the Xcode index store live **inside the repo** in `DerivedData/` (gitignored), not in `~/Library/Developer/Xcode/DerivedData`. Xcode picks this up from the shared `GamesLibrary.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings`; Xcode nests everything one level deeper, in `DerivedData/GamesLibrary/` (`Build/`, `Index.noindex/`). `xcodebuild` ignores that file, so pass the same path explicitly to share one index:
+
+```bash
+xcodebuild build -project GamesLibrary.xcodeproj -scheme GamesLibrary \
+  -destination 'generic/platform=iOS Simulator' -derivedDataPath DerivedData/GamesLibrary
+```
+
+`codenav-swift` (sourcekit-lsp) reads that index through `buildServer.json` (gitignored, machine-specific). Regenerate it after a fresh clone or when the path changes:
+
+```bash
+xcode-build-server config -project GamesLibrary.xcodeproj -scheme GamesLibrary --build_root "$PWD/DerivedData/GamesLibrary"
+```
+
+**Tip — clear the index from time to time.** The index store keeps one unit per build of each file, and stale units make `references`/`callers`/`symbol_info` return phantom hits one line off from the real ones. If codenav results disagree with grep, or after big refactors and branch switches, run `rm -rf DerivedData`, rebuild with the command above, and retry.
+
 ## Skills
 
 Project workflows (this repo):
