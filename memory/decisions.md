@@ -2,6 +2,12 @@
 
 _Log of significant technical, structural, or dependency choices. Newest first._
 
+## 2026-10-01 — Use the Homebrew release of codenav-swift-mcp
+
+- **Context:** `.mcp.json` pointed at a local source build (`~/Projects/MCPs/.../.build/release`), which breaks on other machines and after a clean build folder.
+- **Decision:** Install the prebuilt release with `brew install illescasDaniel/tap/codenav-swift-mcp` and have `.mcp.json` call `codenav-swift-mcp` from `PATH`. The README carries a copyable `.mcp.json` example, since the file is gitignored; Cursor needs the absolute `/opt/homebrew/bin/` path.
+- **Rationale:** Matches the official install instructions and updates with `brew upgrade`.
+
 ## 2026-10-01 — Build output and index store inside the repo
 
 - **Context:** codenav-swift returned phantom references/callers (one line before each real hit). Cause: three stale index units for the same file in the shared `~/Library/.../DerivedData` store; a fresh index returned exactly the grep results.

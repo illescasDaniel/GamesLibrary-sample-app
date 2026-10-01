@@ -1,6 +1,6 @@
 # Progress
 
-_Last updated: 2026-09-19_
+_Last updated: 2026-10-01_
 
 ## Hexagonal + SDD refactor (on `develop`)
 
@@ -28,6 +28,7 @@ _Last updated: 2026-09-19_
 - [x] Cleanup batch: backtick GWT test names, AccessibilityIdentifiers SPM, UI POM, C API key (not Info.plist), flatten Infrastructure, lazy AppContainer, inline UI-test stub, OptimizedAsyncImage keep + README note
 - [x] Fold API key + `DEVELOPMENT_TEAM` into gitignored `Config.xcconfig`; track `Config.xcconfig.sample`; remove `Secrets.xcconfig`
 - [x] Shared `httpClient` + interceptors as lazy vars on `AppContainer` (reuse for future repositories)
+- [x] In-repo `DerivedData/` index store + Homebrew `codenav-swift-mcp` setup documented in `AGENTS.md` and README; tools verified natively
 
 - [x] Commit cleanup batch on `develop` (flatten, a11y SPM, POM pages, Config.xcconfig sample, shared httpClient)
 - [x] `AppContainer.Overrides` + thin UITest bootstrap (`UITestSupport.makeOverrides()`)
