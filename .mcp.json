@@ -2,7 +2,10 @@
 	"mcpServers": {
 		"codenav-swift": {
 			"command": "codenav-swift-mcp",
-			"args": []
+			"args": [],
+			"env": {
+				"CODENAV_SWIFT_WRITE": "1"
+			}
 		},
 		"ios-simulator": {
 			"command": "npx",
