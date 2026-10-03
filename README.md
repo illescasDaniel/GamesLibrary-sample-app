@@ -65,7 +65,7 @@ This project configures MCP servers for agent workflows:
 |--------|--------|---------|
 | **`ios-simulator`** | [`.cursor/mcp.json`](.cursor/mcp.json) (Cursor), [`.mcp.json`](.mcp.json) (Claude Code) | Explore live UI on a booted simulator (`get_ui_tree`, tap, type) before writing XCUITests |
 | **`xcode-tools`** | `~/.cursor/mcp.json` (Cursor, global), [`.mcp.json`](.mcp.json) (Claude Code) | Build, run tests, render SwiftUI previews from Xcode |
-| **[`codenav-swift`](https://github.com/illescasDaniel/codenav-swift-mcp)** | [`.mcp.json`](.mcp.json) | Compiler-accurate navigation via sourcekit-lsp: `symbol_info`, `references`, `callers`, `implementations`, `type_at`, `outline`, `diagnostics` — by symbol name instead of grep |
+| **[`codenav-swift`](https://github.com/illescasDaniel/codenav-swift-mcp)** | [`.mcp.json`](.mcp.json) | Compiler-accurate navigation **and editing** via sourcekit-lsp: `symbol_info`, `references`, `callers`, `implementations`, `type_at`, `outline`, `diagnostics`, plus compiler-checked edits (below) — by symbol name instead of grep |
 
 Enable the Cursor servers in **Cursor → Settings → MCP**. See [docs/playbooks/ios-simulator-mcp.md](docs/playbooks/ios-simulator-mcp.md) for setup and the SDD explore → interact → codify UI-test workflow.
 
@@ -78,6 +78,19 @@ xcode-build-server config -project GamesLibrary.xcodeproj -scheme GamesLibrary -
 
 [`.mcp.json`](.mcp.json) is checked in and registers all three servers for Claude Code. It sets no workspace: codenav-swift resolves the repo from the client's roots, then `CLAUDE_PROJECT_DIR`, then the current directory. Clients that start servers elsewhere (Cursor) must pin it with `CODENAV_SWIFT_WORKSPACE`. The first `xcode-tools` call asks Xcode to approve the agent: have Xcode open and call `XcodeOpenWorkspace` on `GamesLibrary.xcodeproj`.
 
+**Compiler-checked code editing (codenav-swift 0.2.0):** the write tools show each change to sourcekit-lsp in memory first and refuse to write it if it introduces new compile errors; when other modules are affected they also run an `xcodebuild build-for-testing`. Every applied edit gets an id, and `undo_edit` reverts it.
+
+| Tool | What it does |
+|------|--------------|
+| `rename_symbol` | Rename through the type checker (overloads, witnesses, extensions, labels) |
+| `change_signature` | Add/remove/reorder/retype parameters and rewrite every call site, tests included |
+| `edit_symbol`, `insert_member`, `apply_edit` | Rewrite a declaration by name, add a member, or apply multi-file text edits |
+| `move_symbol`, `delete_symbol` | Move a declaration to another file/type; delete one (refuses while it is still used) |
+| `add_conformance`, `refactor`, `fix_diagnostics` | Protocol stubs, sourcekit-lsp refactorings (extract method/expression), compiler fix-its |
+| `check_edit`, `undo_edit`, `verify`, `affected_tests` | Dry-run a change, revert an applied one, build/test the project, find the tests that cover a symbol |
+
+Write tools are opt-in: add `"env": { "CODENAV_SWIFT_WRITE": "1" }` to the `codenav-swift` entry in [`.mcp.json`](.mcp.json) (without it the server is read-only). Pass `dry_run: true` to any of them to preview the diff without writing. Under the repo's hexagonal rules, prefer these over blind text edits so layer boundaries survive refactors.
+
 Alternatively, `claude mcp add codenav-swift --scope user -- codenav-swift-mcp` registers it for every project without a file. Apps that don't inherit your shell `PATH` (Cursor, for example) need the absolute `command`: `/opt/homebrew/bin/codenav-swift-mcp`.
 
 ## Features
@@ -88,7 +101,7 @@ Alternatively, `claude mcp add codenav-swift --scope user -- codenav-swift-mcp` 
 - In-memory TTL cache (5 minutes)
 - Shared-process UI tests via [ASTK](https://github.com/illescasDaniel/astk) (no live API)
 - Swift 6, Swift Testing
-- Compiler-accurate code navigation for AI agents via [codenav-swift-mcp](https://github.com/illescasDaniel/codenav-swift-mcp)
+- Compiler-accurate code navigation and compiler-checked, undoable code editing for AI agents via [codenav-swift-mcp](https://github.com/illescasDaniel/codenav-swift-mcp)
 
 ## Development
 
